@@ -1,5 +1,5 @@
 {
-  "name": "pdf_builder",
+  "name": "draftjs-demo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,12 +7,12 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "draft-convert": "^2.1.13",
     "draft-js": "^0.11.7",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.0.2",
-    "prettier": "^3.0.3",
+    "draftjs-to-html": "^0.9.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draft-wysiwyg": "^1.15.0",
     "react-icons": "^4.11.0",
     "react-pdf": "^7.5.1",
     "react-scripts": "5.0.1",
@@ -32,16 +32,6 @@
       "react-app/jest"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -53,5 +43,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "prettier": "^3.0.3"
   }
 }
