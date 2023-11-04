@@ -1,49 +1,55 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
-// import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-// import htmlToDraft from "html-to-draftjs";
-import RichText from "../content/rich-text";
-import { Text, Link, View, StyleSheet } from "@react-pdf/renderer";
-import redraft from "redraft";
+import "./editor.css";
 
-const addBreaklines = (children) => children.map((child) => [child, <br />]);
 const WYSIWYGEditor = () => {
-  const [editorState, setEditorState] = React.useState(() =>
+  const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
-  const [rawContent, setRawContent] = React.useState(null);
-  const [pageSize, setPageSize] = React.useState("carta");
+  const [pageSize, setPageSize] = useState("carta");
+  const [fontSize, setFontSize] = useState(12);
+  const [margin, setMargin] = useState(20);
 
   const onEditorStateChange = (editorState) => {
-    setRawContent(convertToRaw(editorState.getCurrentContent()));
     setEditorState(editorState);
   };
 
   const changePageSize = (size) => {
     setPageSize(size);
+    if (size === "carta") {
+      setFontSize(12);
+    } else if (size === "oficio") {
+      setFontSize(14);
+    }
+  };
+
+  const changeMargin = (newMargin) => {
+    setMargin(parseInt(newMargin)); // Convertir a número y establecerlo en el estado
   };
 
   const pageStyles = {
     width: pageSize === "carta" ? "210mm" : "216mm",
     height: pageSize === "carta" ? "297mm" : "356mm",
     backgroundColor: "white",
-    margin: "20px",
+    padding: `${margin}px`, // Usar el valor de margen del estado
     border: "1px solid #000",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
   };
+
+  const editorContent = convertToRaw(editorState.getCurrentContent());
 
   return (
     <div className="editor-container">
       <div className="editor">
         <Editor
-          // toolbar={options}
           editorState={editorState}
-          wrapperClassName="demo-wrapper"
-          editorClassName="demo-editor"
+          wrapperClassName="wrapper-class"
+          editorClassName="editor-class"
+          toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
         />
       </div>
@@ -58,8 +64,26 @@ const WYSIWYGEditor = () => {
           <option value="oficio">Oficio</option>
         </select>
       </div>
+      <div id="margin-selector">
+        <label htmlFor="page-margin">Configura el margen:</label>
+        <input
+          type="number"
+          id="page-margin"
+          value={margin}
+          onChange={(e) => changeMargin(e.target.value)}
+        />
+      </div>
       <div style={pageStyles}>
-        <p>Contenido de la página</p>
+        <div
+          style={{
+            fontSize: `${fontSize}px`,
+            width: "100%",
+            textAlign: "left",
+            padding: "1rem",
+          }}
+        >
+          {editorContent.blocks.map((block) => block.text).join("\n")}
+        </div>
       </div>
     </div>
   );
