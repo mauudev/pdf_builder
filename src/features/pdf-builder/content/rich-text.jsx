@@ -14,7 +14,7 @@ import {
   OrderedList,
   OrderedListItem,
   UnorderedListItem,
-} from "../ui";
+} from "../../ui";
 
 const styles = StyleSheet.create({
   text: {
@@ -110,8 +110,8 @@ const renderers = {
   },
 };
 
-const RichText = ({ note }) => {
-  const blocksFromHTML = convertFromHTML(note);
+const RichText = ({ text }) => {
+  const blocksFromHTML = convertFromHTML(text);
   const initialState = ContentState.createFromBlockArray(
     blocksFromHTML.contentBlocks,
     blocksFromHTML.entityMap

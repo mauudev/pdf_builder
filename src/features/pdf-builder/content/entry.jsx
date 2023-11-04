@@ -28,19 +28,6 @@ const Entry = ({ entry }) => {
 
   return (
     <View style={styles.containerStyles} wrap={false} break={pageBreak}>
-      <Link
-        src={assetPreviewLarge}
-        style={styles.imageContainerStyles}
-        target="_blank"
-      >
-        <Image
-          style={styles.imageStyles}
-          source={{
-            uri: assetPreviewLarge,
-            headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
-          }}
-        />
-      </Link>
       <View style={styles.contentStyles}>
         <RichText note={entry.notes} />
       </View>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { pdf } from "@react-pdf/renderer";
 import { pdfjs, Document as PDFDocument, Page as PDFPage } from "react-pdf";
-import { LoadingSpinner } from "../ui";
+import { LoadingSpinner } from "../../ui";
 import Document from "./document";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
