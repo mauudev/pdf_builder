@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { EditorState, convertToRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import DOMPurify from "dompurify";
+import { convertToHTML } from "draft-convert";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./editor.css";
@@ -14,6 +17,12 @@ const WYSIWYGEditor = () => {
   const [marginLeft, setMarginLeft] = useState(20);
   const [marginRight, setMarginRight] = useState(20);
   const [marginBottom, setMarginBottom] = useState(20);
+  const [convertedContent, setConvertedContent] = useState(null);
+
+  useEffect(() => {
+    let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+    setConvertedContent(html);
+  }, [editorState]);
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
@@ -41,6 +50,12 @@ const WYSIWYGEditor = () => {
     setMarginBottom(parseInt(newMargin));
   };
 
+  const createMarkup = (html) => {
+    return {
+      __html: DOMPurify.sanitize(html),
+    };
+  };
+
   const pageStyles = {
     width: pageSize === "carta" ? "210mm" : "216mm",
     height: pageSize === "carta" ? "297mm" : "356mm",
@@ -63,8 +78,10 @@ const WYSIWYGEditor = () => {
     border: "5px solid #000",
   };
 
-  const editorContent = convertToRaw(editorState.getCurrentContent());
-
+  const editorContent = draftToHtml(
+    convertToRaw(editorState.getCurrentContent())
+  );
+  console.log(`EDITOR CONTENT: ${JSON.stringify(editorContent)}`);
   return (
     <div className="editor-container">
       <div className="editor">
@@ -127,9 +144,10 @@ const WYSIWYGEditor = () => {
       </div>
       <div className="preview">
         <div style={pageStyles}>
-          <div style={contentStyles}>
-            {editorContent.blocks.map((block) => block.text).join("\n")}
-          </div>
+          <div
+            style={contentStyles}
+            dangerouslySetInnerHTML={createMarkup(convertedContent)}
+          ></div>
         </div>
       </div>
     </div>

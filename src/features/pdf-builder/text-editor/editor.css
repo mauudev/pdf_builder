@@ -3,17 +3,29 @@
   border: 1px solid #ccc;
   background-color: aqua;
 }
+
 .editor-class {
-  background-color: lightgray;
   padding: 1rem;
-  border: 1px solid #ccc;
-  overflow: auto;
+  background-color: rgb(248, 249, 249);
+  max-height: 300px;
+  min-height: 100px;
+  resize: none;
 }
+
 .toolbar-class {
   border: 1px solid #ccc;
+  background-color: rgb(158, 42, 215);
 }
+
 .preview {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
+}
+
+.text-area {
+  width: 100%; /* Haz que el textarea ocupe todo el ancho del contenedor */
+  height: 100%; /* Haz que el textarea ocupe todo el alto del contenedor */
+  border: none; /* Elimina el borde por defecto */
+  resize: none; /* Desactiva la capacidad de redimensionar el textarea por el usuario */
 }
