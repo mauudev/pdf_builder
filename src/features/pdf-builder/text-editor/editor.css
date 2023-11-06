@@ -22,10 +22,3 @@
   justify-content: center;
   margin-top: 1rem;
 }
-
-.text-area {
-  width: 100%; /* Haz que el textarea ocupe todo el ancho del contenedor */
-  height: 100%; /* Haz que el textarea ocupe todo el alto del contenedor */
-  border: none; /* Elimina el borde por defecto */
-  resize: none; /* Desactiva la capacidad de redimensionar el textarea por el usuario */
-}
