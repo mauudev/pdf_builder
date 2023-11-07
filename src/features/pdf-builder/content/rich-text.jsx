@@ -1,10 +1,4 @@
 import React from "react";
-import {
-  EditorState,
-  ContentState,
-  convertToRaw,
-  convertFromHTML,
-} from "draft-js";
 import { Text, Link, View, StyleSheet } from "@react-pdf/renderer";
 import redraft from "redraft";
 import {
@@ -110,20 +104,9 @@ const renderers = {
   },
 };
 
-const RichText = ({ text }) => {
-  const blocksFromHTML = convertFromHTML(text);
-  const initialState = ContentState.createFromBlockArray(
-    blocksFromHTML.contentBlocks,
-    blocksFromHTML.entityMap
-  );
-
-  const editorState = EditorState.createWithContent(initialState);
-  const rawContent = convertToRaw(editorState.getCurrentContent());
-
+const RichText = ({ rawContent, styles }) => {
   console.log(`RAW CONTENT: ${JSON.stringify(rawContent)}`);
   return redraft(rawContent, renderers, { blockFallback: "unstyled" });
-  // console.log(`note`, note);
-  // return <Text>{note}</Text>;
 };
 
 export default RichText;

@@ -73,21 +73,17 @@ const WYSIWYGEditor = () => {
             </select>
           </div>
           {["top", "left", "right", "bottom"].map((marginKey) => (
-            <div style={styles.gridItem}>
-              <div key={marginKey}>
-                <label htmlFor={`page-margin_${marginKey}`}>
-                  {capitalizeFirstLetter(marginKey)}:
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={marginValues[marginKey]}
-                  onChange={(e) =>
-                    handleMarginChange(marginKey, e.target.value)
-                  }
-                />
-              </div>
+            <div key={marginKey} style={styles.gridItem}>
+              <label htmlFor={`page-margin_${marginKey}`}>
+                {capitalizeFirstLetter(marginKey)}:
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                value={marginValues[marginKey]}
+                onChange={(e) => handleMarginChange(marginKey, e.target.value)}
+              />
             </div>
           ))}
           <div style={styles.gridItem}>
@@ -101,12 +97,12 @@ const WYSIWYGEditor = () => {
               onChange={(e) => handleLineSpacingChange(e.target.value)}
             />
           </div>
-          <div style={styles.gridItem}>
-            <label htmlFor="pdf-preview">Vista previa</label>
-            <button id="pdf-preview">Vista previa</button>
-          </div>
         </div>
       </div>
+      <button onClick={() => console.log(rawContent)}>
+        <span>vista previa</span>
+        <i></i>
+      </button>
       <div style={styles.livePreview}>
         <div
           style={
