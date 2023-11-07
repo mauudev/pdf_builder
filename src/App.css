@@ -66,6 +66,7 @@ body {
 
 .editor-container {
   margin-top: 5vh;
-  flex-grow: 1;
   background-color: #ffbf44;
+  display: flex;
+  width: calc(100% - 20vh);
 }

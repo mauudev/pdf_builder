@@ -49,8 +49,8 @@ const WYSIWYGEditor = () => {
   });
 
   return (
-    <div className="main-container">
-      <div className="editor-container">
+    <div className="editor-layout">
+      <div className="wrapper">
         <Editor
           editorState={editorState}
           wrapperClassName="wrapper-class"

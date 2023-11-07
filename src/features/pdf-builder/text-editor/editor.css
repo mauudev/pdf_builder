@@ -1,23 +1,18 @@
-.main-container {
-  align-items: center;
+.editor-layout {
   width: 100%;
   height: 100%;
-  padding: 1rem;
 }
 
-.editor-container {
+.wrapper {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding: 1rem;
 }
 
 .controls-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  width: 100%;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
@@ -26,7 +21,7 @@
   padding: 1rem;
   border: 1px solid #000;
   background-color: #f7f7f7;
-  width: 60%;
+  width: 40%;
 }
 
 .editor-class {
