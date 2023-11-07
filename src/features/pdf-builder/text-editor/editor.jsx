@@ -10,18 +10,20 @@ const WYSIWYGEditor = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [pageSize, setPageSize] = useState("carta");
   const [fontSize, setFontSize] = useState(12);
+  const [lineSpacing, setLineSpacing] = useState(5.0);
+  const [convertedContent, setConvertedContent] = useState(null);
+  const [rawContent, setRawContent] = useState(null);
   const [marginValues, setMarginValues] = useState({
     top: 20.0,
     left: 20.0,
     right: 20.0,
     bottom: 20.0,
   });
-  const [lineSpacing, setLineSpacing] = useState(5.0);
-  const [convertedContent, setConvertedContent] = useState(null);
 
   useEffect(() => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     setConvertedContent(html);
+    setRawContent(convertToRaw(editorState.getCurrentContent()));
   }, [editorState]);
 
   const onEditorStateChange = (editorState) => {
@@ -58,40 +60,48 @@ const WYSIWYGEditor = () => {
           toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
         />
-        <label htmlFor="page-size">Selecciona el tamaño de la página:</label>
-        <select
-          id="page-size"
-          value={pageSize}
-          onChange={(e) => handleChangePageSize(e.target.value)}
-        >
-          <option value="carta">Carta</option>
-          <option value="oficio">Oficio</option>
-        </select>
-        {["top", "left", "right", "bottom"].map((marginKey) => (
-          <div key={marginKey}>
-            <label htmlFor={`page-margin_${marginKey}`}>
-              {capitalizeFirstLetter(marginKey)}:
-            </label>
+        <div class="grid-container">
+          <div class="grid-item">
+            <label htmlFor="page-size">Tamanio de pagina:</label>
+            <select
+              id="page-size"
+              value={pageSize}
+              onChange={(e) => handleChangePageSize(e.target.value)}
+            >
+              <option value="carta">Carta</option>
+              <option value="oficio">Oficio</option>
+            </select>
+          </div>
+          {["top", "left", "right", "bottom"].map((marginKey) => (
+            <div class="grid-item">
+              <div key={marginKey}>
+                <label htmlFor={`page-margin_${marginKey}`}>
+                  {capitalizeFirstLetter(marginKey)}:
+                </label>
+                <input
+                  type="number"
+                  value={marginValues[marginKey]}
+                  onChange={(e) =>
+                    handleMarginChange(marginKey, e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          ))}
+          <div class="grid-item">
+            <label htmlFor="line-spacing">Espaciado:</label>
             <input
               type="number"
               step="0.1"
               min="0"
-              id={`page-margin_${marginKey}`}
-              value={marginValues[marginKey]}
-              onChange={(e) => handleMarginChange(marginKey, e.target.value)}
+              max="10"
+              value={lineSpacing}
+              onChange={(e) => handleLineSpacingChange(e.target.value)}
             />
           </div>
-        ))}
-        <label htmlFor="line-spacing">Espaciado entre lineas (mm):</label>
-        <input
-          type="number"
-          step="0.1"
-          min="0"
-          max="10"
-          value={lineSpacing}
-          onChange={(e) => handleLineSpacingChange(e.target.value)}
-        />
+        </div>
       </div>
+
       <div style={styles.livePreview}>
         <div
           style={

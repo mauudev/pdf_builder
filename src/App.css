@@ -81,6 +81,7 @@ body {
 .editor-class {
   padding: 1rem;
   background-color: #f7f7f7;
+  line-height: 1.5mm;
   max-height: 300px;
   min-height: 150px;
   resize: none;
@@ -90,5 +91,18 @@ body {
 .toolbar-class {
   border: 1px solid #000;
   background-color: #f7f7f7;
-  color:#e5e5e5;
+}
+
+.grid-container {
+  margin: 10px;
+  width:40%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+}
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
