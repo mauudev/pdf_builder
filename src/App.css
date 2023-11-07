@@ -92,17 +92,3 @@ body {
   border: 1px solid #000;
   background-color: #f7f7f7;
 }
-
-.grid-container {
-  margin: 10px;
-  width:40%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 10px;
-}
-
-.grid-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}

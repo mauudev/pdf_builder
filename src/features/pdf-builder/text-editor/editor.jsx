@@ -60,8 +60,8 @@ const WYSIWYGEditor = () => {
           toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
         />
-        <div class="grid-container">
-          <div class="grid-item">
+        <div style={styles.gridContainer}>
+          <div style={styles.gridItem}>
             <label htmlFor="page-size">Tamanio de pagina:</label>
             <select
               id="page-size"
@@ -73,13 +73,15 @@ const WYSIWYGEditor = () => {
             </select>
           </div>
           {["top", "left", "right", "bottom"].map((marginKey) => (
-            <div class="grid-item">
+            <div style={styles.gridItem}>
               <div key={marginKey}>
                 <label htmlFor={`page-margin_${marginKey}`}>
                   {capitalizeFirstLetter(marginKey)}:
                 </label>
                 <input
                   type="number"
+                  step="0.1"
+                  min="0"
                   value={marginValues[marginKey]}
                   onChange={(e) =>
                     handleMarginChange(marginKey, e.target.value)
@@ -88,7 +90,7 @@ const WYSIWYGEditor = () => {
               </div>
             </div>
           ))}
-          <div class="grid-item">
+          <div style={styles.gridItem}>
             <label htmlFor="line-spacing">Espaciado:</label>
             <input
               type="number"
@@ -99,9 +101,12 @@ const WYSIWYGEditor = () => {
               onChange={(e) => handleLineSpacingChange(e.target.value)}
             />
           </div>
+          <div style={styles.gridItem}>
+            <label htmlFor="pdf-preview">Vista previa</label>
+            <button id="pdf-preview">Vista previa</button>
+          </div>
         </div>
       </div>
-
       <div style={styles.livePreview}>
         <div
           style={

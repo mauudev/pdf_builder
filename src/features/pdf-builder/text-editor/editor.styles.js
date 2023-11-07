@@ -64,4 +64,16 @@ export const styles = {
     overflowWrap: "break-word",
     border: "1px solid #e5e5e5",
   },
+  gridContainer: {
+    margin: "10px",
+    width: "40%",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gridGap: "10px",
+  },
+  gridItem: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 };
