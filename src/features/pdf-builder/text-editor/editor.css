@@ -1,20 +1,46 @@
+.main-container {
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .wrapper-class {
   padding: 1rem;
-  border: 1px solid #ccc;
-  background-color: aqua;
+  border: 1px solid #000;
+  background-color: #f7f7f7;
+  width: 60%;
 }
 
 .editor-class {
   padding: 1rem;
-  background-color: rgb(248, 249, 249);
+  background-color: #f7f7f7;
   max-height: 300px;
-  min-height: 100px;
+  min-height: 150px;
   resize: none;
+  border: 1px solid #000;
 }
 
 .toolbar-class {
-  border: 1px solid #ccc;
-  background-color: rgb(158, 42, 215);
+  border: 1px solid #000;
+  background-color: #f7f7f7;
 }
 
 .carta {
@@ -26,27 +52,29 @@
   width: 220mm;
   height: 340mm;
 }
+
 .preview-container {
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  justify-content: center;
 }
 
 .preview {
-  justify-content: flex-start;
-  align-items: flex-start;
   background-color: white;
   border: 1px solid #000;
 }
 
 .content {
   font-size: var(--font-size, 12px);
-  width: calc(100% - var(--margin-left, 20px) - var(--margin-right, 20px));
-  margin-left: var(--margin-left, 20px);
-  margin-right: var(--margin-right, 20px);
-  margin-top: var(--margin-top, 20px);
-  margin-bottom: var(--margin-bottom, 20px);
+  width: calc(100% - var(--margin-left, 5mm) - var(--margin-right, 5mm));
+  line-height: var(--line-spacing, 5.0mm);
+  margin-left: var(--margin-left, 5mm);
+  margin-right: var(--margin-right, 5mm);
+  margin-top: var(--margin-top, 5mm);
+  margin-bottom: var(--margin-bottom, 5mm);
   text-align: left;
   overflow-wrap: break-word;
+  border: 1px solid #efeeee;
 }

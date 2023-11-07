@@ -16,6 +16,7 @@ const WYSIWYGEditor = () => {
     right: 20,
     bottom: 20,
   });
+  const [lineSpacing, setLineSpacing] = useState(5.0);
   const [convertedContent, setConvertedContent] = useState(null);
 
   useEffect(() => {
@@ -39,13 +40,17 @@ const WYSIWYGEditor = () => {
     }));
   };
 
+  const handleLineSpacingChange = (value) => {
+    setLineSpacing(parseFloat(value));
+  };
+
   const createMarkup = (html) => ({
     __html: DOMPurify.sanitize(html),
   });
 
   return (
-    <div className="editor-container">
-      <div className="editor">
+    <div className="main-container">
+      <div className="editor-container">
         <Editor
           editorState={editorState}
           wrapperClassName="wrapper-class"
@@ -53,8 +58,6 @@ const WYSIWYGEditor = () => {
           toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
         />
-      </div>
-      <div id="size-selector">
         <label htmlFor="page-size">Selecciona el tamaño de la página:</label>
         <select
           id="page-size"
@@ -64,10 +67,9 @@ const WYSIWYGEditor = () => {
           <option value="carta">Carta</option>
           <option value="oficio">Oficio</option>
         </select>
-      </div>
-      <div id="margin-selector">
+
         {["top", "left", "right", "bottom"].map((marginKey) => (
-          <div key={marginKey} className={`margin-${marginKey}`}>
+          <div key={marginKey}>
             <label htmlFor={`page-margin_${marginKey}`}>
               {capitalizeFirstLetter(marginKey)}:
             </label>
@@ -79,22 +81,30 @@ const WYSIWYGEditor = () => {
             />
           </div>
         ))}
+        <label htmlFor="line-spacing">Espaciado entre lineas (mm):</label>
+        <input
+          type="number"
+          step="0.1"
+          min="0"
+          max="10"
+          value={lineSpacing}
+          onChange={(e) => handleLineSpacingChange(e.target.value)}
+        />
       </div>
       <div className="preview-container">
-        <div className="preview">
-          <div className={`${pageSize === "carta" ? "carta" : "oficio"}`}>
-            <div
-              className="content"
-              style={{
-                "--font-size": `${fontSize}px`,
-                "--margin-left": `${marginValues.left}px`,
-                "--margin-right": `${marginValues.right}px`,
-                "--margin-top": `${marginValues.top}px`,
-                "--margin-bottom": `${marginValues.bottom}px`,
-              }}
-              dangerouslySetInnerHTML={createMarkup(convertedContent)}
-            ></div>
-          </div>
+        <div className={`preview ${pageSize}`}>
+          <div
+            className="content"
+            style={{
+              "--font-size": `${fontSize}px`,
+              "--line-spacing": `${lineSpacing}mm`,
+              "--margin-left": `${marginValues.left}mm`,
+              "--margin-right": `${marginValues.right}mm`,
+              "--margin-top": `${marginValues.top}mm`,
+              "--margin-bottom": `${marginValues.bottom}mm`,
+            }}
+            dangerouslySetInnerHTML={createMarkup(convertedContent)}
+          ></div>
         </div>
       </div>
     </div>
