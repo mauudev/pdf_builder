@@ -43,27 +43,6 @@ const WYSIWYGEditor = () => {
     __html: DOMPurify.sanitize(html),
   });
 
-  const pageStyles = {
-    width: pageSize === "carta" ? "210mm" : "216mm",
-    height: pageSize === "carta" ? "297mm" : "356mm",
-    backgroundColor: "white",
-    border: "1px solid #000",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-  };
-
-  const contentStyles = {
-    fontSize: `${fontSize}px`,
-    width: `calc(100% - ${marginValues.left + marginValues.right}px)`,
-    marginLeft: `${marginValues.left}px`,
-    marginRight: `${marginValues.right}px`,
-    marginTop: `${marginValues.top}px`,
-    marginBottom: `${marginValues.bottom}px`,
-    textAlign: "left",
-    overflowWrap: "break-word",
-  };
-
   return (
     <div className="editor-container">
       <div className="editor">
@@ -101,12 +80,21 @@ const WYSIWYGEditor = () => {
           </div>
         ))}
       </div>
-      <div className="preview">
-        <div style={pageStyles}>
-          <div
-            style={contentStyles}
-            dangerouslySetInnerHTML={createMarkup(convertedContent)}
-          ></div>
+      <div className="preview-container">
+        <div className="preview">
+          <div className={`${pageSize === "carta" ? "carta" : "oficio"}`}>
+            <div
+              className="content"
+              style={{
+                "--font-size": `${fontSize}px`,
+                "--margin-left": `${marginValues.left}px`,
+                "--margin-right": `${marginValues.right}px`,
+                "--margin-top": `${marginValues.top}px`,
+                "--margin-bottom": `${marginValues.bottom}px`,
+              }}
+              dangerouslySetInnerHTML={createMarkup(convertedContent)}
+            ></div>
+          </div>
         </div>
       </div>
     </div>

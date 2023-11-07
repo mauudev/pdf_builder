@@ -17,8 +17,36 @@
   background-color: rgb(158, 42, 215);
 }
 
-.preview {
+.carta {
+  width: 220mm;
+  height: 280mm;
+}
+
+.oficio {
+  width: 220mm;
+  height: 340mm;
+}
+.preview-container {
   display: flex;
-  justify-content: center;
   margin-top: 1rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.preview {
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: white;
+  border: 1px solid #000;
+}
+
+.content {
+  font-size: var(--font-size, 12px);
+  width: calc(100% - var(--margin-left, 20px) - var(--margin-right, 20px));
+  margin-left: var(--margin-left, 20px);
+  margin-right: var(--margin-right, 20px);
+  margin-top: var(--margin-top, 20px);
+  margin-bottom: var(--margin-bottom, 20px);
+  text-align: left;
+  overflow-wrap: break-word;
 }
