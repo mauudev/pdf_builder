@@ -92,10 +92,10 @@ const WYSIWYGEditor = () => {
           onChange={(e) => handleLineSpacingChange(e.target.value)}
         />
       </div>
-      <div style={styles.previewContainer}>
+      <div style={styles.livePreview}>
         <div
           style={
-            pageSize == "carta" ? styles.cartaPreview : styles.oficioPreview
+            pageSize === "carta" ? styles.cartaPreview : styles.oficioPreview
           }
         >
           <div

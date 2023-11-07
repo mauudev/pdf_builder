@@ -45,16 +45,12 @@ export const styles = {
     width: "220mm",
     height: "340mm",
   },
-  previewContainer: {
+  livePreview: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     marginTop: "1rem",
     marginBottom: "1rem",
-  },
-  preview: {
-    backgroundColor: "white",
-    border: "1px solid #000",
   },
   content: {
     fontSize: "var(--font-size, 12px)",
@@ -66,6 +62,6 @@ export const styles = {
     marginBottom: "var(--margin-bottom, 5mm)",
     textAlign: "left",
     overflowWrap: "break-word",
-    border: "1px solid #efeeee",
+    border: "1px solid #e5e5e5",
   },
 };
