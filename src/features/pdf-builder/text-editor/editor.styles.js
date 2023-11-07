@@ -1,0 +1,71 @@
+export const styles = {
+  editorLayout: {
+    width: "100%",
+    height: "100%",
+  },
+  wrapper: {
+    padding: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  controlsContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  },
+  wrapperClass: {
+    padding: "1rem",
+    border: "1px solid #000",
+    backgroundColor: "#f7f7f7",
+    width: "40%",
+  },
+  editorClass: {
+    padding: "1rem",
+    backgroundColor: "#f7f7f7",
+    maxHeight: "300px",
+    minHeight: "150px",
+    resize: "none",
+    border: "1px solid #000",
+  },
+  toolbarClass: {
+    border: "1px solid #000",
+    backgroundColor: "#f7f7f7",
+  },
+  cartaPreview: {
+    backgroundColor: "white",
+    border: "1px solid #000",
+    width: "220mm",
+    height: "280mm",
+  },
+  oficioPreview: {
+    backgroundColor: "white",
+    border: "1px solid #000",
+    width: "220mm",
+    height: "340mm",
+  },
+  previewContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "1rem",
+    marginBottom: "1rem",
+  },
+  preview: {
+    backgroundColor: "white",
+    border: "1px solid #000",
+  },
+  content: {
+    fontSize: "var(--font-size, 12px)",
+    width: "calc(100% - var(--margin-left, 5mm) - var(--margin-right, 5mm))",
+    lineHeight: "var(--line-spacing, 5mm)",
+    marginLeft: "var(--margin-left, 5mm)",
+    marginRight: "var(--margin-right, 5mm)",
+    marginTop: "var(--margin-top, 5mm)",
+    marginBottom: "var(--margin-bottom, 5mm)",
+    textAlign: "left",
+    overflowWrap: "break-word",
+    border: "1px solid #efeeee",
+  },
+};

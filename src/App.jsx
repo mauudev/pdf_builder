@@ -1,5 +1,5 @@
 import React from "react";
-// import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
+import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
 import "./App.css";
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
       <div className="app-container">
         <div className="sidebar"></div>
         <div className="editor-container">
-          {/* <WYSIWYGEditor /> */}
+          <WYSIWYGEditor />
         </div>
       </div>
     </div>
