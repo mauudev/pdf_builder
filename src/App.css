@@ -70,3 +70,24 @@ body {
   display: flex;
   width: calc(100% - 20vh);
 }
+
+.wrapper-class {
+  padding: 1rem;
+  border: 1px solid #000;
+  background-color: #f7f7f7;
+  width: 40%;
+}
+
+.editor-class {
+  padding: 1rem;
+  background-color: #f7f7f7;
+  max-height: 300px;
+  min-height: 150px;
+  resize: none;
+  border: 1px solid #000;
+}
+
+.toolbar-class {
+  border: 1px solid #000;
+  background-color: #f7f7f7;
+}
