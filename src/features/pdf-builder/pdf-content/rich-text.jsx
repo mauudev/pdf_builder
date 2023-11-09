@@ -1,10 +1,4 @@
 import React from "react";
-import {
-  EditorState,
-  ContentState,
-  convertToRaw,
-  convertFromHTML,
-} from "draft-js";
 import { Text, Link, View, StyleSheet } from "@react-pdf/renderer";
 import redraft from "redraft";
 import {
@@ -72,8 +66,10 @@ const renderers = {
     //   });
     // },
     "header-one": (children, { keys }) => {
+      console.log(`CHILDREN: ${JSON.stringify(children)}`);
       return children.map((child, index) => {
-        return <HeadingOne key={keys[index]}>{child}</HeadingOne>;
+        // return <HeadingOne key={keys[index]}>{child}</HeadingOne>;
+        return child;
       });
     },
     "unordered-list-item": (children, { depth, keys }) => {
@@ -110,20 +106,17 @@ const renderers = {
   },
 };
 
-const RichText = ({ text }) => {
-  const blocksFromHTML = convertFromHTML(text);
-  const initialState = ContentState.createFromBlockArray(
-    blocksFromHTML.contentBlocks,
-    blocksFromHTML.entityMap
-  );
+const options = {
+  cleanup: {
+    after: "all",
+    types: "all",
+    split: true,
+  },
+};
 
-  const editorState = EditorState.createWithContent(initialState);
-  const rawContent = convertToRaw(editorState.getCurrentContent());
-
+const RichText = ({ rawContent }) => {
   console.log(`RAW CONTENT: ${JSON.stringify(rawContent)}`);
-  return redraft(rawContent, renderers, { blockFallback: "unstyled" });
-  // console.log(`note`, note);
-  // return <Text>{note}</Text>;
+  return redraft(rawContent, renderers, options);
 };
 
 export default RichText;
