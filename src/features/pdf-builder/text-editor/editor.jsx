@@ -5,6 +5,10 @@ import DOMPurify from "dompurify";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { styles } from "./editor.styles";
+import { capitalizeFirstLetter } from "../../../utils/helpers";
+import PreviewModal from "../../ui/modal/preview-modal";
+import Typography from "@mui/material/Typography";
+import RichText from "../pdf-content/rich-text";
 
 const WYSIWYGEditor = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -24,6 +28,7 @@ const WYSIWYGEditor = () => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     setConvertedContent(html);
     setRawContent(convertToRaw(editorState.getCurrentContent()));
+    console.log(`RAW CONTENT: ${JSON.stringify(rawContent)}`);
   }, [editorState]);
 
   const onEditorStateChange = (editorState) => {
@@ -50,6 +55,10 @@ const WYSIWYGEditor = () => {
     __html: DOMPurify.sanitize(html),
   });
 
+  const buildPdfPreview = () => {
+    return <RichText rawContent={rawContent} />;
+  };
+
   return (
     <div style={styles.editorLayout}>
       <div style={styles.wrapper}>
@@ -59,6 +68,18 @@ const WYSIWYGEditor = () => {
           editorClassName="editor-class"
           toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
+          toolbar={{
+            options: [
+              "inline",
+              "blockType",
+              "fontSize",
+              "list",
+              "textAlign",
+              "history",
+              "remove",
+              "colorPicker",
+            ],
+          }}
         />
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
@@ -99,10 +120,7 @@ const WYSIWYGEditor = () => {
           </div>
         </div>
       </div>
-      <button onClick={() => console.log(rawContent)}>
-        <span>vista previa</span>
-        <i></i>
-      </button>
+      <PreviewModal pdfPreview={buildPdfPreview()} />
       <div style={styles.livePreview}>
         <div
           style={
@@ -126,9 +144,5 @@ const WYSIWYGEditor = () => {
     </div>
   );
 };
-
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 export default WYSIWYGEditor;
