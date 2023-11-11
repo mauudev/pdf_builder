@@ -389,6 +389,33 @@
             "inlineStyleRanges": [],
             "entityRanges": [],
             "data": {}
+        },
+        {
+            "key": "ag4sh",
+            "text": "asdasdsadasdsa",
+            "type": "unstyled",
+            "depth": 0,
+            "inlineStyleRanges": [
+                {
+                    "offset": 0,
+                    "length": 4,
+                    "style": "fontsize-10"
+                },
+                {
+                    "offset": 4,
+                    "length": 10,
+                    "style": "fontsize-60"
+                },
+                {
+                    "offset": 8,
+                    "length": 3,
+                    "style": "color-rgb(97,189,109)"
+                }
+            ],
+            "entityRanges": [],
+            "data": {
+                "text-align": "center"
+            }
         }
     ],
     "entityMap": {}
