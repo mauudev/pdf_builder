@@ -81,15 +81,28 @@ class UnstyledBlock implements IBlock {
       }
     }
 
+    const lastStyledRange = orderedStyleRanges[orderedStyleRanges.length - 1];
+    if (
+      lastStyledRange.offset + lastStyledRange.length <
+      this.getTextLength()
+    ) {
+      const restText = this.rawJson.text.substring(
+        lastStyledRange.offset + lastStyledRange.length
+      );
+      if (!styleMap[restText]) {
+        styleMap[restText] = [
+          { style: "color-rgb(0,0,0)" },
+          { style: "fontsize-12" },
+        ];
+      }
+    }
+
+    console.log(`styleMap`, JSON.stringify(styleMap, null, 2));
+
     return styleMap;
   }
 
   public buildBlocks(): void {
-    let data = {
-      intermediat: [{ style: "color-rgb(0,0,0)" }, { style: "ITALIC" }],
-      "e styled t": [{ style: "BOLD" }, { style: "color-rgb(226,80,65)" }],
-      ext: [{ style: "color-rgb(0,0,0)" }],
-    };
     const styledTexts = this.getStyledTexts();
 
     for (const [text, styles] of Object.entries(styledTexts)) {
