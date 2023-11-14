@@ -94,15 +94,14 @@ class UnstyledBlock implements IBlock {
 
     for (const [text, styles] of Object.entries(styledTexts)) {
       const Component = this.component;
-      const st = getDynamicStyle(this.styleMap, styles)
-      console.log(`st`, JSON.stringify(st));
+      const style = getDynamicStyle(this.styleMap, styles);
 
-      // const block = (
-      //   <Component key={uuidv4()} style={getDynamicStyle(this.styleMap, styles)}>
-      //     {text}
-      //   </Component>
-      // );
-      // this.blocks.push(block);
+      const block = (
+        <Component key={uuidv4()} style={style}>
+          {text}
+        </Component>
+      );
+      this.blocks.push(block);
     }
   }
 }

@@ -11,7 +11,7 @@ const parseColorRGB = (style: string): string => {
 };
 
 const applyStyle = (styles: object, key: string, value: any): object => {
-  return value ? { ...styles, [key]: value } : styles;
+  return value ? { ...styles, ...value } : styles;
 };
 
 export const getDynamicStyle = (
