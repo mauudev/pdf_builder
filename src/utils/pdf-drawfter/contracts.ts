@@ -1,9 +1,25 @@
 import React, { ReactNode, ReactElement } from "react";
 import { Style } from "@react-pdf/types";
 
-export type StyledText = {
-  text: string;
-  style: string;
+export type StyleMap = {
+  italic?: {
+    fontSize: number;
+    fontWeight: number;
+    fontStyle: "italic";
+  };
+  bold?: {
+    fontSize: number;
+    fontWeight: number;
+  };
+  "color-rgb"?: (color: string) => {
+    color: string;
+  };
+  fontsize?: (fontSize: number) => {
+    fontSize: number;
+  };
+  "text-align"?: (textAlign: string) => {
+    textAlign: string;
+  };
 };
 
 export type RawJSON = {
@@ -28,12 +44,12 @@ export type ComponentProps = {
 export interface IBlock {
   rawJson?: RawJSON;
   styleMap?: object;
-  getStyledTexts(): Array<object>;
+  getStyledTexts(): object;
   getBlocks(): Array<ReactNode>;
   getTextLength(): number;
   getComponent(): React.ComponentType<ComponentProps>;
   getProps(): ComponentProps;
-  buildBlocks(inlineStyles: Array<object>): Array<ReactNode>;
+  buildBlocks(): void;
 }
 
 export interface IBuilder<ComponentProps> {

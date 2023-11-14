@@ -5,7 +5,6 @@ import {
   ComponentProps,
   IBlock,
   RawJSON,
-  StyledText,
 } from "./contracts";
 import { getDynamicStyle } from "./utils";
 import { v4 as uuidv4 } from "uuid";
@@ -29,6 +28,7 @@ class UnstyledBlock implements IBlock {
     this.styleMap = styleMap;
     this.textLength = rawJson.text.length;
     this.props = {};
+    this.blocks = [];
   }
 
   getBlocks(): Array<ReactNode> {
@@ -38,48 +38,72 @@ class UnstyledBlock implements IBlock {
     return this.textLength;
   }
   getComponent(): React.FC<ComponentProps> {
-    return this.component;
+    const Component = this.component;
+    const mainBlock: React.FC<ComponentProps> = (props) => (
+      <Component key={this.rawJson.key} {...props}>
+        {this.getBlocks().map((block, index) => (
+          <React.Fragment key={index}>{block}</React.Fragment>
+        ))}
+      </Component>
+    );
+    return mainBlock;
   }
 
   getProps(): ComponentProps {
     return this.props;
   }
 
-  getStyledTexts(): Array<StyledText> {
+  getStyledTexts(): object {
+    type Style = {
+      [key: string]: string;
+    };
+
+    type StyleMap = {
+      [text: string]: Array<Style>;
+    };
+
+    const styleMap: StyleMap = {};
     const orderedStyleRanges = this.rawJson.inlineStyleRanges.sort(
       (a, b) => a.offset - b.offset
     );
-    const orderedStyledTexts = new Set<StyledText>();
-    orderedStyleRanges.forEach((range) => {
-      orderedStyledTexts.add({
-        text: this.rawJson.text.substring(
-          range.offset,
-          range.offset + range.length
-        ),
-        style: range.style,
-      });
-    });
-    return Array.from(orderedStyledTexts);
+
+    for (const range of orderedStyleRanges) {
+      const text = this.rawJson.text.substring(
+        range.offset,
+        range.offset + range.length
+      );
+      const style = range.style;
+
+      if (!styleMap[text]) {
+        styleMap[text] = [{ style }];
+      } else {
+        styleMap[text].push({ style });
+      }
+    }
+
+    return styleMap;
   }
 
-  private pushUnstyledBlock(): void {
-    const Component = this.component;
-    const newBlock = <Component key={uuidv4()} {...this.props} />;
-    this.blocks.push(newBlock);
-  }
-
-  public buildBlocks(inlineStyles: Array<object>): Array<ReactNode> {
+  public buildBlocks(): void {
+    let data = {
+      intermediat: [{ style: "color-rgb(0,0,0)" }, { style: "ITALIC" }],
+      "e styled t": [{ style: "BOLD" }, { style: "color-rgb(226,80,65)" }],
+      ext: [{ style: "color-rgb(0,0,0)" }],
+    };
     const styledTexts = this.getStyledTexts();
-    styledTexts.forEach((styledText) => {
-      const { style } = styledText;
-      const styleToApply = getDynamicStyle(this.styleMap, style);
-    });
-    const blocks: Array<ReactNode> = inlineStyles.map((style) => {
-      const Component = this.component;
-      <Component key={uuidv4()} {...this.props} />;
-    });
 
-    return blocks;
+    for (const [text, styles] of Object.entries(styledTexts)) {
+      const Component = this.component;
+      const st = getDynamicStyle(this.styleMap, styles)
+      console.log(`st`, JSON.stringify(st));
+
+      // const block = (
+      //   <Component key={uuidv4()} style={getDynamicStyle(this.styleMap, styles)}>
+      //     {text}
+      //   </Component>
+      // );
+      // this.blocks.push(block);
+    }
   }
 }
 

@@ -8,13 +8,13 @@ export const styleMap = {
     fontSize: 10,
     fontWeight: 700,
   },
-  "color-rgb": (color) => ({
+  "color-rgb": (color: string) => ({
     color,
   }),
-  fontsize: (fontSize) => ({
+  fontsize: (fontSize: string) => ({
     fontSize,
   }),
-  "text-align": (textAlign) => ({
+  "text-align": (textAlign: string) => ({
     textAlign,
-  })
+  }),
 };
