@@ -2,6 +2,7 @@ import React from "react";
 import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
 import "./App.css";
 import UnstyledBlock from "./utils/pdf-drawfter/builders/unstyled";
+import ComponentBuilder from "./utils/pdf-drawfter/component-builder";
 import { styleMap } from "./utils/pdf-drawfter/style";
 import { Document, Page, View } from "@react-pdf/renderer";
 
@@ -59,8 +60,8 @@ const rawJson2 = {
   data: {},
 };
 
-const builder = new UnstyledBlock(rawJson1, styleMap);
-builder.buildBlocks();
+const builder = new ComponentBuilder(styleMap);
+builder.buildBlocks(rawJson1);
 
 const PDFPage = () => {
   return (
@@ -72,7 +73,9 @@ const PDFPage = () => {
           paddingHorizontal: 35,
         }}
       >
-        <View>{builder.getComponent()()}</View>
+        {builder.blocks.map((block) => {
+          return block;
+        })}
       </Page>
     </Document>
   );

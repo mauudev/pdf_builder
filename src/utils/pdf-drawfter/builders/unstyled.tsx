@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, ReactElement } from "react";
+
 import { Text } from "@react-pdf/renderer";
 import { ComponentProps, IBlock, RawJSON } from "../contracts";
 import { getDynamicStyle } from "../utils";
@@ -9,8 +10,6 @@ const Paragraph: React.FC<ComponentProps> = ({ style, children }) => (
 );
 
 class UnstyledBlock implements IBlock {
-  private component: React.FC<ComponentProps>;
-  private props: ComponentProps;
   private blocks: Array<ReactNode>;
   private textLength: number;
 
@@ -18,11 +17,9 @@ class UnstyledBlock implements IBlock {
     public rawJson: RawJSON,
     public styleMap: object
   ) {
-    this.component = Paragraph;
     this.rawJson = rawJson;
     this.styleMap = styleMap;
     this.textLength = rawJson.text.length;
-    this.props = {};
     this.blocks = [];
   }
 
@@ -32,20 +29,16 @@ class UnstyledBlock implements IBlock {
   getTextLength(): number {
     return this.textLength;
   }
-  getComponent(): React.FC<ComponentProps> {
-    const Component = this.component;
-    const mainBlock: React.FC<ComponentProps> = (props) => (
-      <Component key={this.rawJson.key} {...props}>
+  getComponent(): ReactElement {
+    this.buildBlocks();
+    const mainBlock = (
+      <Text key={uuidv4()}>
         {this.getBlocks().map((block, index) => (
           <React.Fragment key={index}>{block}</React.Fragment>
         ))}
-      </Component>
+      </Text>
     );
     return mainBlock;
-  }
-
-  getProps(): ComponentProps {
-    return this.props;
   }
 
   getStyledTexts(): object {
@@ -99,13 +92,12 @@ class UnstyledBlock implements IBlock {
     const styledTexts = this.getStyledTexts();
 
     for (const [text, styles] of Object.entries(styledTexts)) {
-      const Component = this.component;
       const style = getDynamicStyle(this.styleMap, styles);
 
       const block = (
-        <Component key={uuidv4()} style={style}>
+        <Text key={uuidv4()} style={style}>
           {text}
-        </Component>
+        </Text>
       );
       this.blocks.push(block);
     }

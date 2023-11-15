@@ -47,24 +47,20 @@ export type ComponentProps = {
 };
 
 export interface IBlock {
-  rawJson: RawJSON;
   styleMap: object;
   getStyledTexts(): object;
   getBlocks(): Array<ReactNode>;
   getTextLength(): number;
-  getComponent(): React.ComponentType<ComponentProps>;
-  getProps(): ComponentProps;
+  getComponent(): ReactElement;
   buildBlocks(): void;
 }
 
 export interface IBuilder {
-  rawJson: object;
-  componentType: string;
   blockComponent: IBlock | undefined;
-  blocks: Array<React.ComponentType<ComponentProps>>;
+  blocks: Array<ReactElement>;
   reset(): void;
-  buildUnstyledBlocks(): void;
-  buildHeaderBlocks(headerType: string): void;
-  buildListBlocks(listType: string): void;
-  buildBlocks(): void;
+  buildUnstyledBlocks(rawJson: RawJSON): void;
+  buildHeaderBlocks(rawJson: RawJSON): void;
+  buildListBlocks(rawJson: RawJSON): void;
+  buildBlocks(rawJson: RawJSON): void;
 }
