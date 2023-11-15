@@ -1,7 +1,7 @@
 import React from "react";
 import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
 import "./App.css";
-import UnstyledBlock from "./utils/pdf-drawfter/unstyled";
+import UnstyledBlock from "./utils/pdf-drawfter/builders/unstyled";
 import { styleMap } from "./utils/pdf-drawfter/style";
 import { Document, Page, View } from "@react-pdf/renderer";
 

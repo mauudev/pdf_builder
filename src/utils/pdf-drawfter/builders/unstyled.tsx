@@ -1,12 +1,7 @@
-import React, { ReactNode, ReactElement } from "react";
-import { View, Text } from "@react-pdf/renderer";
-import {
-  IUnstyledBlockBuilder,
-  ComponentProps,
-  IBlock,
-  RawJSON,
-} from "./contracts";
-import { getDynamicStyle } from "./utils";
+import React, { ReactNode } from "react";
+import { Text } from "@react-pdf/renderer";
+import { ComponentProps, IBlock, RawJSON } from "../contracts";
+import { getDynamicStyle } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
 const Paragraph: React.FC<ComponentProps> = ({ style, children }) => (
@@ -97,8 +92,6 @@ class UnstyledBlock implements IBlock {
       }
     }
 
-    console.log(`styleMap`, JSON.stringify(styleMap, null, 2));
-
     return styleMap;
   }
 
@@ -120,24 +113,3 @@ class UnstyledBlock implements IBlock {
 }
 
 export default UnstyledBlock;
-
-// class UnstyledBlockBuilder implements IUnstyledBlockBuilder {
-//   private component: React.FC<ComponentProps>;
-//   private props: ComponentProps;
-//   private children: ReactNode;
-//   private rawJson: object;
-//   private textLength: number;
-
-//   constructor(props: ComponentProps, children: ReactNode) {
-//     this.props = props;
-//     this.children = children;
-//     this.component = Paragraph;
-//   }
-
-//   buildUnstyledBlock(): ReactNode {
-//     const Component = this.component;
-//     return <Component {...this.props}>{this.children}</Component>;
-//   }
-// }
-
-// export default UnstyledBlockBuilder;

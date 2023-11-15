@@ -22,6 +22,11 @@ export type StyleMap = {
   };
 };
 
+export type Blocks = {
+  blocks: Array<RawJSON>;
+  entityMap: object;
+};
+
 export type RawJSON = {
   key: string;
   text: string;
@@ -42,8 +47,8 @@ export type ComponentProps = {
 };
 
 export interface IBlock {
-  rawJson?: RawJSON;
-  styleMap?: object;
+  rawJson: RawJSON;
+  styleMap: object;
   getStyledTexts(): object;
   getBlocks(): Array<ReactNode>;
   getTextLength(): number;
@@ -52,21 +57,14 @@ export interface IBlock {
   buildBlocks(): void;
 }
 
-export interface IBuilder<ComponentProps> {
-  component: React.ComponentType<ComponentProps>;
-  props: ComponentProps;
-  children?: ReactNode | ReactElement;
-  rawJson?: object;
-  textLength?: number;
-  blocks?: Array<React.ComponentType<ComponentProps>>;
-  buildBlocks(
-    inlineStyles: Array<object>
-  ): Array<React.ComponentType<ComponentProps>>;
-}
-
-export interface IUnstyledBlockBuilder extends IBuilder<ComponentProps> {
-  buildUnstyledBlock(
-    style: Style,
-    children: ReactNode
-  ): React.ComponentType<ComponentProps>;
+export interface IBuilder {
+  rawJson: object;
+  componentType: string;
+  blockComponent: IBlock | undefined;
+  blocks: Array<React.ComponentType<ComponentProps>>;
+  reset(): void;
+  buildUnstyledBlocks(): void;
+  buildHeaderBlocks(headerType: string): void;
+  buildListBlocks(listType: string): void;
+  buildBlocks(): void;
 }
