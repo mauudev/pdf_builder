@@ -46,3 +46,23 @@ export const getDynamicStyle = (
 
   return styles;
 };
+
+export const parseViewStyle = (
+  styleData: object,
+  styleMap: StyleMap
+): object => {
+  let stylesAcc = {};
+  for (const [style, value] of Object.entries(styleData)) {
+    switch (style) {
+      case "text-align":
+        stylesAcc = applyStyle(
+          stylesAcc,
+          style,
+          styleMap["text-align"]?.(value)
+        );
+        break;
+      // agregar los demas aca
+    }
+  }
+  return stylesAcc;
+};
