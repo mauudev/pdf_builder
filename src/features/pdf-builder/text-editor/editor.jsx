@@ -3,12 +3,12 @@ import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
 import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { styles } from "./editor.styles";
-import { capitalizeFirstLetter } from "../../../utils/helpers";
-import PreviewModal from "../../ui/modal/preview-modal";
-import Typography from "@mui/material/Typography";
 import RichText from "../pdf-content/rich-text";
+import { styles } from "./editor.styles";
+import PreviewModal from "../../ui/modal/preview-modal";
+import { capitalizeFirstLetter } from "../../../utils/helpers";
+
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const WYSIWYGEditor = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -28,7 +28,6 @@ const WYSIWYGEditor = () => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     setConvertedContent(html);
     setRawContent(convertToRaw(editorState.getCurrentContent()));
-    console.log(`RAW CONTENT: ${JSON.stringify(rawContent)}`);
   }, [editorState]);
 
   const onEditorStateChange = (editorState) => {
