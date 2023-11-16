@@ -1,10 +1,9 @@
 import React from "react";
 import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
-import "./App.css";
-import UnstyledBlock from "./utils/pdf-drawfter/builders/unstyled";
-import ComponentBuilder from "./utils/pdf-drawfter/component-builder";
 import { styleMap } from "./utils/pdf-drawfter/style";
 import { Document, Page, View } from "@react-pdf/renderer";
+import UnstyledBlockBuilder from "./utils/pdf-drawfter/builders/unstyled-builder";
+import "./App.css";
 
 const rawJson1 = {
   key: "ehoft",
@@ -60,8 +59,8 @@ const rawJson2 = {
   data: {},
 };
 
-const builder = new ComponentBuilder(styleMap);
-builder.buildBlocks(rawJson1);
+const builder = new UnstyledBlockBuilder(styleMap);
+const block = builder.getBuiltBlock(rawJson1);
 
 const PDFPage = () => {
   return (
@@ -73,9 +72,7 @@ const PDFPage = () => {
           paddingHorizontal: 35,
         }}
       >
-        {builder.blocks.map((block) => {
-          return block;
-        })}
+        {block}
       </Page>
     </Document>
   );

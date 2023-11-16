@@ -48,19 +48,19 @@ export type ComponentProps = {
 
 export interface IBlock {
   styleMap: object;
-  getStyledTexts(): object;
+  reset(): void;
+  getStyledTexts(rawJson: RawJSON): object;
   getBlocks(): Array<ReactNode>;
-  getTextLength(): number;
-  getComponent(): ReactElement;
-  buildBlocks(): void;
+  getComponent(rawJson: RawJSON): ReactElement;
+  buildBlocks(rawJson: RawJSON): void;
 }
 
 export interface IBuilder {
-  blockComponent: IBlock | undefined;
-  blocks: Array<ReactElement>;
-  reset(): void;
-  buildUnstyledBlocks(rawJson: RawJSON): void;
-  buildHeaderBlocks(rawJson: RawJSON): void;
-  buildListBlocks(rawJson: RawJSON): void;
-  buildBlocks(rawJson: RawJSON): void;
+  styleMap: StyleMap;
+  getBlockComponent(): IBlock | undefined;
+  getBuiltBlock(rawJson: RawJSON): ReactElement | undefined;
+}
+
+export interface IUnstyledBuilder extends IBuilder {
+  buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined;
 }

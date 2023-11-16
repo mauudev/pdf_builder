@@ -1,36 +1,27 @@
 import React, { ReactNode, ReactElement } from "react";
 
 import { Text } from "@react-pdf/renderer";
-import { ComponentProps, IBlock, RawJSON } from "../contracts";
+import { IBlock, RawJSON } from "../contracts";
 import { getDynamicStyle } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
-const Paragraph: React.FC<ComponentProps> = ({ style, children }) => (
-  <Text style={style}>{children}</Text>
-);
-
 class UnstyledBlock implements IBlock {
   private blocks: Array<ReactNode>;
-  private textLength: number;
 
-  constructor(
-    public rawJson: RawJSON,
-    public styleMap: object
-  ) {
-    this.rawJson = rawJson;
+  constructor(public styleMap: object) {
     this.styleMap = styleMap;
-    this.textLength = rawJson.text.length;
+    this.blocks = [];
+  }
+  public reset(): void {
     this.blocks = [];
   }
 
   getBlocks(): Array<ReactNode> {
     return this.blocks;
   }
-  getTextLength(): number {
-    return this.textLength;
-  }
-  getComponent(): ReactElement {
-    this.buildBlocks();
+
+  getComponent(rawJson: RawJSON): ReactElement {
+    this.buildBlocks(rawJson);
     const mainBlock = (
       <Text key={uuidv4()}>
         {this.getBlocks().map((block, index) => (
@@ -41,7 +32,7 @@ class UnstyledBlock implements IBlock {
     return mainBlock;
   }
 
-  getStyledTexts(): object {
+  getStyledTexts(rawJson: RawJSON): object {
     type Style = {
       [key: string]: string;
     };
@@ -51,12 +42,12 @@ class UnstyledBlock implements IBlock {
     };
 
     const styleMap: StyleMap = {};
-    const orderedStyleRanges = this.rawJson.inlineStyleRanges.sort(
+    const orderedStyleRanges = rawJson.inlineStyleRanges.sort(
       (a, b) => a.offset - b.offset
     );
 
     for (const range of orderedStyleRanges) {
-      const text = this.rawJson.text.substring(
+      const text = rawJson.text.substring(
         range.offset,
         range.offset + range.length
       );
@@ -70,11 +61,9 @@ class UnstyledBlock implements IBlock {
     }
 
     const lastStyledRange = orderedStyleRanges[orderedStyleRanges.length - 1];
-    if (
-      lastStyledRange.offset + lastStyledRange.length <
-      this.getTextLength()
-    ) {
-      const restText = this.rawJson.text.substring(
+    const textLength = rawJson.text.length;
+    if (lastStyledRange.offset + lastStyledRange.length < textLength) {
+      const restText = rawJson.text.substring(
         lastStyledRange.offset + lastStyledRange.length
       );
       if (!styleMap[restText]) {
@@ -88,8 +77,8 @@ class UnstyledBlock implements IBlock {
     return styleMap;
   }
 
-  public buildBlocks(): void {
-    const styledTexts = this.getStyledTexts();
+  public buildBlocks(rawJson: RawJSON): void {
+    const styledTexts = this.getStyledTexts(rawJson);
 
     for (const [text, styles] of Object.entries(styledTexts)) {
       const style = getDynamicStyle(this.styleMap, styles);
