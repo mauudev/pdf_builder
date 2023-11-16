@@ -1,23 +1,15 @@
 import React, { ReactElement } from "react";
-import ReactPDF, { View } from "@react-pdf/renderer";
+import { View } from "@react-pdf/renderer";
 import { IUnstyledBuilder, IBlock, RawJSON, StyleMap } from "../contracts";
 import { parseViewStyle } from "../utils";
 import UnstyledBlock from "../blocks/unstyled";
 
 /**
- * Responsabilidades:
- *
- * UnstyledBlock:
- * - recibir chunks del array blocks y crear componentes estilizados
- * - wrappear en un componente Text de reactpdf
- * - retornar el componente
- *
- * ComponentBuilder:
- * - recibir chunks del array blocks e invocar a su blockComponent
- * - wrappear en un componente View de reactpdf
- * - retornar el componente
+ * Builder de componentes de tipo 'unstyled', itera los inlineStyleRanges
+ * del rawJson si existe y genera un Text para cada texto cortado segun los offsets.
+ * Retorna un componente Text que wrappea otros componentes Text estilizados
+ * para crear una sola linea de texto.
  */
-
 class UnstyledBlockBuilder implements IUnstyledBuilder {
   private blockComponent: IBlock | undefined;
   public styleMap: StyleMap;

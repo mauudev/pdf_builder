@@ -1,10 +1,14 @@
 import React, { ReactNode, ReactElement } from "react";
 
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON, TextStyles } from "../contracts";
+import { IBlock, RawJSON } from "../contracts";
 import { composeInlineStyles, getDynamicStyle } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
+/**
+ * Clase Block para los componentes de tipo Unstyled.
+ * Recibe un objeto de estilos y genera un componente Text,
+ */
 class UnstyledBlock implements IBlock {
   private unstyledBlocks: Array<ReactNode>;
 

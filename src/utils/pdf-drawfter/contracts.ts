@@ -1,5 +1,8 @@
 import React, { ReactNode, ReactElement } from "react";
 
+/**
+ * Types para los estilos de los bloques
+ */
 export type StyleMap = {
   italic?: {
     fontSize: number;
@@ -48,6 +51,9 @@ export type TextStyles = {
   [text: string]: InlineStyle[];
 };
 
+/**
+ * Interfaces para los bloques y builders
+ */
 export interface IBlock {
   styleMap: object;
   reset(): void;
