@@ -1,23 +1,23 @@
 import React, { ReactNode, ReactElement } from "react";
 
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON } from "../contracts";
-import { getDynamicStyle } from "../utils";
+import { IBlock, RawJSON, TextStyles } from "../contracts";
+import { composeInlineStyles, getDynamicStyle } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
 class UnstyledBlock implements IBlock {
-  private blocks: Array<ReactNode>;
+  private unstyledBlocks: Array<ReactNode>;
 
   constructor(public styleMap: object) {
     this.styleMap = styleMap;
-    this.blocks = [];
+    this.unstyledBlocks = [];
   }
   public reset(): void {
-    this.blocks = [];
+    this.unstyledBlocks = [];
   }
 
   getBlocks(): Array<ReactNode> {
-    return this.blocks;
+    return this.unstyledBlocks;
   }
 
   getComponent(rawJson: RawJSON): ReactElement {
@@ -32,53 +32,8 @@ class UnstyledBlock implements IBlock {
     return mainBlock;
   }
 
-  getStyledTexts(rawJson: RawJSON): object {
-    type Style = {
-      [key: string]: string;
-    };
-
-    type StyleMap = {
-      [text: string]: Array<Style>;
-    };
-
-    const styleMap: StyleMap = {};
-    const orderedStyleRanges = rawJson.inlineStyleRanges.sort(
-      (a, b) => a.offset - b.offset
-    );
-
-    for (const range of orderedStyleRanges) {
-      const text = rawJson.text.substring(
-        range.offset,
-        range.offset + range.length
-      );
-      const style = range.style;
-
-      if (!styleMap[text]) {
-        styleMap[text] = [{ style }];
-      } else {
-        styleMap[text].push({ style });
-      }
-    }
-
-    const lastStyledRange = orderedStyleRanges[orderedStyleRanges.length - 1];
-    const textLength = rawJson.text.length;
-    if (lastStyledRange.offset + lastStyledRange.length < textLength) {
-      const restText = rawJson.text.substring(
-        lastStyledRange.offset + lastStyledRange.length
-      );
-      if (!styleMap[restText]) {
-        styleMap[restText] = [
-          { style: "color-rgb(0,0,0)" },
-          { style: "fontsize-12" },
-        ];
-      }
-    }
-
-    return styleMap;
-  }
-
   public buildBlocks(rawJson: RawJSON): void {
-    const styledTexts = this.getStyledTexts(rawJson);
+    const styledTexts = composeInlineStyles(rawJson);
 
     for (const [text, styles] of Object.entries(styledTexts)) {
       const style = getDynamicStyle(this.styleMap, styles);
@@ -88,7 +43,7 @@ class UnstyledBlock implements IBlock {
           {text}
         </Text>
       );
-      this.blocks.push(block);
+      this.unstyledBlocks.push(block);
     }
   }
 }

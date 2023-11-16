@@ -1,5 +1,4 @@
 import React, { ReactNode, ReactElement } from "react";
-import { Style } from "@react-pdf/types";
 
 export type StyleMap = {
   italic?: {
@@ -41,15 +40,17 @@ export type RawJSON = {
   data: object;
 };
 
-export type ComponentProps = {
-  style?: Style | Style[];
-  children?: ReactNode;
+export type InlineStyle = {
+  [key: string]: string;
+};
+
+export type TextStyles = {
+  [text: string]: InlineStyle[];
 };
 
 export interface IBlock {
   styleMap: object;
   reset(): void;
-  getStyledTexts(rawJson: RawJSON): object;
   getBlocks(): Array<ReactNode>;
   getComponent(rawJson: RawJSON): ReactElement;
   buildBlocks(rawJson: RawJSON): void;

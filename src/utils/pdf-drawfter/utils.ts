@@ -1,6 +1,4 @@
-import { StyleMap } from "./contracts";
-
-type StyleList = { style: string }[];
+import { StyleMap, InlineStyle, TextStyles, RawJSON } from "./contracts";
 
 const parseColorRGB = (style: string): string => {
   const colorValues = style
@@ -16,7 +14,7 @@ const applyStyle = (styles: object, key: string, value: any): object => {
 
 export const getDynamicStyle = (
   styleMap: StyleMap,
-  styleList: StyleList
+  styleList: InlineStyle[]
 ): object => {
   let styles: object = {};
 
@@ -65,4 +63,44 @@ export const parseViewStyle = (
     }
   }
   return stylesAcc;
+};
+
+export const composeInlineStyles = (rawJson: RawJSON): TextStyles => {
+  const textStyles: TextStyles = {};
+
+  if (rawJson.inlineStyleRanges.length === 0) {
+    textStyles[rawJson.text] = [];
+    return textStyles;
+  }
+
+  const orderedStyleRanges = rawJson.inlineStyleRanges.sort(
+    (a, b) => a.offset - b.offset
+  );
+
+  for (const range of orderedStyleRanges) {
+    const text = rawJson.text.substring(
+      range.offset,
+      range.offset + range.length
+    );
+    const style = range.style;
+
+    if (style !== undefined) {
+      if (!textStyles[text]) {
+        textStyles[text] = [{ style }];
+      } else {
+        textStyles[text].push({ style });
+      }
+    }
+  }
+
+  const lastStyledRange = orderedStyleRanges[orderedStyleRanges.length - 1];
+  const textLength = rawJson.text.length;
+  if (lastStyledRange.offset + lastStyledRange.length < textLength) {
+    const restText = rawJson.text.substring(
+      lastStyledRange.offset + lastStyledRange.length
+    );
+    textStyles[restText] = [];
+  }
+
+  return textStyles;
 };
