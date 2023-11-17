@@ -67,7 +67,3 @@ export interface IBuilder {
   getBlockComponent(): IBlock | undefined;
   getBuiltBlock(rawJson: RawJSON): ReactElement | undefined;
 }
-
-export interface IUnstyledBuilder extends IBuilder {
-  buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined;
-}
