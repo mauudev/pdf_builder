@@ -39,7 +39,7 @@ export const rawJson1 = {
   data: {},
 };
 
-const rawJson2 = {
+export const rawJson2 = {
   key: "1d0mv",
   text: "aasdasdqweqweqweqweqweqweqweqweqweqw",
   type: "unstyled",
@@ -52,7 +52,7 @@ const rawJson2 = {
   data: {},
 };
 
-const editorBlocks = {
+export const editorBlocks = {
   blocks: [
     {
       key: "31tf7",
@@ -85,12 +85,14 @@ const editorBlocks = {
     },
     {
       key: "5i8b7",
-      text: "HEADER 3",
+      text: "HEADER 3 RIGHT",
       type: "header-three",
       depth: 0,
       inlineStyleRanges: [],
       entityRanges: [],
-      data: {},
+      data: {
+        "text-align": "right",
+      },
     },
     {
       key: "1b7lm",
