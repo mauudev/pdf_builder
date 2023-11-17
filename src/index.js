@@ -1,10 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-// import ReactPDF from "@react-pdf/renderer";
 import { PDFViewer } from "@react-pdf/renderer";
 import PDFBuilder from "./utils/pdf-drawfter/pdf-builder";
-import { rawJson1, editorBlocks } from "./utils/pdf-drawfter/samples/rawJson";
+import { editorBlocks } from "./utils/pdf-drawfter/samples/rawJson";
 import { styleMap } from "./utils/pdf-drawfter/global-styles";
 
 const builder = new PDFBuilder(editorBlocks.blocks, styleMap);
