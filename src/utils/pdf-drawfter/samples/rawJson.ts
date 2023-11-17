@@ -95,6 +95,39 @@ export const editorBlocks = {
       },
     },
     {
+      key: "5i8b7",
+      text: "HEADER 4 RIGHT",
+      type: "header-four",
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {
+        "text-align": "center",
+      },
+    },
+    {
+      key: "5i8b7",
+      text: "HEADER 5 RIGHT",
+      type: "header-five",
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {
+        "text-align": "right",
+      },
+    },
+    {
+      key: "5i8b7",
+      text: "HEADER 6 RIGHT",
+      type: "header-six",
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {
+        "text-align": "center",
+      },
+    },
+    {
       key: "1b7lm",
       text: "underlined text",
       type: "unstyled",
