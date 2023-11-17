@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IUnstyledBuilder, IBlock, RawJSON, StyleMap } from "../contracts";
+import { IBuilder, IBlock, RawJSON, StyleMap } from "../contracts";
 import { parseViewStyle } from "../utils";
 import UnstyledBlock from "../blocks/unstyled";
 
@@ -10,7 +10,7 @@ import UnstyledBlock from "../blocks/unstyled";
  * Retorna un componente Text que wrappea otros componentes Text estilizados
  * para crear una sola linea de texto.
  */
-class UnstyledBlockBuilder implements IUnstyledBuilder {
+class UnstyledBlockBuilder implements IBuilder {
   private blockComponent: IBlock | undefined;
   public styleMap: StyleMap;
 
