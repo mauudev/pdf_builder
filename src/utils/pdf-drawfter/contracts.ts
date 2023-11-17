@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from "react";
+import { ReactNode, ReactElement } from "react";
 
 /**
  * Types para los estilos de los bloques
@@ -58,7 +58,7 @@ export interface IBlock {
   styleMap: object;
   reset(): void;
   getBlocks(): Array<ReactNode>;
-  getComponent(rawJson: RawJSON): ReactElement;
+  getComponent(rawJson: RawJSON): ReactElement | undefined;
   buildBlocks(rawJson: RawJSON): void;
 }
 
@@ -66,8 +66,4 @@ export interface IBuilder {
   styleMap: StyleMap;
   getBlockComponent(): IBlock | undefined;
   getBuiltBlock(rawJson: RawJSON): ReactElement | undefined;
-}
-
-export interface IUnstyledBuilder extends IBuilder {
-  buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined;
 }

@@ -1,7 +1,8 @@
 import React from "react";
-import { Document, Page, View } from "@react-pdf/renderer";
+import { Document, Page } from "@react-pdf/renderer";
 import { IBuilder, RawJSON } from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
+import HeaderBlockBuilder from "./builders/headers-builder";
 
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
@@ -48,16 +49,15 @@ class PDFBuilder {
 
   public buildPDFBlocks() {
     for (const rawJson of this.editorBlocks) {
-      switch (rawJson.type) {
-        case "unstyled":
-          this.setBuilder(new UnstyledBlockBuilder(this.styleMap));
-          break;
-        default:
-          console.error(
-            `type ${rawJson.type} not supported, setting unstyled block by default.`
-          );
-        // this.setBuilder(new UnstyledBlockBuilder(this.styleMap));
+      if (rawJson.type === "unstyled") {
+        this.setBuilder(new UnstyledBlockBuilder(this.styleMap));
       }
+      if (rawJson.type.startsWith("header")) {
+        this.setBuilder(new HeaderBlockBuilder(this.styleMap));
+      }
+      // console.error(
+      //   `type ${rawJson.type} not supported, setting unstyled block by default.`
+      // );
       this.contentBlocks.push(this.componentBuilder?.getBuiltBlock(rawJson)!);
     }
   }

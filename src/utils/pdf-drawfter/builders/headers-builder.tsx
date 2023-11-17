@@ -2,21 +2,18 @@ import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
 import { IBuilder, IBlock, RawJSON, StyleMap } from "../contracts";
 import { parseViewStyle } from "../utils";
-import UnstyledBlock from "../blocks/unstyled";
+import HeaderBlock from "../blocks/headers/headers";
 
 /**
- * Builder de componentes de tipo 'unstyled', itera los inlineStyleRanges
- * del rawJson si existe y genera un Text para cada texto cortado segun los offsets.
- * Retorna un componente Text que wrappea otros componentes Text estilizados
- * para crear una sola linea de texto.
+ * Builder de componentes de tipo 'header'
  */
-class UnstyledBlockBuilder implements IBuilder {
+class HeaderBlockBuilder implements IBuilder {
   private blockComponent: IBlock | undefined;
   public styleMap: StyleMap;
 
   constructor(styleMap: StyleMap) {
     this.styleMap = styleMap;
-    this.blockComponent = new UnstyledBlock(styleMap);
+    this.blockComponent = new HeaderBlock(styleMap);
   }
 
   public getBlockComponent(): IBlock | undefined {
@@ -24,16 +21,24 @@ class UnstyledBlockBuilder implements IBuilder {
   }
 
   public getBuiltBlock(rawJson: RawJSON): ReactElement | undefined {
-    if (rawJson.type !== "unstyled") {
+    const headerTypes = [
+      "header-one",
+      "header-two",
+      "header-three",
+      "header-four",
+      "header-five",
+      "header-six",
+    ];
+    if (rawJson.type && !headerTypes.includes(rawJson.type)) {
       console.error(`type ${rawJson.type} not supported`);
       return;
     }
-    const block = this.buildUnstyledBlock(rawJson);
+    const block = this.buildHeaderBlock(rawJson);
     this.getBlockComponent()?.reset();
     return block;
   }
 
-  public buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined {
+  public buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined {
     const blockStyle = parseViewStyle(rawJson.data, this.styleMap);
     return (
       <View key={rawJson.key} style={blockStyle}>
@@ -43,4 +48,4 @@ class UnstyledBlockBuilder implements IBuilder {
   }
 }
 
-export default UnstyledBlockBuilder;
+export default HeaderBlockBuilder;
