@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
 import { IBuilder, IBlock, RawJSON } from "../contracts";
-import { parseViewStyle } from "../utils";
+import { parseStyle } from "../utils";
 import UnstyledBlock from "../blocks/unstyled";
 
 /**
@@ -32,7 +32,11 @@ class UnstyledBlockBuilder implements IBuilder {
   }
 
   public buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined {
-    const blockStyle = parseViewStyle(rawJson.data);
+    let blockStyle = {};
+    if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
+      const [style, value] = Object.entries(rawJson.data)[0];
+      blockStyle = parseStyle(style, value);
+    }
     return (
       <View key={rawJson.key} style={blockStyle}>
         {this.blockComponent?.getComponent(rawJson)}
