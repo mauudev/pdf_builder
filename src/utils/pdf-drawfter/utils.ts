@@ -1,106 +1,156 @@
-import { StyleMap, InlineStyle, TextStyles, RawJSON } from "./contracts";
+import { InlineStyleRange } from "./contracts";
 
-const parseColorRGB = (style: string): string => {
-  const colorValues = style
-    .match(/\(([^)]+)\)/)![1]
-    .split(",")
-    .map(Number);
-  return `rgb(${colorValues.join(",")})`;
-};
+/** ##########################################################################
+ *  ## UTILITIES FUNCTIONS
+ * ##########################################################################
+ */
+/**
+ * Sobre-escribe los estilos acumulados para un texto.
+ * Ejemplo: Si hay un estilo 'color-rgb(0, 0, 0)' y se agrega otro 'color-rgb(55, 130, 121)'
+ * se toma en cuenta el ultimo agregado ('color-rgb(55, 130, 121)') y se elimina el primero.
+ * @param style Estilo a agregar
+ * @param stylesArray Array de estilos
+ * @returns string[]  El array de estilos
+ */
+const overrideStyle = (style: string, stylesArray: string[]): string[] => {
+  const styles = new Set<string>(stylesArray);
 
-const applyStyle = (styles: object, key: string, value: any): object => {
-  return value ? { ...styles, ...value } : styles;
-};
-
-export const getDynamicStyle = (
-  styleMap: StyleMap,
-  styleList: InlineStyle[]
-): object => {
-  let styles: object = {};
-
-  for (const item of styleList) {
-    const style: string = item.style.toLowerCase();
-
-    if (style.startsWith("color-rgb")) {
-      const rgbValue: string = parseColorRGB(style);
-      styles = applyStyle(
-        styles,
-        "color-rgb",
-        styleMap["color-rgb"]?.(rgbValue)
-      );
-    }
-
-    if (style.startsWith("fontsize")) {
-      const fontSizeValue: number = parseInt(style.substring(9));
-      styles = applyStyle(
-        styles,
-        "fontsize",
-        styleMap["fontsize"]?.(fontSizeValue)
-      );
-    }
-
-    styles = applyStyle(styles, style, styleMap[style as keyof StyleMap]);
-  }
-
-  return styles;
-};
-
-export const parseViewStyle = (
-  styleData: object,
-  styleMap: StyleMap
-): object => {
-  let stylesAcc = {};
-  for (const [style, value] of Object.entries(styleData)) {
-    switch (style) {
-      case "text-align":
-        stylesAcc = applyStyle(
-          stylesAcc,
-          style,
-          styleMap["text-align"]?.(value)
-        );
-        break;
-      // agregar los demas aca
-    }
-  }
-  return stylesAcc;
-};
-
-export const composeInlineStyles = (rawJson: RawJSON): TextStyles => {
-  const textStyles: TextStyles = {};
-
-  if (rawJson.inlineStyleRanges.length === 0) {
-    textStyles[rawJson.text] = [];
-    return textStyles;
-  }
-
-  const orderedStyleRanges = rawJson.inlineStyleRanges.sort(
-    (a, b) => a.offset - b.offset
-  );
-
-  for (const range of orderedStyleRanges) {
-    const text = rawJson.text.substring(
-      range.offset,
-      range.offset + range.length
+  if (
+    Array.from(styles).some((existingStyle) =>
+      existingStyle.startsWith(style.split("-")[0])
+    )
+  ) {
+    styles.delete(
+      [...styles].find((existingStyle) =>
+        existingStyle.startsWith(style.split("-")[0])
+      )!
     );
-    const style = range.style;
+  }
 
-    if (style !== undefined) {
-      if (!textStyles[text]) {
-        textStyles[text] = [{ style }];
+  styles.add(style);
+  return Array.from(styles);
+};
+
+/**
+ * Recibe un array de objetos que contiene los estilos
+ * para cada caracter del texto original, luego va concatenando todos
+ * los caracteres que comparten los mismos estilos, de esta forma
+ * se va reconstruyendo los textos con sus estilos.
+ * Esto evita crear componentes `<Text/>` para cada caracter.
+ * @param styledTexts La lista de caracteres y sus estilos
+ * @returns string[]  El array de objetos con el texto y sus estilos
+ */
+const buildStyledTextBlocks = (
+  styledTexts: { char: string; styles: string[] }[]
+): { text: string; styles: string[] }[] => {
+  let styleMap: { text: string; styles: string[] }[] = [];
+  for (const currentItem of styledTexts) {
+    if (styleMap.length === 0) {
+      styleMap.push({
+        text: currentItem.char,
+        styles: currentItem.styles,
+      });
+    } else {
+      const lastItem = styleMap[styleMap.length - 1];
+      if (equalArrays(lastItem.styles, currentItem.styles)) {
+        lastItem.text += currentItem.char;
       } else {
-        textStyles[text].push({ style });
+        styleMap.push({
+          text: currentItem.char,
+          styles: currentItem.styles,
+        });
       }
     }
   }
+  return styleMap;
+};
 
-  const lastStyledRange = orderedStyleRanges[orderedStyleRanges.length - 1];
-  const textLength = rawJson.text.length;
-  if (lastStyledRange.offset + lastStyledRange.length < textLength) {
-    const restText = rawJson.text.substring(
-      lastStyledRange.offset + lastStyledRange.length
-    );
-    textStyles[restText] = [];
+/**
+ * Aplica los estilos del mapa de estilos globales.
+ * Casos especiales como 'fontsize' y 'color-rgb' deben parsearse primero
+ * para aplicarlos correctamente.
+ * @param styledTexts La lista de objetos con el texto y sus estilos
+ * @returns { text: string; styles: Record<string, string | number> }[] El array de objetos con el texto y sus estilos
+ */
+const applyStyle = (
+  styledTexts: { text: string; styles: string[] }[]
+): { text: string; styles: Record<string, string | number | undefined> }[] => {
+  const result: { text: string; styles: Record<string, string | number> }[] =
+    [];
+  for (const currentItem of styledTexts) {
+    let styles = {};
+    for (let style of currentItem.styles) {
+      style = style.toLowerCase();
+      if (style.startsWith("fontsize")) {
+        const fontSizeVal = parseInt(style.split("-")[1]);
+        styles = {
+          ...styles,
+          ...{ fontSize: fontSizeVal },
+        };
+      }
+      if (style.startsWith("color-rgb")) {
+        const colorVal = style.split("-")[1];
+        styles = {
+          ...styles,
+          ...{ color: colorVal },
+        };
+      }
+      if (style === "bold") {
+        styles = {
+          ...styles,
+          ...{ fontWeight: "bold" },
+        };
+      }
+      if (style === "italic") {
+        styles = {
+          ...styles,
+          ...{ fontStyle: "italic" },
+        };
+      }
+    }
+    result.push({
+      text: currentItem.text,
+      styles: styles,
+    });
+  }
+  return result;
+};
+
+/** ##########################################################################
+ *  ## EXPORTED FUNCTIONS
+ * ##########################################################################
+ */
+export const equalArrays = (arrayA: any[], arrayB: any[]): boolean =>
+  arrayA.length === arrayB.length && arrayA.every((x) => arrayB.includes(x));
+
+/**
+ * Dado el texto original del RawJSON, segmenta los sub-textos por estilos.
+ * @param text El texto original
+ * @param inlineStyleRanges Los rangos de estilos para cada segmento de texto
+ * @returns { text: string; styles: Record<string, string | number>; }[]
+ */
+export const composeStyledTexts = (
+  text: string,
+  inlineStyleRanges: InlineStyleRange[]
+) => {
+  const styledTexts: { char: string; styles: string[]; index: number }[] = [];
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charAt(i);
+    styledTexts.push({ char, styles: [], index: -1 });
   }
 
-  return textStyles;
+  for (const range of inlineStyleRanges) {
+    const { offset, length, style } = range;
+    for (let i = 0; i < text.length; i++) {
+      if (i >= offset && i <= length) {
+        let currentItem = styledTexts[i];
+        currentItem.styles = overrideStyle(style, currentItem.styles);
+        currentItem.index = i;
+        currentItem.char = text.charAt(i);
+      }
+    }
+  }
+  const composedStyledTexts = buildStyledTextBlocks(styledTexts);
+  return applyStyle(composedStyledTexts);
 };
