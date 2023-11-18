@@ -80,33 +80,10 @@ const applyStyle = (
   for (const currentItem of styledTexts) {
     let styles = {};
     for (let style of currentItem.styles) {
-      style = style.toLowerCase();
-      if (style.startsWith("fontsize")) {
-        const fontSizeVal = parseInt(style.split("-")[1]);
-        styles = {
-          ...styles,
-          ...{ fontSize: fontSizeVal },
-        };
-      }
-      if (style.startsWith("color-rgb")) {
-        const colorVal = style.split("-")[1];
-        styles = {
-          ...styles,
-          ...{ color: colorVal },
-        };
-      }
-      if (style === "bold") {
-        styles = {
-          ...styles,
-          ...{ fontWeight: "bold" },
-        };
-      }
-      if (style === "italic") {
-        styles = {
-          ...styles,
-          ...{ fontStyle: "italic" },
-        };
-      }
+      styles = {
+        ...styles,
+        ...parseStyle(style),
+      };
     }
     result.push({
       text: currentItem.text,
@@ -116,10 +93,38 @@ const applyStyle = (
   return result;
 };
 
-/** ##########################################################################
- *  ## EXPORTED FUNCTIONS
- * ##########################################################################
- */
+// ##########################################################################
+// ## EXPORTED FUNCTIONS
+// ##########################################################################
+export const parseStyle = (
+  style: string,
+  value?: string | number | boolean | null | undefined
+) => {
+  let styles = {};
+  style = style.toLowerCase();
+  if (style.startsWith("fontsize")) {
+    const fontSizeVal = parseInt(style.split("-")[1]);
+    styles = { fontSize: fontSizeVal };
+  }
+  if (style.startsWith("color-rgb")) {
+    const colorVal = style.split("-")[1];
+    styles = { color: colorVal };
+  }
+  if (style === "bold") {
+    styles = { fontWeight: "bold" };
+  }
+  if (style === "italic") {
+    styles = { fontStyle: "italic" };
+  }
+  if (style === "underline") {
+    styles = { textDecoration: "underline" };
+  }
+  if (style === "text-align") {
+    styles = { textAlign: value };
+  }
+  return styles;
+};
+
 export const equalArrays = (arrayA: any[], arrayB: any[]): boolean =>
   arrayA.length === arrayB.length && arrayA.every((x) => arrayB.includes(x));
 
