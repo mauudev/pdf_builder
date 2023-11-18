@@ -16,12 +16,10 @@ import HeaderBlockBuilder from "./builders/headers-builder";
  */
 class PDFBuilder {
   public componentBuilder: IBuilder | undefined;
-  public styleMap: object;
   private contentBlocks: Array<React.ReactElement>;
   private editorBlocks: Array<RawJSON>;
 
-  constructor(editorBlocks: Array<RawJSON>, styleMap: object) {
-    this.styleMap = styleMap;
+  constructor(editorBlocks: Array<RawJSON>) {
     this.editorBlocks = editorBlocks;
     this.contentBlocks = [];
   }
@@ -50,10 +48,10 @@ class PDFBuilder {
   public buildPDFBlocks() {
     for (const rawJson of this.editorBlocks) {
       if (rawJson.type === "unstyled") {
-        this.setBuilder(new UnstyledBlockBuilder(this.styleMap));
+        this.setBuilder(new UnstyledBlockBuilder());
       }
       if (rawJson.type.startsWith("header")) {
-        this.setBuilder(new HeaderBlockBuilder(this.styleMap));
+        this.setBuilder(new HeaderBlockBuilder());
       }
       // console.error(
       //   `type ${rawJson.type} not supported, setting unstyled block by default.`
