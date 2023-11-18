@@ -145,15 +145,17 @@ export const composeStyledTexts = (
     styledTexts.push({ char, styles: [], index: -1 });
   }
 
-  for (const range of inlineStyleRanges) {
+  const orderedStyleRanges = inlineStyleRanges.sort(
+    (a, b) => a.offset - b.offset
+  );
+
+  for (const range of orderedStyleRanges) {
     const { offset, length, style } = range;
-    for (let i = 0; i < text.length; i++) {
-      if (i >= offset && i <= length) {
-        let currentItem = styledTexts[i];
-        currentItem.styles = overrideStyle(style, currentItem.styles);
-        currentItem.index = i;
-        currentItem.char = text.charAt(i);
-      }
+    for (let i = offset; i < offset + length; i++) {
+      let currentItem = styledTexts[i];
+      currentItem.styles = overrideStyle(style, currentItem.styles);
+      currentItem.index = i;
+      currentItem.char = text.charAt(i);
     }
   }
   const composedStyledTexts = buildStyledTextBlocks(styledTexts);
