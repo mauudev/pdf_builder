@@ -2,7 +2,7 @@ import React, { ReactNode, ReactElement } from "react";
 
 import { Text } from "@react-pdf/renderer";
 import { IBlock, RawJSON } from "../contracts";
-import { composeInlineStyles, getDynamicStyle } from "../utils";
+import { composeStyledTexts } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -12,8 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 class UnstyledBlock implements IBlock {
   private unstyledBlocks: Array<ReactNode>;
 
-  constructor(public styleMap: object) {
-    this.styleMap = styleMap;
+  constructor() {
     this.unstyledBlocks = [];
   }
   public reset(): void {
@@ -37,14 +36,13 @@ class UnstyledBlock implements IBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const styledTexts = composeInlineStyles(rawJson);
+    const { text, inlineStyleRanges } = rawJson;
+    const styledTexts = composeStyledTexts(text, inlineStyleRanges);
 
-    for (const [text, styles] of Object.entries(styledTexts)) {
-      const style = getDynamicStyle(this.styleMap, styles);
-
+    for (const styledText of styledTexts) {
       const block = (
-        <Text key={uuidv4()} style={style}>
-          {text}
+        <Text key={uuidv4()} style={styledText.styles}>
+          {styledText.text}
         </Text>
       );
       this.unstyledBlocks.push(block);
