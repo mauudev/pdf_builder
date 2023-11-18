@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IBuilder, IBlock, RawJSON, StyleMap } from "../contracts";
+import { IBuilder, IBlock, RawJSON } from "../contracts";
 import { parseViewStyle } from "../utils";
 import HeaderBlock from "../blocks/headers/headers";
 
@@ -9,11 +9,9 @@ import HeaderBlock from "../blocks/headers/headers";
  */
 class HeaderBlockBuilder implements IBuilder {
   private blockComponent: IBlock | undefined;
-  public styleMap: StyleMap;
 
-  constructor(styleMap: StyleMap) {
-    this.styleMap = styleMap;
-    this.blockComponent = new HeaderBlock(styleMap);
+  constructor() {
+    this.blockComponent = new HeaderBlock();
   }
 
   public getBlockComponent(): IBlock | undefined {
@@ -39,7 +37,7 @@ class HeaderBlockBuilder implements IBuilder {
   }
 
   public buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined {
-    const blockStyle = parseViewStyle(rawJson.data, this.styleMap);
+    const blockStyle = parseViewStyle(rawJson.data);
     return (
       <View key={rawJson.key} style={blockStyle}>
         {this.blockComponent?.getComponent(rawJson)}

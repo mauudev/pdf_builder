@@ -1,7 +1,8 @@
 import React, { ReactNode, ReactElement } from "react";
+import { Style } from "@react-pdf/types";
 import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON, StyleMap } from "../../contracts";
+import { IBlock, RawJSON } from "../../contracts";
 import { headerStyles } from "./header.styles";
 
 /**
@@ -10,9 +11,10 @@ import { headerStyles } from "./header.styles";
  */
 class HeaderBlock implements IBlock {
   private headerBlocks: Array<ReactNode>;
+  private styleMap: { [key: string]: Style };
 
-  constructor(public styleMap: StyleMap) {
-    this.styleMap = { ...headerStyles, ...styleMap };
+  constructor() {
+    this.styleMap = headerStyles;
     this.headerBlocks = [];
   }
   reset(): void {
@@ -36,12 +38,11 @@ class HeaderBlock implements IBlock {
   }
 
   buildBlocks(rawJson: RawJSON): void {
-    const headerType = rawJson.type as keyof StyleMap;
-    const style = this.styleMap[headerType];
+    const style = this.styleMap[rawJson.type];
 
     if (style) {
       const block = (
-        <Text key={uuidv4()} style={{ ...style }}>
+        <Text key={uuidv4()} style={style}>
           {rawJson.text}
         </Text>
       );
