@@ -1,28 +1,8 @@
 import { ReactNode, ReactElement } from "react";
-
+import { Style } from "@react-pdf/types";
 /**
  * Types para los estilos de los bloques
  */
-export type StyleMap = {
-  italic?: {
-    fontSize: number;
-    fontWeight: number;
-    fontStyle: "italic";
-  };
-  bold?: {
-    fontSize: number;
-    fontWeight: number;
-  };
-  "color-rgb"?: (color: string) => {
-    color: string;
-  };
-  fontsize?: (fontSize: number) => {
-    fontSize: number;
-  };
-  "text-align"?: (textAlign: string) => {
-    textAlign: string;
-  };
-};
 
 export type Blocks = {
   blocks: Array<RawJSON>;
@@ -43,6 +23,12 @@ export type RawJSON = {
   data: object;
 };
 
+export type InlineStyleRange = {
+  offset: number;
+  length: number;
+  style: string;
+};
+
 export type InlineStyle = {
   [key: string]: string;
 };
@@ -55,7 +41,6 @@ export type TextStyles = {
  * Interfaces para los bloques y builders
  */
 export interface IBlock {
-  styleMap: object;
   reset(): void;
   getBlocks(): Array<ReactNode>;
   getComponent(rawJson: RawJSON): ReactElement | undefined;
@@ -63,7 +48,6 @@ export interface IBlock {
 }
 
 export interface IBuilder {
-  styleMap: StyleMap;
   getBlockComponent(): IBlock | undefined;
   getBuiltBlock(rawJson: RawJSON): ReactElement | undefined;
 }
