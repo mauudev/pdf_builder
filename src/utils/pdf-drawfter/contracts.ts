@@ -23,6 +23,19 @@ export type RawJSON = {
   data: object;
 };
 
+export type PageStyles = {
+  pageSize: string;
+  fontSize: number;
+  lineHeight: number;
+  margin: {
+    marginTop: number;
+    marginLeft: number;
+    marginRight: number;
+    marginBottom: number;
+  };
+};
+
+
 export type InlineStyleRange = {
   offset: number;
   length: number;
