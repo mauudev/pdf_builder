@@ -4,9 +4,9 @@ import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
 import { Editor } from "react-draft-wysiwyg";
 import { styles } from "./editor.styles";
-import PreviewModal from "../../ui/modal/preview-modal";
-import { capitalizeFirstLetter } from "../../../utils/helpers";
-import PDFBuilder from "../pdf-builder";
+import PreviewModal from "../ui/modal/preview-modal";
+import { capitalizeFirstLetter } from "../../utils/helpers";
+import PDFBuilder from "../pdf-builder/pdf-builder";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 

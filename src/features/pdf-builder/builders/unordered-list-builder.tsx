@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
 import { IBuilder, IBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
-import UnorderedListItemBlock from "../blocks/unordered-list/unordered-list-item";
+import UnorderedListItemBlock from "../blocks/unordered-list/unordered-list";
 
 /**
  * Builder de componentes de tipo 'unordered-list-item', itera los inlineStyleRanges

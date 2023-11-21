@@ -1,5 +1,5 @@
 import React from "react";
-import WYSIWYGEditor from "./features/pdf-builder/text-editor/editor";
+import WYSIWYGEditor from "./features/text-editor/editor";
 
 import "./App.css";
 
