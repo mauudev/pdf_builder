@@ -39,6 +39,23 @@
             "data": {}
         },
         {
+            "key": "ehs7t",
+            "text": "COLORED CENTERED HEADER  ",
+            "type": "header-one",
+            "depth": 0,
+            "inlineStyleRanges": [
+                {
+                    "offset": 0,
+                    "length": 23,
+                    "style": "color-rgb(97,189,109)"
+                }
+            ],
+            "entityRanges": [],
+            "data": {
+                "text-align": "center"
+            }
+        },
+        {
             "key": "1b7lm",
             "text": "underlined text",
             "type": "unstyled",

@@ -36,14 +36,14 @@ export const styles = {
   cartaPreview: {
     backgroundColor: "white",
     border: "1px solid #000",
-    width: "220mm",
-    height: "280mm",
+    width: "215.9mm",
+    height: "279.4mm",
   },
   oficioPreview: {
     backgroundColor: "white",
     border: "1px solid #000",
-    width: "220mm",
-    height: "340mm",
+    width: "210.0mm",
+    height: "297.0mm",
   },
   livePreview: {
     display: "flex",
@@ -51,6 +51,12 @@ export const styles = {
     alignItems: "center",
     marginTop: "1rem",
     marginBottom: "1rem",
+  },
+  modalPreview: {
+    marginTop: "6rem",
+    marginBottom: "1rem",
+    width: "90%",
+    height: "100%",
   },
   content: {
     fontSize: "var(--font-size, 12px)",

@@ -1,4 +1,7 @@
-export const headerStyles = {
+import { StyleSheet } from "@react-pdf/renderer";
+
+
+export const headerStyles = StyleSheet.create({
   "header-one": {
     fontSize: 24,
     fontWeight: 800,
@@ -23,4 +26,4 @@ export const headerStyles = {
     fontSize: 14,
     fontWeight: 300,
   },
-};
+});

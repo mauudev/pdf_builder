@@ -1,6 +1,7 @@
 import React from "react";
-import { Document, Page } from "@react-pdf/renderer";
-import { IBuilder, RawJSON } from "./contracts";
+import { Document, Page, PDFViewer } from "@react-pdf/renderer";
+import { Style } from "@react-pdf/types";
+import { IBuilder, RawJSON, PageStyles } from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
 
@@ -18,27 +19,43 @@ class PDFBuilder {
   public componentBuilder: IBuilder | undefined;
   private contentBlocks: Array<React.ReactElement>;
   private editorBlocks: Array<RawJSON>;
+  private headerBuilder: IBuilder;
+  private unstyledBuilder: IBuilder;
 
   constructor(editorBlocks: Array<RawJSON>) {
-    this.editorBlocks = editorBlocks;
+    this.editorBlocks = editorBlocks || [];
     this.contentBlocks = [];
+    this.headerBuilder = new HeaderBlockBuilder();
+    this.unstyledBuilder = new UnstyledBlockBuilder();
   }
 
   public setBuilder(builder: IBuilder): void {
     this.componentBuilder = builder;
   }
 
-  public buildPDFContent(): React.ReactElement | undefined {
+  public PDFPreview(
+    styles: PageStyles,
+    previewStyles: Style
+  ): React.ReactElement | undefined {
+    return (
+      <PDFViewer style={previewStyles}>
+        {this.buildPDFContent(styles)}
+      </PDFViewer>
+    );
+  }
+
+  public buildPDFContent(styles: PageStyles): React.ReactElement | undefined {
     this.buildPDFBlocks();
+    const { pageSize, fontSize, lineHeight, margin } = styles;
+    const pdfStyles = {
+      fontSize,
+      lineHeight,
+      ...margin,
+    };
+
     return (
       <Document>
-        <Page
-          style={{
-            paddingTop: 35,
-            paddingBottom: 65,
-            paddingHorizontal: 35,
-          }}
-        >
+        <Page size={pageSize as any} style={pdfStyles}>
           {this.contentBlocks.map((block) => block)}
         </Page>
       </Document>
@@ -48,10 +65,10 @@ class PDFBuilder {
   public buildPDFBlocks() {
     for (const rawJson of this.editorBlocks) {
       if (rawJson.type === "unstyled") {
-        this.setBuilder(new UnstyledBlockBuilder());
+        this.setBuilder(this.unstyledBuilder);
       }
       if (rawJson.type.startsWith("header")) {
-        this.setBuilder(new HeaderBlockBuilder());
+        this.setBuilder(this.headerBuilder);
       }
       // console.error(
       //   `type ${rawJson.type} not supported, setting unstyled block by default.`

@@ -1,6 +1,6 @@
 {
   // "extends": "@tsconfig/node20/tsconfig.json",
-  "include": ["src/utils/pdf-drawfter/**/*"],
+  "include": ["src/features/pdf-builder/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
