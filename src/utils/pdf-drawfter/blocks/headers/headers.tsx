@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
 import { IBlock, RawJSON } from "../../contracts";
 import { headerStyles } from "./header.styles";
+import { composeStyledTexts } from "../../utils";
 
 /**
  * Clase Block para los componentes de tipo Header (h1, h2, h3 ...).
@@ -28,7 +29,7 @@ class HeaderBlock implements IBlock {
   getComponent(rawJson: RawJSON): ReactElement {
     this.buildBlocks(rawJson);
     const mainBlock = (
-      <Text key={uuidv4()}>
+      <Text key={uuidv4()} style={this.styleMap[rawJson.type]}>
         {this.getBlocks().map((block, index) => (
           <React.Fragment key={index}>{block}</React.Fragment>
         ))}
@@ -38,12 +39,13 @@ class HeaderBlock implements IBlock {
   }
 
   buildBlocks(rawJson: RawJSON): void {
-    const style = this.styleMap[rawJson.type];
+    const { text, inlineStyleRanges } = rawJson;
+    const styledTexts = composeStyledTexts(text, inlineStyleRanges);
 
-    if (style) {
+    for (const styledText of styledTexts) {
       const block = (
-        <Text key={uuidv4()} style={style}>
-          {rawJson.text}
+        <Text key={uuidv4()} style={styledText.styles}>
+          {styledText.text}
         </Text>
       );
       this.headerBlocks.push(block);
