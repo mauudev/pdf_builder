@@ -77,7 +77,7 @@ const WYSIWYGEditor = () => {
   });
 
   const buildPdfPreview = () => {
-    return pdfBuilder.PDFPreview(pageStyles);
+    return pdfBuilder.PDFPreview(pageStyles, styles.modalPreview);
   };
 
   return (

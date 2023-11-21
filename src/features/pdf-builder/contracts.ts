@@ -1,8 +1,9 @@
 import { ReactNode, ReactElement } from "react";
 import { Style } from "@react-pdf/types";
-/**
- * Types para los estilos de los bloques
- */
+
+// #################################################
+// # Types para los estilos de los bloques
+// #################################################
 
 export type Blocks = {
   blocks: Array<RawJSON>;
@@ -35,7 +36,6 @@ export type PageStyles = {
   };
 };
 
-
 export type InlineStyleRange = {
   offset: number;
   length: number;
@@ -50,9 +50,9 @@ export type TextStyles = {
   [text: string]: InlineStyle[];
 };
 
-/**
- * Interfaces para los bloques y builders
- */
+// #################################################
+// # Interfaces para los bloques y builders
+// #################################################
 export interface IBlock {
   reset(): void;
   getBlocks(): Array<ReactNode>;

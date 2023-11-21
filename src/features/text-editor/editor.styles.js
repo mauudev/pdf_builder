@@ -52,6 +52,12 @@ export const styles = {
     marginTop: "1rem",
     marginBottom: "1rem",
   },
+  modalPreview: {
+    marginTop: "6rem",
+    marginBottom: "1rem",
+    width: "90%",
+    height: "100%",
+  },
   content: {
     fontSize: "var(--font-size, 12px)",
     width: "calc(100% - var(--margin-left, 5mm) - var(--margin-right, 5mm))",
