@@ -6,7 +6,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { styles } from "./editor.styles";
 import PreviewModal from "../../ui/modal/preview-modal";
 import { capitalizeFirstLetter } from "../../../utils/helpers";
-import PDFBuilder from "../../../utils/pdf-drawfter/pdf-builder";
+import PDFBuilder from "../pdf-builder";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 

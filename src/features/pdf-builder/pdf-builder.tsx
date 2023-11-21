@@ -4,6 +4,7 @@ import { Style } from "@react-pdf/types";
 import { IBuilder, RawJSON, PageStyles } from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
+
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
  * Este actua como la fachada o saga principal de los builders, itera

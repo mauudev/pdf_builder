@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
 import { IBlock, RawJSON } from "../../contracts";
 import { composeStyledTexts } from "../../utils";
-import { unoListStyles } from "./unodered-list-item.styles";
+// import { unoListStyles } from "./unodered-list.styles";
 
 /**
  * Clase Block para los componentes de tipo 'unordered-list-item'.
