@@ -4,6 +4,7 @@ import { Style } from "@react-pdf/types";
 import { IBuilder, RawJSON, PageStyles } from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
+import UnorderedListBuilder from "./builders/unordered-list-builder";
 
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
@@ -21,12 +22,14 @@ class PDFBuilder {
   private editorBlocks: Array<RawJSON>;
   private headerBuilder: IBuilder;
   private unstyledBuilder: IBuilder;
+  private unorderedListBuilder: IBuilder;
 
   constructor(editorBlocks: Array<RawJSON>) {
     this.editorBlocks = editorBlocks || [];
     this.contentBlocks = [];
     this.headerBuilder = new HeaderBlockBuilder();
     this.unstyledBuilder = new UnstyledBlockBuilder();
+    this.unorderedListBuilder = new UnorderedListBuilder();
   }
 
   public setBuilder(builder: IBuilder): void {
@@ -69,6 +72,9 @@ class PDFBuilder {
       }
       if (rawJson.type.startsWith("header")) {
         this.setBuilder(this.headerBuilder);
+      }
+      if (rawJson.type === "unordered-list-item") {
+        this.setBuilder(this.unorderedListBuilder);
       }
       // console.error(
       //   `type ${rawJson.type} not supported, setting unstyled block by default.`
