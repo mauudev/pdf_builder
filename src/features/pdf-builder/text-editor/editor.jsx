@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
@@ -10,22 +10,41 @@ import PDFBuilder from "../../../utils/pdf-drawfter/pdf-builder";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
+const initialState = {
+  pageSize: "LETTER",
+  fontSize: 14.0,
+  lineHeight: 5.0,
+  margin: {
+    marginTop: 20.0,
+    marginLeft: 20.0,
+    marginRight: 20.0,
+    marginBottom: 20.0,
+  },
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "CHANGE_PAGE_SIZE":
+      return { ...state, pageSize: action.payload };
+    case "CHANGE_LINE_HEIGHT":
+      return { ...state, lineHeight: parseFloat(action.payload) };
+    case "CHANGE_MARGIN":
+      return {
+        ...state,
+        margin: {
+          ...state.margin,
+          [action.payload.margin]: parseFloat(action.payload.value),
+        },
+      };
+    default:
+      return state;
+  }
+};
 const WYSIWYGEditor = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [convertedContent, setConvertedContent] = useState(null);
   const [rawContent, setRawContent] = useState({});
-  const [pageStyles, setPageStyles] = useState({
-    pageSize: "LETTER",
-    fontSize: 14.0,
-    lineHeight: 5.0,
-    margin: {
-      marginTop: 20.0,
-      marginLeft: 20.0,
-      marginRight: 20.0,
-      marginBottom: 20.0,
-    },
-  });
-
+  const [pageStyles, dispatch] = useReducer(reducer, initialState);
   const pdfBuilder = new PDFBuilder(rawContent.blocks, pageStyles);
 
   useEffect(() => {
@@ -42,27 +61,15 @@ const WYSIWYGEditor = () => {
   };
 
   const handleChangePageSize = (size) => {
-    setPageStyles((prevStyles) => ({
-      ...prevStyles,
-      pageSize: size,
-    }));
+    dispatch({ type: "CHANGE_PAGE_SIZE", payload: size });
   };
 
   const handleChangeLineHeight = (spacing) => {
-    setPageStyles((prevStyles) => ({
-      ...prevStyles,
-      lineHeight: parseFloat(spacing),
-    }));
+    dispatch({ type: "CHANGE_LINE_HEIGHT", payload: spacing });
   };
 
   const handleChangeMargin = (margin, value) => {
-    setPageStyles((prevStyles) => ({
-      ...prevStyles,
-      margin: {
-        ...prevStyles.margin,
-        [margin]: parseFloat(value),
-      },
-    }));
+    dispatch({ type: "CHANGE_MARGIN", payload: { margin, value } });
   };
 
   const createMarkup = (html) => ({
