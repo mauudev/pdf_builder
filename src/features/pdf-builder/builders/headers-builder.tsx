@@ -3,6 +3,7 @@ import { View } from "@react-pdf/renderer";
 import { IHeaderBuilder, IBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
 import HeaderBlock from "../blocks/headers/headers";
+import { HeaderBuilderException } from "../exceptions";
 
 /**
  * Builder de componentes de tipo 'header'
@@ -14,11 +15,14 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     this.blockComponent = new HeaderBlock();
   }
 
-  public getBlockComponent(): IBlock | undefined {
+  getBlockComponent(): IBlock | undefined {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+    if (!rawJson || !rawJson.key) {
+      throw new HeaderBuilderException("Invalid rawJson format or missing key");
+    }
     const block = this.buildHeaderBlock(rawJson);
     if (resetBlock) {
       this.getBlockComponent()?.reset();
@@ -26,7 +30,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     return block;
   }
 
-  public buildHeaderBlock(rawJson: RawJSON): ReactElement {
+  buildHeaderBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];
