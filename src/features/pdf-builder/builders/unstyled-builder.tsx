@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IBuilder, IBlock, RawJSON } from "../contracts";
+import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
 import UnstyledBlock from "../blocks/unstyled";
 
@@ -10,28 +10,26 @@ import UnstyledBlock from "../blocks/unstyled";
  * Retorna un componente Text que wrappea otros componentes Text estilizados
  * para crear una sola linea de texto.
  */
-class UnstyledBlockBuilder implements IBuilder {
-  private blockComponent: IBlock | undefined;
+class UnstyledBlockBuilder implements IUnstyledBuilder {
+  private blockComponent: IUnstyledBlock;
 
   constructor() {
     this.blockComponent = new UnstyledBlock();
   }
 
-  public getBlockComponent(): IBlock | undefined {
+  public getBlockComponent(): IUnstyledBlock {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON): ReactElement | undefined {
-    if (rawJson.type !== "unstyled") {
-      console.error(`type ${rawJson.type} not supported`);
-      return;
-    }
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     const block = this.buildUnstyledBlock(rawJson);
-    this.getBlockComponent()?.reset();
+    if (resetBlock) {
+      this.getBlockComponent()?.reset();
+    }
     return block;
   }
 
-  public buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined {
+  public buildUnstyledBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

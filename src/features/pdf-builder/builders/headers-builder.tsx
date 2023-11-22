@@ -1,13 +1,13 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IBuilder, IBlock, RawJSON } from "../contracts";
+import { IHeaderBuilder, IBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
 import HeaderBlock from "../blocks/headers/headers";
 
 /**
  * Builder de componentes de tipo 'header'
  */
-class HeaderBlockBuilder implements IBuilder {
+class HeaderBlockBuilder implements IHeaderBuilder {
   private blockComponent: IBlock | undefined;
 
   constructor() {
@@ -18,25 +18,15 @@ class HeaderBlockBuilder implements IBuilder {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON): ReactElement | undefined {
-    const headerTypes = [
-      "header-one",
-      "header-two",
-      "header-three",
-      "header-four",
-      "header-five",
-      "header-six",
-    ];
-    if (rawJson.type && !headerTypes.includes(rawJson.type)) {
-      console.error(`type ${rawJson.type} not supported`);
-      return;
-    }
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     const block = this.buildHeaderBlock(rawJson);
-    this.getBlockComponent()?.reset();
+    if (resetBlock) {
+      this.getBlockComponent()?.reset();
+    }
     return block;
   }
 
-  public buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined {
+  public buildHeaderBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

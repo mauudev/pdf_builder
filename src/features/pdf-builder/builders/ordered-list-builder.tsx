@@ -1,39 +1,39 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import {
-  IUnorderedListBuilder,
-  IUnorderedListBlock,
-  RawJSON,
-} from "../contracts";
+import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
-import UnorderedListBlock from "../blocks/unordered-list";
+import OrderedListBlock from "../blocks/ordered-list";
 
 /**
- * Builder de componentes de tipo 'unordered-list-item', itera los inlineStyleRanges
+ * Builder de componentes de tipo 'ordered-list-item', itera los inlineStyleRanges
  * del rawJson si existe y genera un Text para cada texto cortado segun los offsets.
  * Retorna un componente Text que wrappea otros componentes Text estilizados
  * para crear una sola linea de texto.
  */
-class UnorderedListBuilder implements IUnorderedListBuilder {
-  private blockComponent: IUnorderedListBlock;
+class OrderedListBuilder implements IOrderedListBuilder {
+  private blockComponent: IOrderedListBlock;
 
   constructor() {
-    this.blockComponent = new UnorderedListBlock();
+    this.blockComponent = new OrderedListBlock();
   }
 
-  public getBlockComponent(): IUnorderedListBlock {
+  resetIndex(): void {
+    this.blockComponent?.resetIndex();
+  }
+
+  getBlockComponent(): IOrderedListBlock {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
-    const block = this.buildUnorderedListBlock(rawJson);
+  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+    const block = this.buildOrderedListBlock(rawJson);
     if (resetBlock) {
       this.getBlockComponent()?.reset();
     }
     return block;
   }
 
-  public buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
+  buildOrderedListBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];
@@ -47,4 +47,4 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
   }
 }
 
-export default UnorderedListBuilder;
+export default OrderedListBuilder;

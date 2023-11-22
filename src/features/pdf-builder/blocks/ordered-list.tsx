@@ -1,21 +1,27 @@
 import React, { ReactNode, ReactElement } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON } from "../../contracts";
-import { composeStyledTexts } from "../../utils";
+import { IOrderedListBlock, RawJSON } from "../contracts";
+import { composeStyledTexts } from "../utils";
 // import { unoListStyles } from "./unodered-list.styles";
 
 /**
  * Clase Block para los componentes de tipo 'unordered-list-item'.
  * Recibe un objeto de estilos y genera los componentes Text,
  */
-class UnorderedListItemBlock implements IBlock {
+class OrderedListBlock implements IOrderedListBlock {
   private listBlocks: Array<ReactNode>;
+  public index: number;
 
   constructor() {
     this.listBlocks = [];
+    this.index = 0;
   }
-  public reset(): void {
+
+  resetIndex(): void {
+    this.index = 0;
+  }
+  reset(): void {
     this.listBlocks = [];
   }
 
@@ -35,14 +41,18 @@ class UnorderedListItemBlock implements IBlock {
     return mainBlock;
   }
 
-  public buildBlocks(rawJson: RawJSON): void {
-    const { text, inlineStyleRanges } = rawJson;
+  buildBlocks(rawJson: RawJSON): void {
+    const { type, text, inlineStyleRanges } = rawJson;
+    if (type !== "ordered-list-item") {
+      console.error(`List type not supported: ${type}`);
+      return;
+    }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-
+    this.index += 1;
     for (const styledText of styledTexts) {
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
-          • &nbsp;<Text>{styledText.text}</Text>
+          {this.index}. &nbsp;<Text>{styledText.text}</Text>
         </Text>
       );
       this.listBlocks.push(block);
@@ -50,4 +60,4 @@ class UnorderedListItemBlock implements IBlock {
   }
 }
 
-export default UnorderedListItemBlock;
+export default OrderedListBlock;

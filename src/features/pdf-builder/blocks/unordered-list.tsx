@@ -1,26 +1,26 @@
 import React, { ReactNode, ReactElement } from "react";
-
-import { Text } from "@react-pdf/renderer";
-import { IUnstyledBlock, RawJSON } from "../contracts";
-import { composeStyledTexts } from "../utils";
 import { v4 as uuidv4 } from "uuid";
+import { Text } from "@react-pdf/renderer";
+import { IUnorderedListBlock, RawJSON } from "../contracts";
+import { composeStyledTexts } from "../utils";
+// import { unoListStyles } from "./unodered-list.styles";
 
 /**
- * Clase Block para los componentes de tipo Unstyled.
- * Recibe un objeto de estilos y genera un componente Text,
+ * Clase Block para los componentes de tipo 'unordered-list-item'.
+ * Recibe un objeto de estilos y genera los componentes Text,
  */
-class UnstyledBlock implements IUnstyledBlock {
-  private unstyledBlocks: Array<ReactNode>;
+class UnorderedListBlock implements IUnorderedListBlock {
+  private listBlocks: Array<ReactNode>;
 
   constructor() {
-    this.unstyledBlocks = [];
+    this.listBlocks = [];
   }
   public reset(): void {
-    this.unstyledBlocks = [];
+    this.listBlocks = [];
   }
 
   getBlocks(): Array<ReactNode> {
-    return this.unstyledBlocks;
+    return this.listBlocks;
   }
 
   getComponent(rawJson: RawJSON): ReactElement {
@@ -37,8 +37,8 @@ class UnstyledBlock implements IUnstyledBlock {
 
   public buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
-    if (type !== "unstyled") {
-      console.error(`Block type not supported: ${type}`);
+    if (type !== "unordered-list-item") {
+      console.error(`List type not supported: ${type}`);
       return;
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
@@ -46,12 +46,12 @@ class UnstyledBlock implements IUnstyledBlock {
     for (const styledText of styledTexts) {
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
-          {styledText.text}
+          • &nbsp;<Text>{styledText.text}</Text>
         </Text>
       );
-      this.unstyledBlocks.push(block);
+      this.listBlocks.push(block);
     }
   }
 }
 
-export default UnstyledBlock;
+export default UnorderedListBlock;
