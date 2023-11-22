@@ -1,13 +1,13 @@
-import React, { ReactElement } from "react";
-import { View } from "@react-pdf/renderer";
+import React, { ReactElement } from 'react'
+import { View } from '@react-pdf/renderer'
 import {
   IUnorderedListBuilder,
   IUnorderedListBlock,
   RawJSON,
-} from "../contracts";
-import { parseStyle } from "../utils";
-import UnorderedListBlock from "../blocks/unordered-list";
-import { UnorderedListBuilderException } from "../exceptions";
+} from '../contracts'
+import { parseStyle } from '../utils'
+import UnorderedListBlock from '../blocks/unordered-list'
+import { UnorderedListBuilderException } from '../exceptions'
 
 /**
  * Builder de componentes de tipo 'unordered-list-item', itera los inlineStyleRanges
@@ -16,41 +16,41 @@ import { UnorderedListBuilderException } from "../exceptions";
  * para crear una sola linea de texto.
  */
 class UnorderedListBuilder implements IUnorderedListBuilder {
-  private blockComponent: IUnorderedListBlock;
+  private blockComponent: IUnorderedListBlock
 
   constructor() {
-    this.blockComponent = new UnorderedListBlock();
+    this.blockComponent = new UnorderedListBlock()
   }
 
   getBlockComponent(): IUnorderedListBlock {
-    return this.blockComponent;
+    return this.blockComponent
   }
 
   getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new UnorderedListBuilderException(
-        "Invalid rawJson format or missing key"
-      );
+        'Invalid rawJson format or missing key'
+      )
     }
-    const block = this.buildUnorderedListBlock(rawJson);
+    const block = this.buildUnorderedListBlock(rawJson)
     if (resetBlock) {
-      this.getBlockComponent()?.reset();
+      this.getBlockComponent()?.reset()
     }
-    return block;
+    return block
   }
 
   buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
-    let blockStyle = {};
+    let blockStyle = {}
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
-      const [style, value] = Object.entries(rawJson.data)[0];
-      blockStyle = parseStyle(style, value);
+      const [style, value] = Object.entries(rawJson.data)[0]
+      blockStyle = parseStyle(style, value)
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
         {this.blockComponent?.getComponent(rawJson)}
       </View>
-    );
+    )
   }
 }
 
-export default UnorderedListBuilder;
+export default UnorderedListBuilder

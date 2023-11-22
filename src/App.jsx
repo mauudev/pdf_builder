@@ -1,7 +1,7 @@
-import React from "react";
-import WYSIWYGEditor from "./features/text-editor/editor";
+import React from 'react'
+import WYSIWYGEditor from './features/text-editor/editor'
 
-import "./App.css";
+import './App.css'
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <div className="editor-container">{<WYSIWYGEditor />}</div>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

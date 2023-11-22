@@ -117,7 +117,7 @@ body {
 }
 
 .modal-button::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 2px;
   background: #272822;
@@ -134,7 +134,7 @@ body {
 }
 
 .modal-button i::before {
-  content: "";
+  content: '';
   position: absolute;
   width: 10px;
   height: 2px;
@@ -152,7 +152,7 @@ body {
 }
 
 .modal-button i::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 10px;
   height: 2px;

@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { EditorState, convertToRaw } from "draft-js";
-import draftToHtml from "draftjs-to-html";
-import DOMPurify from "dompurify";
-import { Editor } from "react-draft-wysiwyg";
-import { styles } from "./editor.styles";
-import PreviewModal from "../ui/modal/preview-modal";
-import { capitalizeFirstLetter } from "../../utils/helpers";
-import PDFBuilder from "../pdf-builder/pdf-builder";
+import React, { useState, useEffect, useReducer } from 'react'
+import { EditorState, convertToRaw } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
+import DOMPurify from 'dompurify'
+import { Editor } from 'react-draft-wysiwyg'
+import { styles } from './editor.styles'
+import PreviewModal from '../ui/modal/preview-modal'
+import { capitalizeFirstLetter } from '../../utils/helpers'
+import PDFBuilder from '../pdf-builder/pdf-builder'
 
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 const initialState = {
-  pageSize: "LETTER",
+  pageSize: 'LETTER',
   fontSize: 14.0,
   lineHeight: 5.0,
   margin: {
@@ -20,65 +20,65 @@ const initialState = {
     marginRight: 20.0,
     marginBottom: 20.0,
   },
-};
+}
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "CHANGE_PAGE_SIZE":
-      return { ...state, pageSize: action.payload };
-    case "CHANGE_LINE_HEIGHT":
-      return { ...state, lineHeight: parseFloat(action.payload) };
-    case "CHANGE_MARGIN":
+    case 'CHANGE_PAGE_SIZE':
+      return { ...state, pageSize: action.payload }
+    case 'CHANGE_LINE_HEIGHT':
+      return { ...state, lineHeight: parseFloat(action.payload) }
+    case 'CHANGE_MARGIN':
       return {
         ...state,
         margin: {
           ...state.margin,
           [action.payload.margin]: parseFloat(action.payload.value),
         },
-      };
+      }
     default:
-      return state;
+      return state
   }
-};
+}
 const WYSIWYGEditor = () => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [convertedContent, setConvertedContent] = useState(null);
-  const [rawContent, setRawContent] = useState({});
-  const [pageStyles, dispatch] = useReducer(reducer, initialState);
-  const pdfBuilder = new PDFBuilder(rawContent.blocks, pageStyles);
+  const [editorState, setEditorState] = useState(EditorState.createEmpty())
+  const [convertedContent, setConvertedContent] = useState(null)
+  const [rawContent, setRawContent] = useState({})
+  const [pageStyles, dispatch] = useReducer(reducer, initialState)
+  const pdfBuilder = new PDFBuilder(rawContent.blocks, pageStyles)
 
   useEffect(() => {
-    const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-    setConvertedContent(html);
-    setRawContent(convertToRaw(editorState.getCurrentContent()));
+    const html = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+    setConvertedContent(html)
+    setRawContent(convertToRaw(editorState.getCurrentContent()))
     console.log(
       `Blocks: ${JSON.stringify(convertToRaw(editorState.getCurrentContent()))}`
-    );
-  }, [editorState]);
+    )
+  }, [editorState])
 
   const onEditorStateChange = (editorState) => {
-    setEditorState(editorState);
-  };
+    setEditorState(editorState)
+  }
 
   const handleChangePageSize = (size) => {
-    dispatch({ type: "CHANGE_PAGE_SIZE", payload: size });
-  };
+    dispatch({ type: 'CHANGE_PAGE_SIZE', payload: size })
+  }
 
   const handleChangeLineHeight = (spacing) => {
-    dispatch({ type: "CHANGE_LINE_HEIGHT", payload: spacing });
-  };
+    dispatch({ type: 'CHANGE_LINE_HEIGHT', payload: spacing })
+  }
 
   const handleChangeMargin = (margin, value) => {
-    dispatch({ type: "CHANGE_MARGIN", payload: { margin, value } });
-  };
+    dispatch({ type: 'CHANGE_MARGIN', payload: { margin, value } })
+  }
 
   const createMarkup = (html) => ({
     __html: DOMPurify.sanitize(html),
-  });
+  })
 
   const buildPdfPreview = () => {
-    return pdfBuilder.PDFPreview(pageStyles, styles.modalPreview);
-  };
+    return pdfBuilder.PDFPreview(pageStyles, styles.modalPreview)
+  }
 
   return (
     <div style={styles.editorLayout}>
@@ -91,14 +91,14 @@ const WYSIWYGEditor = () => {
           onEditorStateChange={onEditorStateChange}
           toolbar={{
             options: [
-              "inline",
-              "blockType",
-              "fontSize",
-              "list",
-              "textAlign",
-              "history",
-              "remove",
-              "colorPicker",
+              'inline',
+              'blockType',
+              'fontSize',
+              'list',
+              'textAlign',
+              'history',
+              'remove',
+              'colorPicker',
             ],
           }}
         />
@@ -114,7 +114,7 @@ const WYSIWYGEditor = () => {
               <option value="A4">Oficio</option>
             </select>
           </div>
-          {["marginTop", "marginLeft", "marginRight", "marginBottom"].map(
+          {['marginTop', 'marginLeft', 'marginRight', 'marginBottom'].map(
             (marginKey) => (
               <div key={`_${marginKey}`} style={styles.gridItem}>
                 <label htmlFor={`page-margin_${marginKey}`}>
@@ -149,7 +149,7 @@ const WYSIWYGEditor = () => {
       <div style={styles.livePreview}>
         <div
           style={
-            pageStyles.pageSize === "LETTER"
+            pageStyles.pageSize === 'LETTER'
               ? styles.cartaPreview
               : styles.oficioPreview
           }
@@ -157,19 +157,19 @@ const WYSIWYGEditor = () => {
           <div
             style={{
               ...styles.content,
-              "--font-size": `${pageStyles.fontSize}px`,
-              "--line-spacing": `${pageStyles.lineHeight}mm`,
-              "--margin-left": `${pageStyles.margin.marginLeft}mm`,
-              "--margin-right": `${pageStyles.margin.marginRight}mm`,
-              "--margin-top": `${pageStyles.margin.marginTop}mm`,
-              "--margin-bottom": `${pageStyles.margin.marginBottom}mm`,
+              '--font-size': `${pageStyles.fontSize}px`,
+              '--line-spacing': `${pageStyles.lineHeight}mm`,
+              '--margin-left': `${pageStyles.margin.marginLeft}mm`,
+              '--margin-right': `${pageStyles.margin.marginRight}mm`,
+              '--margin-top': `${pageStyles.margin.marginTop}mm`,
+              '--margin-bottom': `${pageStyles.margin.marginBottom}mm`,
             }}
             dangerouslySetInnerHTML={createMarkup(convertedContent)}
           ></div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default WYSIWYGEditor;
+export default WYSIWYGEditor
