@@ -1,6 +1,10 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IBuilder, IBlock, RawJSON } from "../contracts";
+import {
+  IUnorderedListBuilder,
+  IUnorderedListBlock,
+  RawJSON,
+} from "../contracts";
 import { parseStyle } from "../utils";
 import UnorderedListBlock from "../blocks/unordered-list";
 
@@ -10,28 +14,26 @@ import UnorderedListBlock from "../blocks/unordered-list";
  * Retorna un componente Text que wrappea otros componentes Text estilizados
  * para crear una sola linea de texto.
  */
-class UnorderedListBuilder implements IBuilder {
-  private blockComponent: IBlock | undefined;
+class UnorderedListBuilder implements IUnorderedListBuilder {
+  private blockComponent: IUnorderedListBlock;
 
   constructor() {
     this.blockComponent = new UnorderedListBlock();
   }
 
-  public getBlockComponent(): IBlock | undefined {
+  public getBlockComponent(): IUnorderedListBlock {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON): ReactElement | undefined {
-    if (rawJson.type !== "unordered-list-item") {
-      console.error(`type ${rawJson.type} not supported`);
-      return;
-    }
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     const block = this.buildUnorderedListBlock(rawJson);
-    this.getBlockComponent()?.reset();
+    if (resetBlock) {
+      this.getBlockComponent()?.reset();
+    }
     return block;
   }
 
-  public buildUnorderedListBlock(rawJson: RawJSON): ReactElement | undefined {
+  public buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];
