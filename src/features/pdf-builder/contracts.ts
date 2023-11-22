@@ -1,5 +1,4 @@
 import { ReactNode, ReactElement } from "react";
-import { Style } from "@react-pdf/types";
 
 // #################################################
 // # Types para los estilos de los bloques

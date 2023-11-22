@@ -1,30 +1,12 @@
 import React from "react";
 import { Document, Page, PDFViewer } from "@react-pdf/renderer";
 import { Style } from "@react-pdf/types";
-import {
-  IBuilder,
-  IHeaderBuilder,
-  IUnstyledBuilder,
-  IUnorderedListBuilder,
-  IOrderedListBuilder,
-  RawJSON,
-  PageStyles,
-} from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
 import UnorderedListBuilder from "./builders/unordered-list-builder";
 import OrderedListBuilder from "./builders/ordered-list-builder";
-import {
-  BaseException,
-  HeaderBlockException,
-  HeaderBuilderException,
-  UnstyledBlockException,
-  UnstyledBuilderException,
-  UnorderedListBlockException,
-  UnorderedListBuilderException,
-  OrderedListBlockException,
-  OrderedListBuilderException,
-} from "./exceptions";
+import * as contracts from "./contracts";
+import * as exceptions from "./exceptions";
 import Logger from "./logger";
 
 /**
@@ -38,15 +20,15 @@ import Logger from "./logger";
  * cada block.
  */
 class PDFBuilder {
-  public componentBuilder: IBuilder | undefined;
+  public componentBuilder: contracts.IBuilder | undefined;
   private contentBlocks: Array<React.ReactElement>;
-  private editorBlocks: Array<RawJSON>;
-  private headerBuilder: IHeaderBuilder;
-  private unstyledBuilder: IUnstyledBuilder;
-  private unorderedListBuilder: IUnorderedListBuilder;
-  private orderedListBuilder: IOrderedListBuilder;
+  private editorBlocks: Array<contracts.RawJSON>;
+  private headerBuilder: contracts.IHeaderBuilder;
+  private unstyledBuilder: contracts.IUnstyledBuilder;
+  private unorderedListBuilder: contracts.IUnorderedListBuilder;
+  private orderedListBuilder: contracts.IOrderedListBuilder;
 
-  constructor(editorBlocks: Array<RawJSON>) {
+  constructor(editorBlocks: Array<contracts.RawJSON>) {
     this.headerBuilder = new HeaderBlockBuilder();
     this.unstyledBuilder = new UnstyledBlockBuilder();
     this.unorderedListBuilder = new UnorderedListBuilder();
@@ -55,12 +37,12 @@ class PDFBuilder {
     this.contentBlocks = [];
   }
 
-  public setBuilder(builder: IBuilder): void {
+  public setBuilder(builder: contracts.IBuilder): void {
     this.componentBuilder = builder;
   }
 
   public PDFPreview(
-    styles: PageStyles,
+    styles: contracts.PageStyles,
     previewStyles: Style
   ): React.ReactElement | undefined {
     return (
@@ -70,7 +52,9 @@ class PDFBuilder {
     );
   }
 
-  public buildPDFContent(styles: PageStyles): React.ReactElement | undefined {
+  public buildPDFContent(
+    styles: contracts.PageStyles
+  ): React.ReactElement | undefined {
     try {
       this.buildPDFBlocks();
       const { pageSize, fontSize, lineHeight, margin } = styles;
@@ -89,29 +73,11 @@ class PDFBuilder {
       );
     } catch (error) {
       // TODO: find a better way to handle errors,
-      // maybe by using a chain of responsibility pattern
-      if (error instanceof HeaderBlockException) {
+      // maybe by using a chain of responsibility pattern for all exceptions
+      if (error instanceof exceptions.BlockException) {
         Logger.error(`${error.name}: ${error.message}`);
       }
-      if (error instanceof HeaderBuilderException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof UnstyledBlockException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof UnstyledBuilderException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof UnorderedListBlockException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof UnorderedListBuilderException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof OrderedListBlockException) {
-        Logger.error(`${error.name}: ${error.message}`);
-      }
-      if (error instanceof OrderedListBuilderException) {
+      if (error instanceof exceptions.BuilderException) {
         Logger.error(`${error.name}: ${error.message}`);
       }
     } finally {
