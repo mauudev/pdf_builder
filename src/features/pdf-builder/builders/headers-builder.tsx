@@ -1,13 +1,13 @@
 import React, { ReactElement } from "react";
 import { View } from "@react-pdf/renderer";
-import { IBuilder, IBlock, RawJSON } from "../contracts";
+import { IHeaderBuilder, IBlock, RawJSON } from "../contracts";
 import { parseStyle } from "../utils";
 import HeaderBlock from "../blocks/headers/headers";
 
 /**
  * Builder de componentes de tipo 'header'
  */
-class HeaderBlockBuilder implements IBuilder {
+class HeaderBlockBuilder implements IHeaderBuilder {
   private blockComponent: IBlock | undefined;
 
   constructor() {
@@ -18,7 +18,10 @@ class HeaderBlockBuilder implements IBuilder {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON): ReactElement | undefined {
+  public getBuiltBlock(
+    rawJson: RawJSON,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     const headerTypes = [
       "header-one",
       "header-two",
@@ -32,7 +35,9 @@ class HeaderBlockBuilder implements IBuilder {
       return;
     }
     const block = this.buildHeaderBlock(rawJson);
-    this.getBlockComponent()?.reset();
+    if (resetBlock) {
+      this.getBlockComponent()?.reset();
+    }
     return block;
   }
 

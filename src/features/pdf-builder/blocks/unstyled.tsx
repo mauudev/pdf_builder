@@ -1,7 +1,7 @@
 import React, { ReactNode, ReactElement } from "react";
 
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON } from "../contracts";
+import { IUnstyledBlock, RawJSON } from "../contracts";
 import { composeStyledTexts } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
  * Clase Block para los componentes de tipo Unstyled.
  * Recibe un objeto de estilos y genera un componente Text,
  */
-class UnstyledBlock implements IBlock {
+class UnstyledBlock implements IUnstyledBlock {
   private unstyledBlocks: Array<ReactNode>;
 
   constructor() {
