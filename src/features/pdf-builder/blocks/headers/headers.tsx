@@ -5,6 +5,8 @@ import { Text } from "@react-pdf/renderer";
 import { IHeaderBlock, RawJSON } from "../../contracts";
 import { headerStyles } from "./header.styles";
 import { composeStyledTexts } from "../../utils";
+import { HeaderBlockException } from "../../exceptions";
+import Logger from "../../logger";
 
 /**
  * Clase Block para los componentes de tipo Header (h1, h2, h3 ...).
@@ -53,13 +55,20 @@ class HeaderBlock implements IHeaderBlock {
 
   buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
+
+    if (!type || text === undefined || !Array.isArray(inlineStyleRanges)) {
+      throw new HeaderBlockException("Invalid rawJson format");
+    }
     if (!this.headerTypes.includes(type)) {
-      console.error(`Header type not supported: ${type}`);
-      return;
+      throw new HeaderBlockException(`Invalid header type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
+    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
+      if (!styledText || !styledText.text || !styledText.styles) {
+        throw new HeaderBlockException("Invalid styledText format");
+      }
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
           {styledText.text}

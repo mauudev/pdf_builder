@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
 import { IUnorderedListBlock, RawJSON } from "../contracts";
 import { composeStyledTexts } from "../utils";
-// import { unoListStyles } from "./unodered-list.styles";
+import { UnorderedListBlockException } from "../exceptions";
+import Logger from "../logger";
 
 /**
  * Clase Block para los componentes de tipo 'unordered-list-item'.
@@ -15,7 +16,7 @@ class UnorderedListBlock implements IUnorderedListBlock {
   constructor() {
     this.listBlocks = [];
   }
-  public reset(): void {
+  reset(): void {
     this.listBlocks = [];
   }
 
@@ -35,15 +36,25 @@ class UnorderedListBlock implements IUnorderedListBlock {
     return mainBlock;
   }
 
-  public buildBlocks(rawJson: RawJSON): void {
+  buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
+    if (!type || text === undefined || !Array.isArray(inlineStyleRanges)) {
+      throw new UnorderedListBlockException("Invalid rawJson format");
+    }
     if (type !== "unordered-list-item") {
-      console.error(`List type not supported: ${type}`);
-      return;
+      throw new UnorderedListBlockException(`Invalid type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
+    Logger.log(
+      `Building '${type}' blocks with styled texts: ${JSON.stringify(
+        styledTexts
+      )}`
+    );
 
     for (const styledText of styledTexts) {
+      if (!styledText || !styledText.text || !styledText.styles) {
+        throw new UnorderedListBlockException("Invalid styledText format");
+      }
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
           • &nbsp;<Text>{styledText.text}</Text>

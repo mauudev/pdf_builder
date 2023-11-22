@@ -1,3 +1,4 @@
+import { Style } from "@react-pdf/types";
 import { InlineStyleRange } from "./contracts";
 
 /** ##########################################################################
@@ -70,13 +71,12 @@ const buildStyledTextBlocks = (
  * Casos especiales como 'fontsize' y 'color-rgb' deben parsearse primero
  * para aplicarlos correctamente.
  * @param styledTexts La lista de objetos con el texto y sus estilos
- * @returns { text: string; styles: Record<string, string | number> }[] El array de objetos con el texto y sus estilos
+ * @returns { text: string; styles: Style }[] El array de objetos con el texto y sus estilos
  */
 const applyStyle = (
   styledTexts: { text: string; styles: string[] }[]
-): { text: string; styles: Record<string, string | number | undefined> }[] => {
-  const result: { text: string; styles: Record<string, string | number> }[] =
-    [];
+): { text: string; styles: Style }[] => {
+  const result: { text: string; styles: Style }[] = [];
   for (const currentItem of styledTexts) {
     let styles = {};
     for (let style of currentItem.styles) {
@@ -98,8 +98,8 @@ const applyStyle = (
 // ##########################################################################
 export const parseStyle = (
   style: string,
-  value?: string | number | boolean | null | undefined
-) => {
+  value?: string | number | boolean | undefined
+): Style => {
   let styles = {};
   style = style.toLowerCase();
   if (style.startsWith("fontsize")) {
@@ -132,7 +132,7 @@ export const equalArrays = (arrayA: any[], arrayB: any[]): boolean =>
  * Dado el texto original del RawJSON, segmenta los sub-textos por estilos.
  * @param text El texto original
  * @param inlineStyleRanges Los rangos de estilos para cada segmento de texto
- * @returns { text: string; styles: Record<string, string | number>; }[]
+ * @returns { text: string; styles: Style; }[]
  */
 export const composeStyledTexts = (
   text: string,

@@ -1,9 +1,10 @@
 import React, { ReactNode, ReactElement } from "react";
-
 import { Text } from "@react-pdf/renderer";
 import { IUnstyledBlock, RawJSON } from "../contracts";
 import { composeStyledTexts } from "../utils";
 import { v4 as uuidv4 } from "uuid";
+import { UnstyledBlockException } from "../exceptions";
+import Logger from "../logger";
 
 /**
  * Clase Block para los componentes de tipo Unstyled.
@@ -15,7 +16,7 @@ class UnstyledBlock implements IUnstyledBlock {
   constructor() {
     this.unstyledBlocks = [];
   }
-  public reset(): void {
+  reset(): void {
     this.unstyledBlocks = [];
   }
 
@@ -35,15 +36,25 @@ class UnstyledBlock implements IUnstyledBlock {
     return mainBlock;
   }
 
-  public buildBlocks(rawJson: RawJSON): void {
+  buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
+    if (!type || text === undefined || !Array.isArray(inlineStyleRanges)) {
+      throw new UnstyledBlockException("Invalid rawJson format");
+    }
     if (type !== "unstyled") {
-      console.error(`Block type not supported: ${type}`);
-      return;
+      throw new UnstyledBlockException(`Invalid type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
+    Logger.log(
+      `Building '${type}' blocks with styled texts: ${JSON.stringify(
+        styledTexts
+      )}`
+    );
 
     for (const styledText of styledTexts) {
+      if (!styledText || !styledText.text || !styledText.styles) {
+        throw new UnstyledBlockException("Invalid styledText format");
+      }
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
           {styledText.text}
