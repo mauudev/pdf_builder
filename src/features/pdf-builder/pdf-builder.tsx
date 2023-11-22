@@ -1,10 +1,19 @@
 import React from "react";
 import { Document, Page, PDFViewer } from "@react-pdf/renderer";
 import { Style } from "@react-pdf/types";
-import { IBuilder, RawJSON, PageStyles } from "./contracts";
+import {
+  IBuilder,
+  IHeaderBuilder,
+  IUnstyledBuilder,
+  IUnorderedListBuilder,
+  IOrderedListBuilder,
+  RawJSON,
+  PageStyles,
+} from "./contracts";
 import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
 import UnorderedListBuilder from "./builders/unordered-list-builder";
+import OrderedListBuilder from "./builders/ordered-list-builder";
 
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
@@ -20,16 +29,18 @@ class PDFBuilder {
   public componentBuilder: IBuilder | undefined;
   private contentBlocks: Array<React.ReactElement>;
   private editorBlocks: Array<RawJSON>;
-  private headerBuilder: IBuilder;
-  private unstyledBuilder: IBuilder;
-  private unorderedListBuilder: IBuilder;
+  private headerBuilder: IHeaderBuilder;
+  private unstyledBuilder: IUnstyledBuilder;
+  private unorderedListBuilder: IUnorderedListBuilder;
+  private orderedListBuilder: IOrderedListBuilder;
 
   constructor(editorBlocks: Array<RawJSON>) {
-    this.editorBlocks = editorBlocks || [];
-    this.contentBlocks = [];
     this.headerBuilder = new HeaderBlockBuilder();
     this.unstyledBuilder = new UnstyledBlockBuilder();
     this.unorderedListBuilder = new UnorderedListBuilder();
+    this.orderedListBuilder = new OrderedListBuilder();
+    this.editorBlocks = editorBlocks || [];
+    this.contentBlocks = [];
   }
 
   public setBuilder(builder: IBuilder): void {
@@ -76,10 +87,17 @@ class PDFBuilder {
       if (rawJson.type === "unordered-list-item") {
         this.setBuilder(this.unorderedListBuilder);
       }
-      // console.error(
-      //   `type ${rawJson.type} not supported, setting unstyled block by default.`
-      // );
-      this.contentBlocks.push(this.componentBuilder?.getBuiltBlock(rawJson)!);
+      if (rawJson.type === "ordered-list-item") {
+        this.setBuilder(this.orderedListBuilder);
+      }
+
+      // TODO: find a better way to handle the index order
+      if (rawJson.type !== "ordered-list-item") {
+        this.orderedListBuilder.resetIndex();
+      }
+      this.contentBlocks.push(
+        this.componentBuilder?.getBuiltBlock(rawJson, true)!
+      );
     }
   }
 }
