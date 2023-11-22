@@ -62,7 +62,7 @@ export interface IBlock {
 
 export interface IUnstyledBlock extends IBlock {}
 export interface IHeaderBlock extends IBlock {
-  getHeaderTypes(): Array<string>;
+  getHeaderTypes(): string[];
 }
 export interface IUnorderedListBlock extends IBlock {}
 export interface IOrderedListBlock extends IBlock {
@@ -75,25 +75,22 @@ export interface IOrderedListBlock extends IBlock {
 // #################################################
 export interface IBuilder {
   getBlockComponent(): IBlock | undefined;
-  getBuiltBlock(
-    rawJson: RawJSON,
-    resetBlock?: boolean
-  ): ReactElement | undefined;
+  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement;
 }
 
 export interface IUnstyledBuilder extends IBuilder {
-  buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined;
+  buildUnstyledBlock(rawJson: RawJSON): ReactElement;
 }
 
 export interface IHeaderBuilder extends IBuilder {
-  buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined;
+  buildHeaderBlock(rawJson: RawJSON): ReactElement;
 }
 
 export interface IUnorderedListBuilder extends IBuilder {
-  buildUnorderedListBlock(rawJson: RawJSON): ReactElement | undefined;
+  buildUnorderedListBlock(rawJson: RawJSON): ReactElement;
 }
 
 export interface IOrderedListBuilder extends IBuilder {
   resetIndex(): void;
-  buildOrderedListBlock(rawJson: RawJSON): ReactElement | undefined;
+  buildOrderedListBlock(rawJson: RawJSON): ReactElement;
 }
