@@ -1,28 +1,28 @@
-import { StyleSheet } from '@react-pdf/renderer'
+import { StyleSheet } from "@react-pdf/renderer";
 
 export const headerStyles = StyleSheet.create({
-  'header-one': {
+  "header-one": {
     fontSize: 24,
     fontWeight: 800,
   },
-  'header-two': {
+  "header-two": {
     fontSize: 22,
     fontWeight: 700,
   },
-  'header-three': {
+  "header-three": {
     fontSize: 20,
     fontWeight: 600,
   },
-  'header-four': {
+  "header-four": {
     fontSize: 18,
     fontWeight: 500,
   },
-  'header-five': {
+  "header-five": {
     fontSize: 16,
     fontWeight: 400,
   },
-  'header-six': {
+  "header-six": {
     fontSize: 14,
     fontWeight: 300,
   },
-})
+});

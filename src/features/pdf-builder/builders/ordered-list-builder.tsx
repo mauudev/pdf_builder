@@ -1,9 +1,9 @@
-import React, { ReactElement } from 'react'
-import { View } from '@react-pdf/renderer'
-import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../contracts'
-import { parseStyle } from '../utils'
-import OrderedListBlock from '../blocks/ordered-list'
-import { OrderedListBuilderException } from '../exceptions'
+import React, { ReactElement } from "react";
+import { View } from "@react-pdf/renderer";
+import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from "../contracts";
+import { parseStyle } from "../utils";
+import OrderedListBlock from "../blocks/ordered-list";
+import { OrderedListBuilderException } from "../exceptions";
 
 /**
  * Builder de componentes de tipo 'ordered-list-item', itera los inlineStyleRanges
@@ -12,45 +12,45 @@ import { OrderedListBuilderException } from '../exceptions'
  * para crear una sola linea de texto.
  */
 class OrderedListBuilder implements IOrderedListBuilder {
-  private blockComponent: IOrderedListBlock
+  private blockComponent: IOrderedListBlock;
 
   constructor() {
-    this.blockComponent = new OrderedListBlock()
+    this.blockComponent = new OrderedListBlock();
   }
 
   resetIndex(): void {
-    this.blockComponent?.resetIndex()
+    this.blockComponent?.resetIndex();
   }
 
   getBlockComponent(): IOrderedListBlock {
-    return this.blockComponent
+    return this.blockComponent;
   }
 
   getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new OrderedListBuilderException(
-        'Invalid rawJson format or missing key'
-      )
+        "Invalid rawJson format or missing key",
+      );
     }
-    const block = this.buildOrderedListBlock(rawJson)
+    const block = this.buildOrderedListBlock(rawJson);
     if (resetBlock) {
-      this.getBlockComponent()?.reset()
+      this.getBlockComponent()?.reset();
     }
-    return block
+    return block;
   }
 
   buildOrderedListBlock(rawJson: RawJSON): ReactElement {
-    let blockStyle = {}
+    let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
-      const [style, value] = Object.entries(rawJson.data)[0]
-      blockStyle = parseStyle(style, value)
+      const [style, value] = Object.entries(rawJson.data)[0];
+      blockStyle = parseStyle(style, value);
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
         {this.blockComponent?.getComponent(rawJson)}
       </View>
-    )
+    );
   }
 }
 
-export default OrderedListBuilder
+export default OrderedListBuilder;
