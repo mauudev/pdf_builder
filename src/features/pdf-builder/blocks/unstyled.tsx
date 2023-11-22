@@ -36,7 +36,11 @@ class UnstyledBlock implements IUnstyledBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const { text, inlineStyleRanges } = rawJson;
+    const { type, text, inlineStyleRanges } = rawJson;
+    if (type !== "unstyled") {
+      console.error(`Block type not supported: ${type}`);
+      return;
+    }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
 
     for (const styledText of styledTexts) {
