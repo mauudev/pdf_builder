@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
-import { View } from "@react-pdf/renderer";
-import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from "../contracts";
-import { parseStyle } from "../utils";
-import OrderedListBlock from "../blocks/ordered-list";
-import { OrderedListBuilderException } from "../exceptions";
+import React, { ReactElement } from 'react';
+import { View } from '@react-pdf/renderer';
+import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../contracts';
+import { parseStyle } from '../utils';
+import OrderedListBlock from '../blocks/ordered-list';
+import { OrderedListBuilderException } from '../exceptions';
 
 /**
  * Builder de componentes de tipo 'ordered-list-item', itera los inlineStyleRanges
@@ -28,9 +28,7 @@ class OrderedListBuilder implements IOrderedListBuilder {
 
   public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
-      throw new OrderedListBuilderException(
-        "Invalid rawJson format or missing key"
-      );
+      throw new OrderedListBuilderException('Invalid rawJson format or missing key');
     }
     const block = this.buildOrderedListBlock(rawJson);
     if (resetBlock) {

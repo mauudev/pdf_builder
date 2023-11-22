@@ -1,12 +1,12 @@
-import React, { ReactNode, ReactElement } from "react";
-import { Style } from "@react-pdf/types";
-import { v4 as uuidv4 } from "uuid";
-import { Text } from "@react-pdf/renderer";
-import { IHeaderBlock, RawJSON } from "../../contracts";
-import { headerStyles } from "./header.styles";
-import { composeStyledTexts } from "../../utils";
-import { HeaderBlockException } from "../../exceptions";
-import Logger from "../../logger";
+import React, { ReactNode, ReactElement } from 'react';
+import { Style } from '@react-pdf/types';
+import { v4 as uuidv4 } from 'uuid';
+import { Text } from '@react-pdf/renderer';
+import { IHeaderBlock, RawJSON } from '../../contracts';
+import { headerStyles } from './header.styles';
+import { composeStyledTexts } from '../../utils';
+import { HeaderBlockException } from '../../exceptions';
+import Logger from '../../logger';
 
 /**
  * Clase Block para los componentes de tipo Header (h1, h2, h3 ...).
@@ -20,14 +20,7 @@ class HeaderBlock implements IHeaderBlock {
   constructor() {
     this.styleMap = headerStyles;
     this.headerBlocks = [];
-    this.headerTypes = [
-      "header-one",
-      "header-two",
-      "header-three",
-      "header-four",
-      "header-five",
-      "header-six",
-    ];
+    this.headerTypes = ['header-one', 'header-two', 'header-three', 'header-four', 'header-five', 'header-six'];
   }
   public reset(): void {
     this.headerBlocks = [];
@@ -57,21 +50,17 @@ class HeaderBlock implements IHeaderBlock {
     const { type, text, inlineStyleRanges } = rawJson;
 
     if (!type || !text || !Array.isArray(inlineStyleRanges)) {
-      throw new HeaderBlockException("Invalid rawJson format");
+      throw new HeaderBlockException('Invalid rawJson format');
     }
     if (!this.headerTypes.includes(type)) {
       throw new HeaderBlockException(`Invalid header type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-    Logger.log(
-      `Building '${type}' blocks with styled texts: ${JSON.stringify(
-        styledTexts
-      )}`
-    );
+    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.text || !styledText.styles) {
-        throw new HeaderBlockException("Invalid styledText format");
+        throw new HeaderBlockException('Invalid styledText format');
       }
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>

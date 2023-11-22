@@ -1,106 +1,106 @@
 {
-    "blocks": [
+  "blocks": [
+    {
+      "key": "chn46",
+      "text": "HEADING",
+      "type": "header-one",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {
+        "text-align": "center"
+      }
+    },
+    {
+      "key": "aunb3",
+      "text": "ITEM1",
+      "type": "unordered-list-item",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "i7mg",
+      "text": "ITEM2",
+      "type": "unordered-list-item",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "1q0lu",
+      "text": "BLUEITEM3",
+      "type": "unordered-list-item",
+      "depth": 0,
+      "inlineStyleRanges": [
         {
-            "key": "chn46",
-            "text": "HEADING",
-            "type": "header-one",
-            "depth": 0,
-            "inlineStyleRanges": [],
-            "entityRanges": [],
-            "data": {
-                "text-align": "center"
-            }
-        },
-        {
-            "key": "aunb3",
-            "text": "ITEM1",
-            "type": "unordered-list-item",
-            "depth": 0,
-            "inlineStyleRanges": [],
-            "entityRanges": [],
-            "data": {}
-        },
-        {
-            "key": "i7mg",
-            "text": "ITEM2",
-            "type": "unordered-list-item",
-            "depth": 0,
-            "inlineStyleRanges": [],
-            "entityRanges": [],
-            "data": {}
-        },
-        {
-            "key": "1q0lu",
-            "text": "BLUEITEM3",
-            "type": "unordered-list-item",
-            "depth": 0,
-            "inlineStyleRanges": [
-                {
-                    "offset": 0,
-                    "length": 9,
-                    "style": "color-rgb(84,172,210)"
-                }
-            ],
-            "entityRanges": [],
-            "data": {}
-        },
-        {
-            "key": "srcg",
-            "text": "BLUE PARAGRAPH1",
-            "type": "unstyled",
-            "depth": 0,
-            "inlineStyleRanges": [
-                {
-                    "offset": 0,
-                    "length": 15,
-                    "style": "color-rgb(84,172,210)"
-                }
-            ],
-            "entityRanges": [],
-            "data": {}
-        },
-        {
-            "key": "b3rc9",
-            "text": "ITALIC",
-            "type": "unstyled",
-            "depth": 0,
-            "inlineStyleRanges": [
-                {
-                    "offset": 0,
-                    "length": 6,
-                    "style": "color-rgb(0,0,0)"
-                },
-                {
-                    "offset": 0,
-                    "length": 6,
-                    "style": "ITALIC"
-                }
-            ],
-            "entityRanges": [],
-            "data": {}
-        },
-        {
-            "key": "8nugl",
-            "text": "RIGHT",
-            "type": "unstyled",
-            "depth": 0,
-            "inlineStyleRanges": [
-                {
-                    "offset": 0,
-                    "length": 5,
-                    "style": "color-rgb(0,0,0)"
-                },
-                {
-                    "offset": 0,
-                    "length": 5,
-                    "style": "ITALIC"
-                }
-            ],
-            "entityRanges": [],
-            "data": {
-                "text-align": "right"
-            }
+          "offset": 0,
+          "length": 9,
+          "style": "color-rgb(84,172,210)"
         }
-    ],
-    "entityMap": {}
+      ],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "srcg",
+      "text": "BLUE PARAGRAPH1",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [
+        {
+          "offset": 0,
+          "length": 15,
+          "style": "color-rgb(84,172,210)"
+        }
+      ],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "b3rc9",
+      "text": "ITALIC",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [
+        {
+          "offset": 0,
+          "length": 6,
+          "style": "color-rgb(0,0,0)"
+        },
+        {
+          "offset": 0,
+          "length": 6,
+          "style": "ITALIC"
+        }
+      ],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "8nugl",
+      "text": "RIGHT",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [
+        {
+          "offset": 0,
+          "length": 5,
+          "style": "color-rgb(0,0,0)"
+        },
+        {
+          "offset": 0,
+          "length": 5,
+          "style": "ITALIC"
+        }
+      ],
+      "entityRanges": [],
+      "data": {
+        "text-align": "right"
+      }
+    }
+  ],
+  "entityMap": {}
 }

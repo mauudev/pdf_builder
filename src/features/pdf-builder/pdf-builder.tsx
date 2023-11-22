@@ -1,13 +1,13 @@
-import React from "react";
-import { Document, Page, PDFViewer } from "@react-pdf/renderer";
-import { Style } from "@react-pdf/types";
-import UnstyledBlockBuilder from "./builders/unstyled-builder";
-import HeaderBlockBuilder from "./builders/headers-builder";
-import UnorderedListBuilder from "./builders/unordered-list-builder";
-import OrderedListBuilder from "./builders/ordered-list-builder";
-import * as contracts from "./contracts";
-import * as exceptions from "./exceptions";
-import Logger from "./logger";
+import React from 'react';
+import { Document, Page, PDFViewer } from '@react-pdf/renderer';
+import { Style } from '@react-pdf/types';
+import UnstyledBlockBuilder from './builders/unstyled-builder';
+import HeaderBlockBuilder from './builders/headers-builder';
+import UnorderedListBuilder from './builders/unordered-list-builder';
+import OrderedListBuilder from './builders/ordered-list-builder';
+import * as contracts from './contracts';
+import * as exceptions from './exceptions';
+import Logger from './logger';
 
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
@@ -41,20 +41,11 @@ class PDFBuilder {
     this.componentBuilder = builder;
   }
 
-  public PDFPreview(
-    styles: contracts.PageStyles,
-    previewStyles: Style
-  ): React.ReactElement | undefined {
-    return (
-      <PDFViewer style={previewStyles}>
-        {this.buildPDFContent(styles)}
-      </PDFViewer>
-    );
+  public PDFPreview(styles: contracts.PageStyles, previewStyles: Style): React.ReactElement | undefined {
+    return <PDFViewer style={previewStyles}>{this.buildPDFContent(styles)}</PDFViewer>;
   }
 
-  public buildPDFContent(
-    styles: contracts.PageStyles
-  ): React.ReactElement | undefined {
+  public buildPDFContent(styles: contracts.PageStyles): React.ReactElement | undefined {
     try {
       this.buildPDFBlocks();
       const { pageSize, fontSize, lineHeight, margin } = styles;
@@ -87,26 +78,24 @@ class PDFBuilder {
 
   public buildPDFBlocks() {
     for (const rawJson of this.editorBlocks) {
-      if (rawJson.type === "unstyled") {
+      if (rawJson.type === 'unstyled') {
         this.setBuilder(this.unstyledBuilder);
       }
-      if (rawJson.type.startsWith("header")) {
+      if (rawJson.type.startsWith('header')) {
         this.setBuilder(this.headerBuilder);
       }
-      if (rawJson.type === "unordered-list-item") {
+      if (rawJson.type === 'unordered-list-item') {
         this.setBuilder(this.unorderedListBuilder);
       }
-      if (rawJson.type === "ordered-list-item") {
+      if (rawJson.type === 'ordered-list-item') {
         this.setBuilder(this.orderedListBuilder);
       }
 
       // TODO: find a better way to handle the index order
-      if (rawJson.type !== "ordered-list-item") {
+      if (rawJson.type !== 'ordered-list-item') {
         this.orderedListBuilder.resetIndex();
       }
-      this.contentBlocks.push(
-        this.componentBuilder?.getBuiltBlock(rawJson, true)!
-      );
+      this.contentBlocks.push(this.componentBuilder?.getBuiltBlock(rawJson, true)!);
     }
   }
 }

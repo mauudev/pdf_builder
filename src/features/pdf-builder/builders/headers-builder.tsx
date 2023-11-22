@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
-import { View } from "@react-pdf/renderer";
-import { IHeaderBuilder, IBlock, RawJSON } from "../contracts";
-import { parseStyle } from "../utils";
-import HeaderBlock from "../blocks/headers/headers";
-import { HeaderBuilderException } from "../exceptions";
+import React, { ReactElement } from 'react';
+import { View } from '@react-pdf/renderer';
+import { IHeaderBuilder, IBlock, RawJSON } from '../contracts';
+import { parseStyle } from '../utils';
+import HeaderBlock from '../blocks/headers/headers';
+import { HeaderBuilderException } from '../exceptions';
 
 /**
  * Builder de componentes de tipo 'header'
@@ -21,7 +21,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
 
   public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
-      throw new HeaderBuilderException("Invalid rawJson format or missing key");
+      throw new HeaderBuilderException('Invalid rawJson format or missing key');
     }
     const block = this.buildHeaderBlock(rawJson);
     if (resetBlock) {

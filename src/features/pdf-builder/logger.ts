@@ -1,6 +1,6 @@
 class Logger {
   static log(message: string): void {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       console.log(message);
     }
   }
