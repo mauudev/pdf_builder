@@ -18,22 +18,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(
-    rawJson: RawJSON,
-    resetBlock?: boolean
-  ): ReactElement | undefined {
-    const headerTypes = [
-      "header-one",
-      "header-two",
-      "header-three",
-      "header-four",
-      "header-five",
-      "header-six",
-    ];
-    if (rawJson.type && !headerTypes.includes(rawJson.type)) {
-      console.error(`type ${rawJson.type} not supported`);
-      return;
-    }
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     const block = this.buildHeaderBlock(rawJson);
     if (resetBlock) {
       this.getBlockComponent()?.reset();
@@ -41,7 +26,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     return block;
   }
 
-  public buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined {
+  public buildHeaderBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

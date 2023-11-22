@@ -2,7 +2,7 @@ import React, { ReactNode, ReactElement } from "react";
 import { Style } from "@react-pdf/types";
 import { v4 as uuidv4 } from "uuid";
 import { Text } from "@react-pdf/renderer";
-import { IBlock, RawJSON } from "../../contracts";
+import { IHeaderBlock, RawJSON } from "../../contracts";
 import { headerStyles } from "./header.styles";
 import { composeStyledTexts } from "../../utils";
 
@@ -10,13 +10,22 @@ import { composeStyledTexts } from "../../utils";
  * Clase Block para los componentes de tipo Header (h1, h2, h3 ...).
  * Recibe un objeto de estilos y genera un componente Text,
  */
-class HeaderBlock implements IBlock {
+class HeaderBlock implements IHeaderBlock {
   private headerBlocks: Array<ReactNode>;
   private styleMap: { [key: string]: Style };
+  private headerTypes: string[];
 
   constructor() {
     this.styleMap = headerStyles;
     this.headerBlocks = [];
+    this.headerTypes = [
+      "header-one",
+      "header-two",
+      "header-three",
+      "header-four",
+      "header-five",
+      "header-six",
+    ];
   }
   reset(): void {
     this.headerBlocks = [];
@@ -24,6 +33,10 @@ class HeaderBlock implements IBlock {
 
   getBlocks(): Array<ReactNode> {
     return this.headerBlocks;
+  }
+
+  getHeaderTypes(): string[] {
+    return this.headerTypes;
   }
 
   getComponent(rawJson: RawJSON): ReactElement {
@@ -39,7 +52,11 @@ class HeaderBlock implements IBlock {
   }
 
   buildBlocks(rawJson: RawJSON): void {
-    const { text, inlineStyleRanges } = rawJson;
+    const { type, text, inlineStyleRanges } = rawJson;
+    if (!this.headerTypes.includes(type)) {
+      console.error(`Header type not supported: ${type}`);
+      return;
+    }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
 
     for (const styledText of styledTexts) {
