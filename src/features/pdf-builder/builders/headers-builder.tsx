@@ -15,11 +15,11 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     this.blockComponent = new HeaderBlock();
   }
 
-  getBlockComponent(): IBlock | undefined {
+  public getBlockComponent(): IBlock | undefined {
     return this.blockComponent;
   }
 
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new HeaderBuilderException("Invalid rawJson format or missing key");
     }
@@ -30,7 +30,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     return block;
   }
 
-  buildHeaderBlock(rawJson: RawJSON): ReactElement {
+  public buildHeaderBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

@@ -18,18 +18,18 @@ class OrderedListBuilder implements IOrderedListBuilder {
     this.blockComponent = new OrderedListBlock();
   }
 
-  resetIndex(): void {
+  public resetIndex(): void {
     this.blockComponent?.resetIndex();
   }
 
-  getBlockComponent(): IOrderedListBlock {
+  public getBlockComponent(): IOrderedListBlock {
     return this.blockComponent;
   }
 
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new OrderedListBuilderException(
-        "Invalid rawJson format or missing key",
+        "Invalid rawJson format or missing key"
       );
     }
     const block = this.buildOrderedListBlock(rawJson);
@@ -39,7 +39,7 @@ class OrderedListBuilder implements IOrderedListBuilder {
     return block;
   }
 
-  buildOrderedListBlock(rawJson: RawJSON): ReactElement {
+  public buildOrderedListBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

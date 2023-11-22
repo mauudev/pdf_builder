@@ -22,14 +22,14 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
     this.blockComponent = new UnorderedListBlock();
   }
 
-  getBlockComponent(): IUnorderedListBlock {
+  public getBlockComponent(): IUnorderedListBlock {
     return this.blockComponent;
   }
 
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new UnorderedListBuilderException(
-        "Invalid rawJson format or missing key",
+        "Invalid rawJson format or missing key"
       );
     }
     const block = this.buildUnorderedListBlock(rawJson);
@@ -39,7 +39,7 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
     return block;
   }
 
-  buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
+  public buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

@@ -29,19 +29,19 @@ class HeaderBlock implements IHeaderBlock {
       "header-six",
     ];
   }
-  reset(): void {
+  public reset(): void {
     this.headerBlocks = [];
   }
 
-  getBlocks(): Array<ReactNode> {
+  public getBlocks(): Array<ReactNode> {
     return this.headerBlocks;
   }
 
-  getHeaderTypes(): string[] {
+  public getHeaderTypes(): string[] {
     return this.headerTypes;
   }
 
-  getComponent(rawJson: RawJSON): ReactElement {
+  public getComponent(rawJson: RawJSON): ReactElement {
     this.buildBlocks(rawJson);
     const mainBlock = (
       <Text key={uuidv4()} style={this.styleMap[rawJson.type]}>
@@ -53,7 +53,7 @@ class HeaderBlock implements IHeaderBlock {
     return mainBlock;
   }
 
-  buildBlocks(rawJson: RawJSON): void {
+  public buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
 
     if (!type || !text || !Array.isArray(inlineStyleRanges)) {
@@ -65,8 +65,8 @@ class HeaderBlock implements IHeaderBlock {
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
     Logger.log(
       `Building '${type}' blocks with styled texts: ${JSON.stringify(
-        styledTexts,
-      )}`,
+        styledTexts
+      )}`
     );
 
     for (const styledText of styledTexts) {

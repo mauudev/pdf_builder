@@ -18,14 +18,14 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
     this.blockComponent = new UnstyledBlock();
   }
 
-  getBlockComponent(): IUnstyledBlock {
+  public getBlockComponent(): IUnstyledBlock {
     return this.blockComponent;
   }
 
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
       throw new UnstyledBuilderException(
-        "Invalid rawJson format or missing key",
+        "Invalid rawJson format or missing key"
       );
     }
     const block = this.buildUnstyledBlock(rawJson);
@@ -35,7 +35,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
     return block;
   }
 
-  buildUnstyledBlock(rawJson: RawJSON): ReactElement {
+  public buildUnstyledBlock(rawJson: RawJSON): ReactElement {
     let blockStyle = {};
     if (rawJson && rawJson.data ? Object.keys(rawJson.data).length : 0) {
       const [style, value] = Object.entries(rawJson.data)[0];

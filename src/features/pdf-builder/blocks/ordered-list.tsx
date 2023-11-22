@@ -19,18 +19,18 @@ class OrderedListBlock implements IOrderedListBlock {
     this.index = 0;
   }
 
-  resetIndex(): void {
+  public resetIndex(): void {
     this.index = 0;
   }
-  reset(): void {
+  public reset(): void {
     this.listBlocks = [];
   }
 
-  getBlocks(): Array<ReactNode> {
+  public getBlocks(): Array<ReactNode> {
     return this.listBlocks;
   }
 
-  getComponent(rawJson: RawJSON): ReactElement {
+  public getComponent(rawJson: RawJSON): ReactElement {
     this.buildBlocks(rawJson);
     const mainBlock = (
       <Text key={uuidv4()}>
@@ -42,7 +42,7 @@ class OrderedListBlock implements IOrderedListBlock {
     return mainBlock;
   }
 
-  buildBlocks(rawJson: RawJSON): void {
+  public buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
 
     if (!type || !text || !Array.isArray(inlineStyleRanges)) {
@@ -54,8 +54,8 @@ class OrderedListBlock implements IOrderedListBlock {
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
     Logger.log(
       `Building '${type}' blocks with styled texts: ${JSON.stringify(
-        styledTexts,
-      )}`,
+        styledTexts
+      )}`
     );
 
     this.index += 1;

@@ -17,15 +17,15 @@ class UnstyledBlock implements IUnstyledBlock {
     this.unstyledBlocks = [];
   }
 
-  reset(): void {
+  public reset(): void {
     this.unstyledBlocks = [];
   }
 
-  getBlocks(): Array<ReactNode> {
+  public getBlocks(): Array<ReactNode> {
     return this.unstyledBlocks;
   }
 
-  getComponent(rawJson: RawJSON): ReactElement {
+  public getComponent(rawJson: RawJSON): ReactElement {
     this.buildBlocks(rawJson);
     const mainBlock = (
       <Text key={uuidv4()}>
@@ -37,7 +37,7 @@ class UnstyledBlock implements IUnstyledBlock {
     return mainBlock;
   }
 
-  buildBlocks(rawJson: RawJSON): void {
+  public buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
     if (!type || !text || !Array.isArray(inlineStyleRanges)) {
       throw new UnstyledBlockException("Invalid rawJson format");
@@ -48,8 +48,8 @@ class UnstyledBlock implements IUnstyledBlock {
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
     Logger.log(
       `Building '${type}' blocks with styled texts: ${JSON.stringify(
-        styledTexts,
-      )}`,
+        styledTexts
+      )}`
     );
 
     for (const styledText of styledTexts) {
