@@ -63,7 +63,7 @@ class HeaderBlock implements IHeaderBlock {
       throw new HeaderBlockException(`Invalid header type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-    Logger.log(`Building '${type}' blocks with styled texts: ${styledTexts}`);
+    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.text || !styledText.styles) {
