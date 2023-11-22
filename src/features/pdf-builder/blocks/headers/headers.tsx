@@ -56,14 +56,18 @@ class HeaderBlock implements IHeaderBlock {
   buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
 
-    if (!type || text === undefined || !Array.isArray(inlineStyleRanges)) {
+    if (!type || !text || !Array.isArray(inlineStyleRanges)) {
       throw new HeaderBlockException("Invalid rawJson format");
     }
     if (!this.headerTypes.includes(type)) {
       throw new HeaderBlockException(`Invalid header type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
+    Logger.log(
+      `Building '${type}' blocks with styled texts: ${JSON.stringify(
+        styledTexts
+      )}`
+    );
 
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.text || !styledText.styles) {

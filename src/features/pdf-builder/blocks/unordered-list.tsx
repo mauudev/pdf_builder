@@ -38,7 +38,7 @@ class UnorderedListBlock implements IUnorderedListBlock {
 
   buildBlocks(rawJson: RawJSON): void {
     const { type, text, inlineStyleRanges } = rawJson;
-    if (!type || text === undefined || !Array.isArray(inlineStyleRanges)) {
+    if (!type || !text || !Array.isArray(inlineStyleRanges)) {
       throw new UnorderedListBlockException("Invalid rawJson format");
     }
     if (type !== "unordered-list-item") {
