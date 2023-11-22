@@ -51,7 +51,7 @@ export type TextStyles = {
 };
 
 // #################################################
-// # Interfaces para los bloques y builders
+// # BLOCKS INTERFACES
 // #################################################
 export interface IBlock {
   reset(): void;
@@ -60,7 +60,40 @@ export interface IBlock {
   buildBlocks(rawJson: RawJSON): void;
 }
 
+export interface IUnstyledBlock extends IBlock {}
+export interface IHeaderBlock extends IBlock {
+  getHeaderTypes(): Array<string>;
+}
+export interface IUnorderedListBlock extends IBlock {}
+export interface IOrderedListBlock extends IBlock {
+  index: number;
+  resetIndex(): void;
+}
+
+// #################################################
+// # BUILDERS INTERFACES
+// #################################################
 export interface IBuilder {
   getBlockComponent(): IBlock | undefined;
-  getBuiltBlock(rawJson: RawJSON): ReactElement | undefined;
+  getBuiltBlock(
+    rawJson: RawJSON,
+    resetBlock?: boolean
+  ): ReactElement | undefined;
+}
+
+export interface IUnstyledBuilder extends IBuilder {
+  buildUnstyledBlock(rawJson: RawJSON): ReactElement | undefined;
+}
+
+export interface IHeaderBuilder extends IBuilder {
+  buildHeaderBlock(rawJson: RawJSON): ReactElement | undefined;
+}
+
+export interface IUnorderedListBuilder extends IBuilder {
+  buildUnorderedListBlock(rawJson: RawJSON): ReactElement | undefined;
+}
+
+export interface IOrderedListBuilder extends IBuilder {
+  resetIndex(): void;
+  buildOrderedListBlock(rawJson: RawJSON): ReactElement | undefined;
 }
