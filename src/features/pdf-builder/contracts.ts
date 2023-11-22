@@ -1,4 +1,4 @@
-import { ReactNode, ReactElement } from "react";
+import { ReactNode, ReactElement } from 'react';
 
 // #################################################
 // # Types para los estilos de los bloques

@@ -1,5 +1,5 @@
-import { Style } from "@react-pdf/types";
-import { InlineStyleRange } from "./contracts";
+import { Style } from '@react-pdf/types';
+import { InlineStyleRange } from './contracts';
 
 /** ##########################################################################
  *  ## UTILITIES FUNCTIONS
@@ -16,16 +16,8 @@ import { InlineStyleRange } from "./contracts";
 const overrideStyle = (style: string, stylesArray: string[]): string[] => {
   const styles = new Set<string>(stylesArray);
 
-  if (
-    Array.from(styles).some((existingStyle) =>
-      existingStyle.startsWith(style.split("-")[0])
-    )
-  ) {
-    styles.delete(
-      [...styles].find((existingStyle) =>
-        existingStyle.startsWith(style.split("-")[0])
-      )!
-    );
+  if (Array.from(styles).some((existingStyle) => existingStyle.startsWith(style.split('-')[0]))) {
+    styles.delete([...styles].find((existingStyle) => existingStyle.startsWith(style.split('-')[0]))!);
   }
 
   styles.add(style);
@@ -73,9 +65,7 @@ const buildStyledTextBlocks = (
  * @param styledTexts La lista de objetos con el texto y sus estilos
  * @returns { text: string; styles: Style }[] El array de objetos con el texto y sus estilos
  */
-const applyStyle = (
-  styledTexts: { text: string; styles: string[] }[]
-): { text: string; styles: Style }[] => {
+const applyStyle = (styledTexts: { text: string; styles: string[] }[]): { text: string; styles: Style }[] => {
   const result: { text: string; styles: Style }[] = [];
   for (const currentItem of styledTexts) {
     let styles = {};
@@ -96,30 +86,27 @@ const applyStyle = (
 // ##########################################################################
 // ## EXPORTED FUNCTIONS
 // ##########################################################################
-export const parseStyle = (
-  style: string,
-  value?: string | number | boolean | undefined
-): Style => {
+export const parseStyle = (style: string, value?: string | number | boolean | undefined): Style => {
   let styles = {};
   style = style.toLowerCase();
-  if (style.startsWith("fontsize")) {
-    const fontSizeVal = parseInt(style.split("-")[1]);
+  if (style.startsWith('fontsize')) {
+    const fontSizeVal = parseInt(style.split('-')[1]);
     styles = { fontSize: fontSizeVal };
   }
-  if (style.startsWith("color-rgb")) {
-    const colorVal = style.split("-")[1];
+  if (style.startsWith('color-rgb')) {
+    const colorVal = style.split('-')[1];
     styles = { color: colorVal };
   }
-  if (style === "bold") {
-    styles = { fontWeight: "bold" };
+  if (style === 'bold') {
+    styles = { fontWeight: 'bold' };
   }
-  if (style === "italic") {
-    styles = { fontStyle: "italic" };
+  if (style === 'italic') {
+    styles = { fontStyle: 'italic' };
   }
-  if (style === "underline") {
-    styles = { textDecoration: "underline" };
+  if (style === 'underline') {
+    styles = { textDecoration: 'underline' };
   }
-  if (style === "text-align") {
+  if (style === 'text-align') {
     styles = { textAlign: value };
   }
   return styles;
@@ -134,10 +121,7 @@ export const equalArrays = (arrayA: any[], arrayB: any[]): boolean =>
  * @param inlineStyleRanges Los rangos de estilos para cada segmento de texto
  * @returns { text: string; styles: Style; }[]
  */
-export const composeStyledTexts = (
-  text: string,
-  inlineStyleRanges: InlineStyleRange[]
-) => {
+export const composeStyledTexts = (text: string, inlineStyleRanges: InlineStyleRange[]) => {
   const styledTexts: { char: string; styles: string[]; index: number }[] = [];
 
   for (let i = 0; i < text.length; i++) {
@@ -145,9 +129,7 @@ export const composeStyledTexts = (
     styledTexts.push({ char, styles: [], index: -1 });
   }
 
-  const orderedStyleRanges = inlineStyleRanges.sort(
-    (a, b) => a.offset - b.offset
-  );
+  const orderedStyleRanges = inlineStyleRanges.sort((a, b) => a.offset - b.offset);
 
   for (const range of orderedStyleRanges) {
     const { offset, length, style } = range;

@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
-import { View } from "@react-pdf/renderer";
-import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from "../contracts";
-import { parseStyle } from "../utils";
-import UnstyledBlock from "../blocks/unstyled";
-import { UnstyledBuilderException } from "../exceptions";
+import React, { ReactElement } from 'react';
+import { View } from '@react-pdf/renderer';
+import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from '../contracts';
+import { parseStyle } from '../utils';
+import UnstyledBlock from '../blocks/unstyled';
+import { UnstyledBuilderException } from '../exceptions';
 
 /**
  * Builder de componentes de tipo 'unstyled', itera los inlineStyleRanges
@@ -24,9 +24,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
 
   public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
-      throw new UnstyledBuilderException(
-        "Invalid rawJson format or missing key"
-      );
+      throw new UnstyledBuilderException('Invalid rawJson format or missing key');
     }
     const block = this.buildUnstyledBlock(rawJson);
     if (resetBlock) {

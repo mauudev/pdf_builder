@@ -1,13 +1,9 @@
-import React, { ReactElement } from "react";
-import { View } from "@react-pdf/renderer";
-import {
-  IUnorderedListBuilder,
-  IUnorderedListBlock,
-  RawJSON,
-} from "../contracts";
-import { parseStyle } from "../utils";
-import UnorderedListBlock from "../blocks/unordered-list";
-import { UnorderedListBuilderException } from "../exceptions";
+import React, { ReactElement } from 'react';
+import { View } from '@react-pdf/renderer';
+import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON } from '../contracts';
+import { parseStyle } from '../utils';
+import UnorderedListBlock from '../blocks/unordered-list';
+import { UnorderedListBuilderException } from '../exceptions';
 
 /**
  * Builder de componentes de tipo 'unordered-list-item', itera los inlineStyleRanges
@@ -28,9 +24,7 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
 
   public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
     if (!rawJson || !rawJson.key) {
-      throw new UnorderedListBuilderException(
-        "Invalid rawJson format or missing key"
-      );
+      throw new UnorderedListBuilderException('Invalid rawJson format or missing key');
     }
     const block = this.buildUnorderedListBlock(rawJson);
     if (resetBlock) {
