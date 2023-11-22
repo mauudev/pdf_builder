@@ -14,6 +14,18 @@ import UnstyledBlockBuilder from "./builders/unstyled-builder";
 import HeaderBlockBuilder from "./builders/headers-builder";
 import UnorderedListBuilder from "./builders/unordered-list-builder";
 import OrderedListBuilder from "./builders/ordered-list-builder";
+import {
+  BaseException,
+  HeaderBlockException,
+  HeaderBuilderException,
+  UnstyledBlockException,
+  UnstyledBuilderException,
+  UnorderedListBlockException,
+  UnorderedListBuilderException,
+  OrderedListBlockException,
+  OrderedListBuilderException,
+} from "./exceptions";
+import Logger from "./logger";
 
 /**
  * Patron Builder para crear dinamicamente componentes del documento PDF.
@@ -59,21 +71,52 @@ class PDFBuilder {
   }
 
   public buildPDFContent(styles: PageStyles): React.ReactElement | undefined {
-    this.buildPDFBlocks();
-    const { pageSize, fontSize, lineHeight, margin } = styles;
-    const pdfStyles = {
-      fontSize,
-      lineHeight,
-      ...margin,
-    };
+    try {
+      this.buildPDFBlocks();
+      const { pageSize, fontSize, lineHeight, margin } = styles;
+      const pdfStyles = {
+        fontSize,
+        lineHeight,
+        ...margin,
+      };
 
-    return (
-      <Document>
-        <Page size={pageSize as any} style={pdfStyles}>
-          {this.contentBlocks.map((block) => block)}
-        </Page>
-      </Document>
-    );
+      return (
+        <Document>
+          <Page size={pageSize as any} style={pdfStyles}>
+            {this.contentBlocks.map((block) => block)}
+          </Page>
+        </Document>
+      );
+    } catch (error) {
+      // TODO: find a better way to handle errors,
+      // maybe by using a chain of responsibility pattern
+      if (error instanceof HeaderBlockException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof HeaderBuilderException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof UnstyledBlockException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof UnstyledBuilderException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof UnorderedListBlockException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof UnorderedListBuilderException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof OrderedListBlockException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+      if (error instanceof OrderedListBuilderException) {
+        Logger.error(`${error.name}: ${error.message}`);
+      }
+    } finally {
+      this.contentBlocks = [];
+    }
   }
 
   public buildPDFBlocks() {
