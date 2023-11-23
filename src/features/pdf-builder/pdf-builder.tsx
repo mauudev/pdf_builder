@@ -1,6 +1,7 @@
 import React from 'react';
-import { Document, Page, PDFViewer } from '@react-pdf/renderer';
+import { Text, Document, Page, PDFViewer, View } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
+import { v4 as uuidv4 } from 'uuid';
 import UnstyledBlockBuilder from './builders/unstyled-builder';
 import HeaderBlockBuilder from './builders/headers-builder';
 import UnorderedListBuilder from './builders/unordered-list-builder';
@@ -41,24 +42,24 @@ class PDFBuilder {
     this.componentBuilder = builder;
   }
 
-  public PDFPreview(styles: contracts.PageStyles, previewStyles: Style): React.ReactElement | undefined {
-    return <PDFViewer style={previewStyles}>{this.buildPDFContent(styles)}</PDFViewer>;
+  public PDFPreview(pdfStyles: contracts.PageStyles, windowPrevStyles: Style): React.ReactElement | undefined {
+    return <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
   }
 
-  public buildPDFContent(styles: contracts.PageStyles): React.ReactElement | undefined {
+  public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
     try {
-      this.buildPDFBlocks();
-      const { pageSize, fontSize, lineHeight, margin } = styles;
-      const pdfStyles = {
-        fontSize,
-        lineHeight,
-        ...margin,
+      Logger.error(`Applying styles: ${JSON.stringify(pdfStyles)}`);
+      const textStyles = {
+        fontSize: pdfStyles.fontSize,
+        lineHeight: pdfStyles.lineHeight,
+        ...pdfStyles.margin,
       };
-
+      this.buildPDFBlocks(textStyles);
       return (
         <Document>
-          <Page size={pageSize as any} style={pdfStyles}>
-            {this.contentBlocks.map((block) => block)}
+          <Page size={pdfStyles.pageSize as any}>
+            {/* <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View> */}
+            <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View>
           </Page>
         </Document>
       );
@@ -76,7 +77,7 @@ class PDFBuilder {
     }
   }
 
-  public buildPDFBlocks() {
+  public buildPDFBlocks(textStyles: Style) {
     for (const rawJson of this.editorBlocks) {
       if (rawJson.type === 'unstyled') {
         this.setBuilder(this.unstyledBuilder);

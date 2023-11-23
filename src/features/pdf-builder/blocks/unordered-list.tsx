@@ -48,7 +48,7 @@ class UnorderedListBlock implements IUnorderedListBlock {
     Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
-      if (!styledText || !styledText.text || !styledText.styles) {
+      if (!styledText || !styledText.styles) {
         throw new UnorderedListBlockException('Invalid styledText format');
       }
       const block = (

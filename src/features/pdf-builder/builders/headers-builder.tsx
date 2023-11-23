@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
+import { Style } from '@react-pdf/types';
 import { IHeaderBuilder, IBlock, RawJSON } from '../contracts';
 import { parseStyle } from '../utils';
 import HeaderBlock from '../blocks/headers/headers';

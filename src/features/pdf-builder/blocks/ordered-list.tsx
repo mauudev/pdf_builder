@@ -56,7 +56,7 @@ class OrderedListBlock implements IOrderedListBlock {
 
     this.index += 1;
     for (const styledText of styledTexts) {
-      if (!styledText || !styledText.text || !styledText.styles) {
+      if (!styledText || !styledText.styles) {
         throw new OrderedListBlockException('Invalid styledText format');
       }
       const block = (

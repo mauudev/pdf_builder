@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
+import { Style } from '@react-pdf/types';
 import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../contracts';
 import { parseStyle } from '../utils';
 import OrderedListBlock from '../blocks/ordered-list';
