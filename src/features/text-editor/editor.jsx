@@ -13,8 +13,8 @@ import Logger from '../pdf-builder/logger';
 
 const initialState = {
   pageSize: 'LETTER',
-  fontSize: 14.0,
-  lineHeight: '1.5pt',
+  fontSize: '14.0pt',
+  lineHeight: 1.5,
   margin: {
     marginTop: '20.0pt',
     marginLeft: '20.0pt',
@@ -28,7 +28,7 @@ const reducer = (state, action) => {
     case 'CHANGE_PAGE_SIZE':
       return { ...state, pageSize: action.payload };
     case 'CHANGE_LINE_HEIGHT':
-      return { ...state, lineHeight: `${parseFloat(action.payload)}pt` };
+      return { ...state, lineHeight: `${action.payload}` };
     case 'CHANGE_MARGIN':
       return {
         ...state,
@@ -83,7 +83,6 @@ const WYSIWYGEditor = () => {
       lineHeight,
       margin,
     };
-    Logger.error(`Styles on editor: ${JSON.stringify(pdfStyles)}`);
     return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
@@ -131,7 +130,7 @@ const WYSIWYGEditor = () => {
               step="0.1"
               min="0"
               max="10"
-              value={parsePointValue(pageStyles.lineHeight)}
+              value={pageStyles.lineHeight}
               onChange={(e) => handleChangeLineHeight(e.target.value)}
             />
           </div>
@@ -144,7 +143,7 @@ const WYSIWYGEditor = () => {
             style={{
               ...styles.content,
               '--font-size': `${pageStyles.fontSize}`,
-              '--line-spacing': `${pageStyles.lineHeight}`,
+              '--line-spacing': `${pageStyles.lineHeight}rem`,
               '--margin-left': `${pageStyles.margin.marginLeft}`,
               '--margin-right': `${pageStyles.margin.marginRight}`,
               '--margin-top': `${pageStyles.margin.marginTop}`,

@@ -59,16 +59,15 @@ export const styles = {
     height: '100%',
   },
   content: {
-    fontSize: 'var(--font-size, 12px)',
+    fontSize: 'var(--font-size, 12pt)',
     width: 'calc(100% - var(--margin-left, 5pt) - var(--margin-right, 5pt))',
-    lineHeight: 'var(--line-spacing, 5pt)',
+    lineHeight: 'var(--line-spacing, 5em)',
     marginLeft: 'var(--margin-left, 5pt)',
     marginRight: 'var(--margin-right, 5pt)',
     marginTop: 'var(--margin-top, 5pt)',
     marginBottom: 'var(--margin-bottom, 5pt)',
     textAlign: 'left',
     overflowWrap: 'break-word',
-    border: '1px solid #e5e5e5',
   },
   gridContainer: {
     margin: '10px',
