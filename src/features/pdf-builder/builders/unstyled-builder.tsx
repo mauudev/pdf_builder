@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { Style } from '@react-pdf/types';
 import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from '../contracts';
 import { parseStyle } from '../utils';
 import UnstyledBlock from '../blocks/unstyled';

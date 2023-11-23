@@ -52,7 +52,7 @@ const WYSIWYGEditor = () => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     setConvertedContent(html);
     setRawContent(convertToRaw(editorState.getCurrentContent()));
-    console.log(`Blocks: ${JSON.stringify(convertToRaw(editorState.getCurrentContent()))}`);
+    Logger.debug(`Blocks: ${JSON.stringify(convertToRaw(editorState.getCurrentContent()))}`);
   }, [editorState]);
 
   const onEditorStateChange = (editorState) => {

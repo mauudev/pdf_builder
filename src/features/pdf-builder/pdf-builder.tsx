@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text, Document, Page, PDFViewer, View } from '@react-pdf/renderer';
+import { Document, Page, PDFViewer, View } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
-import { v4 as uuidv4 } from 'uuid';
 import UnstyledBlockBuilder from './builders/unstyled-builder';
 import HeaderBlockBuilder from './builders/headers-builder';
 import UnorderedListBuilder from './builders/unordered-list-builder';

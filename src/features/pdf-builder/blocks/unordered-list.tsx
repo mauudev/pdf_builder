@@ -45,6 +45,7 @@ class UnorderedListBlock implements IUnorderedListBlock {
       throw new UnorderedListBlockException(`Invalid type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
+    Logger.debug(`Unordered list content and styles: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.styles) {

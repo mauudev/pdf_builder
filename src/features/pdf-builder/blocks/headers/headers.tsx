@@ -57,6 +57,8 @@ class HeaderBlock implements IHeaderBlock {
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
 
+    Logger.debug(`Header content and styles: ${JSON.stringify(styledTexts)}`);
+
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.styles) {
         throw new HeaderBlockException('Invalid styledText format');

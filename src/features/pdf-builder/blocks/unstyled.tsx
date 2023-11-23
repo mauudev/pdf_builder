@@ -59,6 +59,7 @@ class UnstyledBlock implements IUnstyledBlock {
     } else {
       styledTexts = composeStyledTexts(text, inlineStyleRanges);
     }
+    Logger.debug(`Unstyled content and styles: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.styles) {

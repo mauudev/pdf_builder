@@ -52,6 +52,7 @@ class OrderedListBlock implements IOrderedListBlock {
       throw new OrderedListBlockException(`Invalid type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
+    Logger.debug(`Ordered list content and styles: ${JSON.stringify(styledTexts)}`);
 
     this.index += 1;
     for (const styledText of styledTexts) {
