@@ -61,7 +61,9 @@ class OrderedListBlock implements IOrderedListBlock {
       }
       const block = (
         <Text key={uuidv4()} style={styledText.styles}>
-          {this.index}. &nbsp;<Text>{styledText.text}</Text>
+          <Text>
+            {this.index}. &nbsp;{styledText.text}
+          </Text>
         </Text>
       );
       this.listBlocks.push(block);
