@@ -1,4 +1,5 @@
 import { ReactNode, ReactElement } from 'react';
+import { Style } from '@react-pdf/types';
 
 // #################################################
 // # Types para los estilos de los bloques
@@ -24,14 +25,14 @@ export type RawJSON = {
 };
 
 export type PageStyles = {
-  pageSize: string;
-  fontSize: number;
-  lineHeight: number;
+  pageSize: string | number;
+  fontSize: string | number;
+  lineHeight: string | number;
   margin: {
-    marginTop: number;
-    marginLeft: number;
-    marginRight: number;
-    marginBottom: number;
+    marginTop: string | number;
+    marginLeft: string | number;
+    marginRight: string | number;
+    marginBottom: string | number;
   };
 };
 

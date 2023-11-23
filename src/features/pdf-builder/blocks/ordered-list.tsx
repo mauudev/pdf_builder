@@ -52,11 +52,10 @@ class OrderedListBlock implements IOrderedListBlock {
       throw new OrderedListBlockException(`Invalid type: ${type}`);
     }
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
 
     this.index += 1;
     for (const styledText of styledTexts) {
-      if (!styledText || !styledText.text || !styledText.styles) {
+      if (!styledText || !styledText.styles) {
         throw new OrderedListBlockException('Invalid styledText format');
       }
       const block = (

@@ -9,16 +9,17 @@ import { capitalizeFirstLetter } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import Logger from '../pdf-builder/logger';
 
 const initialState = {
   pageSize: 'LETTER',
-  fontSize: 14.0,
-  lineHeight: 5.0,
+  fontSize: '14.0pt',
+  lineHeight: 1.5,
   margin: {
-    marginTop: 20.0,
-    marginLeft: 20.0,
-    marginRight: 20.0,
-    marginBottom: 20.0,
+    marginTop: '20.0pt',
+    marginLeft: '20.0pt',
+    marginRight: '20.0pt',
+    marginBottom: '20.0pt',
   },
 };
 
@@ -27,13 +28,13 @@ const reducer = (state, action) => {
     case 'CHANGE_PAGE_SIZE':
       return { ...state, pageSize: action.payload };
     case 'CHANGE_LINE_HEIGHT':
-      return { ...state, lineHeight: parseFloat(action.payload) };
+      return { ...state, lineHeight: `${action.payload}` };
     case 'CHANGE_MARGIN':
       return {
         ...state,
         margin: {
           ...state.margin,
-          [action.payload.margin]: parseFloat(action.payload.value),
+          [action.payload.margin]: `${parseFloat(action.payload.value)}pt`,
         },
       };
     default:
@@ -45,7 +46,7 @@ const WYSIWYGEditor = () => {
   const [convertedContent, setConvertedContent] = useState(null);
   const [rawContent, setRawContent] = useState({});
   const [pageStyles, dispatch] = useReducer(reducer, initialState);
-  const pdfBuilder = new PDFBuilder(rawContent.blocks, pageStyles);
+  const pdfBuilder = new PDFBuilder(rawContent.blocks);
 
   useEffect(() => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
@@ -75,7 +76,18 @@ const WYSIWYGEditor = () => {
   });
 
   const buildPdfPreview = () => {
-    return pdfBuilder.PDFPreview(pageStyles, styles.modalPreview);
+    const { pageSize, fontSize, lineHeight, margin } = pageStyles;
+    const pdfStyles = {
+      pageSize,
+      fontSize,
+      lineHeight,
+      margin,
+    };
+    return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
+  };
+
+  const parsePointValue = (value) => {
+    return parseFloat(value.replace('pt', ''));
   };
 
   return (
@@ -106,7 +118,7 @@ const WYSIWYGEditor = () => {
                 type="number"
                 step="0.1"
                 min="0"
-                value={pageStyles.margin[marginKey]}
+                value={parsePointValue(pageStyles.margin[marginKey])}
                 onChange={(e) => handleChangeMargin(marginKey, e.target.value)}
               />
             </div>
@@ -130,12 +142,12 @@ const WYSIWYGEditor = () => {
           <div
             style={{
               ...styles.content,
-              '--font-size': `${pageStyles.fontSize}px`,
-              '--line-spacing': `${pageStyles.lineHeight}mm`,
-              '--margin-left': `${pageStyles.margin.marginLeft}mm`,
-              '--margin-right': `${pageStyles.margin.marginRight}mm`,
-              '--margin-top': `${pageStyles.margin.marginTop}mm`,
-              '--margin-bottom': `${pageStyles.margin.marginBottom}mm`,
+              '--font-size': `${pageStyles.fontSize}`,
+              '--line-spacing': `${pageStyles.lineHeight}rem`,
+              '--margin-left': `${pageStyles.margin.marginLeft}`,
+              '--margin-right': `${pageStyles.margin.marginRight}`,
+              '--margin-top': `${pageStyles.margin.marginTop}`,
+              '--margin-bottom': `${pageStyles.margin.marginBottom}`,
             }}
             dangerouslySetInnerHTML={createMarkup(convertedContent)}
           ></div>
