@@ -48,7 +48,6 @@ class PDFBuilder {
 
   public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
     try {
-      Logger.error(`Applying styles: ${JSON.stringify(pdfStyles)}`);
       const textStyles = {
         fontSize: pdfStyles.fontSize,
         lineHeight: pdfStyles.lineHeight,

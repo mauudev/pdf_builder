@@ -60,8 +60,6 @@ class UnstyledBlock implements IUnstyledBlock {
       styledTexts = composeStyledTexts(text, inlineStyleRanges);
     }
 
-    Logger.log(`Building '${type}' blocks with styled texts: ${JSON.stringify(styledTexts)}`);
-
     for (const styledText of styledTexts) {
       if (!styledText || !styledText.styles) {
         throw new UnstyledBlockException('Invalid styledText format');
