@@ -22,6 +22,7 @@ export const EditorProvider = ({ children }) => {
       rawContent: {},
     },
   };
+
   const reducer = (state, action) => {
     switch (action.type) {
       case 'CHANGE_PAGE_SIZE':
