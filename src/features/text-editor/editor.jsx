@@ -54,7 +54,7 @@ const WYSIWYGEditor = () => {
   });
 
   const buildPdfPreview = () => {
-    const { pageSize, fontSize, lineHeight, margin } = editorState.styles;
+    const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
     const pdfStyles = {
       pageSize,
       fontSize,
@@ -87,7 +87,7 @@ const WYSIWYGEditor = () => {
             <label htmlFor="page-size">Tamanio de pagina:</label>
             <select
               id="page-size"
-              value={editorState.styles.pageSize}
+              value={editorState.pageStyles.pageSize}
               onChange={(e) => handleChangePageSize(e.target.value)}
             >
               <option value="LETTER">Carta</option>
@@ -101,7 +101,7 @@ const WYSIWYGEditor = () => {
                 type="number"
                 step="0.1"
                 min="0"
-                value={parsePointValue(editorState.styles.margin[marginKey])}
+                value={parsePointValue(editorState.pageStyles.margin[marginKey])}
                 onChange={(e) => handleChangeMargin(marginKey, e.target.value)}
               />
             </div>
@@ -113,7 +113,7 @@ const WYSIWYGEditor = () => {
               step="0.1"
               min="0"
               max="10"
-              value={parsePointValue(editorState.styles.lineHeight)}
+              value={parsePointValue(editorState.pageStyles.lineHeight)}
               onChange={(e) => handleChangeLineHeight(e.target.value)}
             />
           </div>
@@ -122,16 +122,16 @@ const WYSIWYGEditor = () => {
       {/* <TableModal isOpen={isTableModalOpen} onClose={() => setTableModalOpen(false)} onSave={handleSaveTable} /> */}
       <PreviewModal pdfPreview={buildPdfPreview()} />
       <div style={styles.livePreview}>
-        <div style={editorState.styles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
+        <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
           <div
             style={{
               ...styles.content,
-              '--font-size': `${editorState.styles.fontSize}`,
-              '--line-spacing': `${editorState.styles.lineHeight}`,
-              '--margin-left': `${editorState.styles.margin.marginLeft}`,
-              '--margin-right': `${editorState.styles.margin.marginRight}`,
-              '--margin-top': `${editorState.styles.margin.marginTop}`,
-              '--margin-bottom': `${editorState.styles.margin.marginBottom}`,
+              '--font-size': `${editorState.pageStyles.fontSize}`,
+              '--line-spacing': `${editorState.pageStyles.lineHeight}`,
+              '--margin-left': `${editorState.pageStyles.margin.marginLeft}`,
+              '--margin-right': `${editorState.pageStyles.margin.marginRight}`,
+              '--margin-top': `${editorState.pageStyles.margin.marginTop}`,
+              '--margin-bottom': `${editorState.pageStyles.margin.marginBottom}`,
             }}
             dangerouslySetInnerHTML={createMarkup(editorState.editor.convertedContent)}
           ></div>

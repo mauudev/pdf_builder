@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useReducer, useState } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import { EditorState } from 'draft-js';
 
 const EditorContext = createContext();
 
 export const EditorProvider = ({ children }) => {
   const editorInitialState = {
-    styles: {
+    pageStyles: {
       pageSize: 'LETTER',
       fontSize: '14.0pt',
       lineHeight: '1.5rem',
@@ -27,20 +27,20 @@ export const EditorProvider = ({ children }) => {
       case 'CHANGE_PAGE_SIZE':
         return {
           ...state,
-          styles: { ...state.styles, pageSize: action.payload },
+          pageStyles: { ...state.pageStyles, pageSize: action.payload },
         };
       case 'CHANGE_LINE_HEIGHT':
         return {
           ...state,
-          styles: { ...state.styles, lineHeight: `${parseFloat(action.payload)}rem` },
+          pageStyles: { ...state.pageStyles, lineHeight: `${parseFloat(action.payload)}rem` },
         };
       case 'CHANGE_MARGIN':
         return {
           ...state,
-          styles: {
-            ...state.styles,
+          pageStyles: {
+            ...state.pageStyles,
             margin: {
-              ...state.styles.margin,
+              ...state.pageStyles.margin,
               [action.payload.margin]: `${parseFloat(action.payload.value)}pt`,
             },
           },
