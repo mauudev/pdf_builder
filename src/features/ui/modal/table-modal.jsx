@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Modal from '@mui/material/Modal';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Tooltip from '@mui/material/Tooltip';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 const modalStyle = {
   display: 'flex',
@@ -27,6 +28,12 @@ const modalStyle = {
     alignItems: 'center',
     marginTop: '1rem',
     marginBottom: '1rem',
+    addButtons: {
+      display: 'flex',
+      alignItems: 'center',
+      marginTop: '1rem',
+      marginBottom: '1rem',
+    }
   },
 };
 
@@ -40,61 +47,40 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     ],
   });
 
-  const [hoveredRow, setHoveredRow] = useState(null);
-  const [hoveredColumn, setHoveredColumn] = useState(null);
-
-  const handleCellHover = (rowIndex, colIndex) => {
-    setHoveredRow(rowIndex);
-    setHoveredColumn(colIndex);
-  };
-
-  const handleRemoveRow = () => {
+  const handleRemoveRow = (rowIndex) => {
     if (tableData.rows > 1) {
       setTableData((prevData) => ({
         ...prevData,
         rows: prevData.rows - 1,
-        data: prevData.data.filter((_, index) => index !== hoveredRow),
+        data: prevData.data.filter((_, index) => index !== rowIndex),
       }));
-      setHoveredRow(null);
     }
   };
 
-  const handleRemoveColumn = () => {
+  const handleRemoveColumn = (colIndex) => {
     if (tableData.columns > 1) {
       setTableData((prevData) => ({
         ...prevData,
         columns: prevData.columns - 1,
-        data: prevData.data.map((row) => row.filter((_, index) => index !== hoveredColumn)),
+        data: prevData.data.map((row) => row.filter((_, index) => index !== colIndex)),
       }));
-      setHoveredColumn(null);
     }
   };
 
   const handleAddRow = () => {
-    setTableData((prevData) => {
-      const newData = [...prevData.data];
-      const newRow = Array(prevData.columns).fill('');
-      const targetIndex = hoveredRow !== null ? hoveredRow + 1 : prevData.rows;
-      newData.splice(targetIndex, 0, newRow);
-      return {
-        ...prevData,
-        rows: prevData.rows + 1,
-        data: newData,
-      };
-    });
+    setTableData((prevData) => ({
+      ...prevData,
+      rows: prevData.rows + 1,
+      data: [...prevData.data, Array(prevData.columns).fill('')],
+    }));
   };
 
   const handleAddColumn = () => {
-    setTableData((prevData) => {
-      const newData = prevData.data.map((row) => [...row]);
-      const targetIndex = hoveredColumn !== null ? hoveredColumn + 1 : prevData.columns;
-      newData.forEach((row) => row.splice(targetIndex, 0, ''));
-      return {
-        ...prevData,
-        columns: prevData.columns + 1,
-        data: newData,
-      };
-    });
+    setTableData((prevData) => ({
+      ...prevData,
+      columns: prevData.columns + 1,
+      data: prevData.data.map((row) => [...row, '']),
+    }));
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
@@ -110,6 +96,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
 
   const handleSave = () => {
     onSave(tableData);
+    onClose();
   };
 
   return (
@@ -119,57 +106,48 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
           <h2>Agregar tabla</h2>
           <table>
             <tbody>
-              {Array.from({ length: tableData.rows }).map((_, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  onMouseEnter={() => handleCellHover(rowIndex, null)}
-                  onMouseLeave={() => setHoveredRow(null)}
-                >
-                  {Array.from({ length: tableData.columns }).map((_, colIndex) => (
+              {tableData.data.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {row.map((cell, colIndex) => (
                     <td key={colIndex}>
                       <input
                         type="text"
-                        value={tableData.data[rowIndex][colIndex]}
+                        value={cell}
                         onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
                       />
                     </td>
                   ))}
-                  {hoveredRow === rowIndex && (
-                    <td>
-                      <IconButton aria-label="add" onClick={handleAddRow}>
-                        <AddCircleIcon />
+                  <td>
+                    <Tooltip title="Eliminar fila">
+                      <IconButton aria-label="delete" onClick={() => handleRemoveRow(rowIndex)}>
+                        <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
                       </IconButton>
-                      <IconButton aria-label="delete" onClick={handleRemoveRow}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </td>
-                  )}
+                    </Tooltip>
+                  </td>
                 </tr>
               ))}
               <tr>
                 {Array.from({ length: tableData.columns }).map((_, colIndex) => (
-                  <td
-                    key={colIndex}
-                    onMouseEnter={() => handleCellHover(null, colIndex)}
-                    onMouseLeave={() => setHoveredColumn(null)}
-                  >
-                    {hoveredColumn === colIndex && (
-                      <>
-                        <IconButton aria-label="add" onClick={handleAddColumn}>
-                          <AddCircleIcon />
-                        </IconButton>
-                        <IconButton aria-label="delete" onClick={handleRemoveColumn}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </>
-                    )}
+                  <td key={colIndex}>
+                    <Tooltip title="Eliminar columna">
+                      <IconButton aria-label="delete" onClick={() => handleRemoveColumn(colIndex)}>
+                        <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
+                      </IconButton>
+                    </Tooltip>
                   </td>
                 ))}
-                <td></td>
               </tr>
             </tbody>
           </table>
           <div style={modalStyle.controlButtons}>
+            <div style={modalStyle.controlButtons.addButtons}>
+              <Button variant="outlined" color="success" startIcon={<AddCircleOutlineIcon />} onClick={handleAddColumn}>
+                Agregar Columna
+              </Button>
+              <Button variant="outlined" color="success" startIcon={<AddCircleOutlineIcon />} onClick={handleAddRow}>
+                Agregar Fila
+              </Button>
+            </div>
             <Button variant="contained" onClick={handleSave}>
               Guardar
             </Button>
