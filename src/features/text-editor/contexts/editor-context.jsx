@@ -50,10 +50,17 @@ export const EditorProvider = ({ children }) => {
         return {
           ...state,
           editor: {
-            ...state.editor,
             state: action.payload.editorState,
             convertedContent: action.payload.convertedContent,
             rawContent: action.payload.rawContent,
+          },
+        };
+      case 'SET_TABLE_DATA':
+        return {
+          ...state,
+          editor: {
+            ...state.editor,
+            tableData: action.payload,
           },
         };
       default:
