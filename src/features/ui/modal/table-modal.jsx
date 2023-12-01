@@ -62,8 +62,8 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
       const cells = row.map((cell) => `<td>${cell}</td>`).join('');
       return `<tr>${cells}</tr>`;
     });
-
-    return `<p></p><table>${tableRows.join('')}</table>`;
+    // agregando los <p> se fixea el issue de entities al renderizar la tabla (?)
+    return `<p></p><table>${tableRows.join('')}</table><p></p>`;
   };
 
   const handleSave = () => {
