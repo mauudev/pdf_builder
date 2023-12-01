@@ -61,6 +61,7 @@ function entityMapper(entity) {
   if (entity.type === 'STYLE') {
     return `<style>${entity.data.innerHTML}</style>`;
   }
+  console.error(`Fallo algo pis duke: ${JSON.stringify(entity)}`);
   return '';
 }
 
@@ -86,16 +87,16 @@ function entityMapperToComponent(entity) {
   if (entity.type === 'STYLE') {
     return () => <style>{entity.data.innerHTML}</style>;
   }
+  console.error(`Fallo algo pis duke: ${JSON.stringify(entity)}`);
 
   return '';
 }
 
 function customBlockRenderFunc(block, config) {
-  console.log('block', block.getLength());
-  console.log('config', config);
   if (block.getType() === 'atomic') {
     const contentState = config.getEditorState().getCurrentContent();
-    const entity = contentState.getEntity(block.getEntityAt(0));
+    const entityKey = contentState.getLastCreatedEntityKey();
+    const entity = contentState.getEntity(entityKey);
     return {
       component: entityMapperToComponent(entity),
       editable: false,
