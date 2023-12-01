@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '@mui/material/Modal';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -33,7 +33,7 @@ const modalStyle = {
       alignItems: 'center',
       marginTop: '1rem',
       marginBottom: '1rem',
-    }
+    },
   },
 };
 
@@ -42,10 +42,34 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     rows: 2,
     columns: 2,
     data: [
-      ['1', '2'],
-      ['3', '4'],
+      ['', ''],
+      ['', ''],
     ],
+    html: '',
   });
+
+  useEffect(() => {
+    setTableData((prevData) => ({
+      ...prevData,
+      html: generateHtmlTable(),
+    }));
+  }, [tableData.data]);
+
+  const generateHtmlTable = () => {
+    const { data } = tableData;
+
+    const tableRows = data.map((row) => {
+      const cells = row.map((cell) => `<td>${cell}</td>`).join('');
+      return `<tr>${cells}</tr>`;
+    });
+
+    return `<p></p><table>${tableRows.join('')}</table>`;
+  };
+
+  const handleSave = () => {
+    onSave(tableData);
+    onClose();
+  };
 
   const handleRemoveRow = (rowIndex) => {
     if (tableData.rows > 1) {
@@ -92,11 +116,6 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
         data: newData,
       };
     });
-  };
-
-  const handleSave = () => {
-    onSave(tableData);
-    onClose();
   };
 
   return (
