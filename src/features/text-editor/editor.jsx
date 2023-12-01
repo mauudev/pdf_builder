@@ -17,7 +17,6 @@ import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
 import TableModal from '../ui/modal/table-modal';
 import Logger from '../pdf-builder/logger';
-import { css } from 'glamor';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -185,9 +184,9 @@ const WYSIWYGEditor = () => {
       <div style={styles.wrapper}>
         <Editor
           editorState={editorState.editor.state}
-          toolbarClassName="toolbarClassName"
-          wrapperClassName="wrapperClassName"
-          editorClassName="editorClassName"
+          toolbarClassName="toolbar-class"
+          wrapperClassName="wrapper-class"
+          editorClassName="editor-class"
           onEditorStateChange={onEditorStateChange}
           customBlockRenderFunc={customBlockRenderFunc}
           toolbar={{
