@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AtomicBlockUtils } from 'draft-js';
 import Modal from '@mui/material/Modal';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -47,13 +48,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     ],
     html: '',
   });
-
-  useEffect(() => {
-    setTableData((prevData) => ({
-      ...prevData,
-      html: generateHtmlTable(),
-    }));
-  }, [tableData.data]);
+  
 
   const generateHtmlTable = () => {
     const { data } = tableData;
@@ -63,12 +58,14 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
       return `<tr>${cells}</tr>`;
     });
     // agregando los <p> se fixea el issue de entities al renderizar la tabla (?)
-    return `<p></p><table>${tableRows.join('')}</table><p></p>`;
+    return `<table style="border: 1px solid black; border-collapse: collapse; width: 100%"><tbody>${tableRows.join(
+      ''
+    )}</tbody></table>`;
   };
 
   const handleSave = () => {
-    onSave(tableData);
-    onClose();
+    onSave(generateHtmlTable());
+    // onClose();
   };
 
   const handleRemoveRow = (rowIndex) => {
