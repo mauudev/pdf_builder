@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { AtomicBlockUtils } from 'draft-js';
 import Modal from '@mui/material/Modal';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tooltip from '@mui/material/Tooltip';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -36,6 +36,11 @@ const modalStyle = {
       marginBottom: '1rem',
     },
   },
+  closeButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
 };
 
 const TableModal = ({ isOpen, onClose, onSave }) => {
@@ -48,7 +53,6 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     ],
     html: '',
   });
-  
 
   const generateHtmlTable = () => {
     const { data } = tableData;
@@ -119,7 +123,16 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     <Modal open={isOpen} onClose={onClose}>
       <Box sx={modalStyle}>
         <div>
-          <h2>Agregar tabla</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2>Agregar tabla</h2>
+            <IconButton
+              onClick={onClose}
+              size="small"
+              style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
           <table>
             <tbody>
               {tableData.data.map((row, rowIndex) => (
