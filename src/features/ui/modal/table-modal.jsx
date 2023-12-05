@@ -43,16 +43,18 @@ const modalStyle = {
   },
 };
 
+const getInitialState = () => ({
+  rows: 2,
+  columns: 2,
+  data: [
+    ['', ''],
+    ['', ''],
+  ],
+  html: '',
+});
+
 const TableModal = ({ isOpen, onClose, onSave }) => {
-  const [tableData, setTableData] = useState({
-    rows: 2,
-    columns: 2,
-    data: [
-      ['', ''],
-      ['', ''],
-    ],
-    html: '',
-  });
+  const [tableData, setTableData] = useState(() => getInitialState());
 
   const generateHtmlTable = () => {
     const { data } = tableData;
@@ -61,15 +63,25 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
       const cells = row.map((cell) => `<td>${cell}</td>`).join('');
       return `<tr>${cells}</tr>`;
     });
-    // agregando los <p> se fixea el issue de entities al renderizar la tabla (?)
     return `<table style="border: 1px solid black; border-collapse: collapse; width: 100%"><tbody>${tableRows.join(
       ''
     )}</tbody></table>`;
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      setTableData(getInitialState());
+    }
+  }, [isOpen]);
+
   const handleSave = () => {
     onSave(generateHtmlTable());
     // onClose();
+  };
+
+  const handleClose = () => {
+    setTableData(getInitialState());
+    onClose();
   };
 
   const handleRemoveRow = (rowIndex) => {
@@ -120,70 +132,84 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
-      <Box sx={modalStyle}>
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2>Agregar tabla</h2>
-            <IconButton
-              onClick={onClose}
-              size="small"
-              style={{ cursor: 'pointer', border: 'none', background: 'none' }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </div>
-          <table>
-            <tbody>
-              {tableData.data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {row.map((cell, colIndex) => (
-                    <td key={colIndex}>
-                      <input
-                        type="text"
-                        value={cell}
-                        onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
-                      />
-                    </td>
+    <>
+      {isOpen && (
+        <Modal open={isOpen} onClose={handleClose}>
+          <Box sx={modalStyle}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2>Agregar tabla</h2>
+                <IconButton
+                  onClick={handleClose}
+                  size="small"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
+              <table>
+                <tbody>
+                  {tableData.data.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell, colIndex) => (
+                        <td key={colIndex}>
+                          <input
+                            type="text"
+                            value={cell}
+                            onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+                          />
+                        </td>
+                      ))}
+                      <td>
+                        <Tooltip title="Eliminar fila">
+                          <IconButton aria-label="delete" onClick={() => handleRemoveRow(rowIndex)}>
+                            <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
                   ))}
-                  <td>
-                    <Tooltip title="Eliminar fila">
-                      <IconButton aria-label="delete" onClick={() => handleRemoveRow(rowIndex)}>
-                        <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                </tr>
-              ))}
-              <tr>
-                {Array.from({ length: tableData.columns }).map((_, colIndex) => (
-                  <td key={colIndex}>
-                    <Tooltip title="Eliminar columna">
-                      <IconButton aria-label="delete" onClick={() => handleRemoveColumn(colIndex)}>
-                        <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-          <div style={modalStyle.controlButtons}>
-            <div style={modalStyle.controlButtons.addButtons}>
-              <Button variant="outlined" color="success" startIcon={<AddCircleOutlineIcon />} onClick={handleAddColumn}>
-                Agregar Columna
-              </Button>
-              <Button variant="outlined" color="success" startIcon={<AddCircleOutlineIcon />} onClick={handleAddRow}>
-                Agregar Fila
-              </Button>
+                  <tr>
+                    {Array.from({ length: tableData.columns }).map((_, colIndex) => (
+                      <td key={colIndex}>
+                        <Tooltip title="Eliminar columna">
+                          <IconButton aria-label="delete" onClick={() => handleRemoveColumn(colIndex)}>
+                            <RemoveCircleOutlineIcon sx={{ color: '#ff0000' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+              <div style={modalStyle.controlButtons}>
+                <div style={modalStyle.controlButtons.addButtons}>
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddColumn}
+                  >
+                    Agregar Columna
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="success"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={handleAddRow}
+                  >
+                    Agregar Fila
+                  </Button>
+                </div>
+                <Button variant="contained" onClick={handleSave}>
+                  Guardar
+                </Button>
+              </div>
             </div>
-            <Button variant="contained" onClick={handleSave}>
-              Guardar
-            </Button>
-          </div>
-        </div>
-      </Box>
-    </Modal>
+          </Box>
+        </Modal>
+      )}
+    </>
   );
 };
 
