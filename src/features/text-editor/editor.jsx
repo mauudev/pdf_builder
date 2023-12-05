@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { convertToRaw, ContentState, EditorState } from 'draft-js';
+import { convertToRaw, ContentState, EditorState, AtomicBlockUtils } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import DOMPurify from 'dompurify';
@@ -17,6 +17,7 @@ import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
 import TableModal from '../ui/modal/table-modal';
 import Logger from '../pdf-builder/logger';
+import TableOption from './custom-toolbar-opts/table-option';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -61,7 +62,6 @@ function entityMapper(entity) {
   if (entity.type === 'STYLE') {
     return `<style>${entity.data.innerHTML}</style>`;
   }
-  console.error(`Fallo algo pis duke: ${JSON.stringify(entity)}`);
   return '';
 }
 
@@ -87,8 +87,6 @@ function entityMapperToComponent(entity) {
   if (entity.type === 'STYLE') {
     return () => <style>{entity.data.innerHTML}</style>;
   }
-  console.error(`Fallo algo pis duke: ${JSON.stringify(entity)}`);
-
   return '';
 }
 
@@ -111,9 +109,9 @@ const WYSIWYGEditor = () => {
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const pdfBuilder = new PDFBuilder(editorState.editor.rawContent.blocks);
 
-  useEffect(() => {
-    Logger.debug(`Blocks: ${JSON.stringify(convertToRaw(editorState.editor.state.getCurrentContent()))}`);
-  }, [editorState.editor.state]);
+  // useEffect(() => {
+  //   Logger.debug(`Blocks: ${JSON.stringify(convertToRaw(editorState.editor.state.getCurrentContent()))}`);
+  // }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
     dispatch({
@@ -149,33 +147,52 @@ const WYSIWYGEditor = () => {
   });
 
   const buildPdfPreview = () => {
-    const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
-    const pdfStyles = {
-      pageSize,
-      fontSize,
-      lineHeight: parsePointValue(lineHeight),
-      margin,
-    };
-    return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
+    // const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
+    // const pdfStyles = {
+    //   pageSize,
+    //   fontSize,
+    //   lineHeight: parsePointValue(lineHeight),
+    //   margin,
+    // };
+    // return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
-  const handleTableModalOpen = () => setIsTableModalOpen(true);
-  const handleTableModalClose = () => setIsTableModalOpen(false);
+  const handleTableModalOpen = () => {
+    setIsTableModalOpen(true);
+  };
+  const handleTableModalClose = () => {
+    setIsTableModalOpen(false);
+  };
 
-  const handleSaveTable = (tableData) => {
-    const contentBlock = htmlToDraft(tableData.html, customChunkRenderer);
-    let newEditorState;
-    if (contentBlock) {
-      const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-      newEditorState = EditorState.createWithContent(contentState);
-    } else {
-      newEditorState = EditorState.createEmpty();
-    }
+  // const handleSaveTable = (tableHTML) => {
+  //   const currentEditorState = editorState.editor.state;
+  //   const contentState = currentEditorState.getCurrentContent();
+  //   const contentStateWithEntity = contentState.createEntity('TABLE', 'IMMUTABLE', {
+  //     innerHTML: tableHTML,
+  //     // tableStyles,
+  //   });
+  //   console.log(`html que no funca: ${tableHTML}`);
+  //   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  //   const newEditorState = AtomicBlockUtils.insertAtomicBlock(currentEditorState, entityKey, ' ');
+
+  //   onEditorStateChange(newEditorState);
+  // };
+
+  const handleSaveTable = (tableHTML) => {
+    const currentEditorState = editorState.editor.state;
+    const contentState = currentEditorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity('TABLE', 'IMMUTABLE', {
+      innerHTML: tableHTML,
+    });
+    console.log(`html que no funca: ${tableHTML}`);
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(currentEditorState, entityKey, ' ');
+
     onEditorStateChange(newEditorState);
   };
 
   const AddTableOption = () => (
-    <div className="rdw-option-wrapper" onClick={handleTableModalOpen}>
+    <div className="rdw-option-wrapper" onClick={() => setIsTableModalOpen(true)}>
       <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
     </div>
   );
@@ -193,7 +210,10 @@ const WYSIWYGEditor = () => {
           toolbar={{
             options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
           }}
-          toolbarCustomButtons={[<AddTableOption />]}
+          toolbarCustomButtons={[
+            <AddTableOption />,
+            <TableOption onChange={onEditorStateChange} editorState={editorState.editor.state} />,
+          ]}
         />
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
@@ -232,7 +252,7 @@ const WYSIWYGEditor = () => {
           </div>
         </div>
       </div>
-      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      <TableModal isOpen={isTableModalOpen} onClose={() => setIsTableModalOpen(false)} onSave={handleSaveTable} />
       <PreviewModal pdfPreview={buildPdfPreview()} />
       <div style={styles.livePreview}>
         <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
