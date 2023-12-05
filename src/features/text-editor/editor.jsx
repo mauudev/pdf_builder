@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { convertToRaw, ContentState, EditorState, AtomicBlockUtils } from 'draft-js';
+import { convertToRaw, ContentState, EditorState, AtomicBlockUtils, Modifier, genKey } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import DOMPurify from 'dompurify';
+import { v4 as uuidv4 } from 'uuid';
 import { Editor } from 'react-draft-wysiwyg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@fortawesome/fontawesome-free';
@@ -157,26 +158,13 @@ const WYSIWYGEditor = () => {
     // return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
-  const handleTableModalOpen = () => {
-    setIsTableModalOpen(true);
-  };
-  const handleTableModalClose = () => {
+  const handleModalClose = () => {
     setIsTableModalOpen(false);
   };
 
-  // const handleSaveTable = (tableHTML) => {
-  //   const currentEditorState = editorState.editor.state;
-  //   const contentState = currentEditorState.getCurrentContent();
-  //   const contentStateWithEntity = contentState.createEntity('TABLE', 'IMMUTABLE', {
-  //     innerHTML: tableHTML,
-  //     // tableStyles,
-  //   });
-  //   console.log(`html que no funca: ${tableHTML}`);
-  //   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  //   const newEditorState = AtomicBlockUtils.insertAtomicBlock(currentEditorState, entityKey, ' ');
-
-  //   onEditorStateChange(newEditorState);
-  // };
+  const handleModalOpen = () => {
+    setIsTableModalOpen(true);
+  };
 
   const handleSaveTable = (tableHTML) => {
     const currentEditorState = editorState.editor.state;
@@ -184,15 +172,15 @@ const WYSIWYGEditor = () => {
     const contentStateWithEntity = contentState.createEntity('TABLE', 'IMMUTABLE', {
       innerHTML: tableHTML,
     });
-    console.log(`html que no funca: ${tableHTML}`);
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    console.log(`ENTITY KEY: ${entityKey}`);
     const newEditorState = AtomicBlockUtils.insertAtomicBlock(currentEditorState, entityKey, ' ');
 
     onEditorStateChange(newEditorState);
   };
 
   const AddTableOption = () => (
-    <div className="rdw-option-wrapper" onClick={() => setIsTableModalOpen(true)}>
+    <div className="rdw-option-wrapper" onClick={handleModalOpen}>
       <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
     </div>
   );
@@ -212,7 +200,7 @@ const WYSIWYGEditor = () => {
           }}
           toolbarCustomButtons={[
             <AddTableOption />,
-            <TableOption onChange={onEditorStateChange} editorState={editorState.editor.state} />,
+            // <TableOption onChange={onEditorStateChange} editorState={editorState.editor.state} />,
           ]}
         />
         <div style={styles.gridContainer}>
@@ -252,7 +240,7 @@ const WYSIWYGEditor = () => {
           </div>
         </div>
       </div>
-      <TableModal isOpen={isTableModalOpen} onClose={() => setIsTableModalOpen(false)} onSave={handleSaveTable} />
+      <TableModal isOpen={isTableModalOpen} onClose={handleModalClose} onSave={handleSaveTable} />
       <PreviewModal pdfPreview={buildPdfPreview()} />
       <div style={styles.livePreview}>
         <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
