@@ -18,28 +18,10 @@ import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
 import TableModal from '../ui/modal/table-modal';
 import Logger from '../pdf-builder/logger';
-import TableOption from './custom-toolbar-opts/table-option';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 library.add(far, fas, fab);
-
-function customChunkRenderer(nodeName, node) {
-  const allowedNodes = ['div', 'table', 'tbody', 'tr', 'th', 'td', 'thead', 'style'];
-
-  if (allowedNodes.includes(nodeName)) {
-    return {
-      type: nodeName.toString().toUpperCase(),
-      mutability: 'MUTABLE',
-      data: {
-        // Pass whatever you want here (like id, or classList, etc.)
-        innerText: node.innerText,
-        innerHTML: node.innerHTML,
-      },
-    };
-  }
-  return null;
-}
 
 function entityMapper(entity) {
   if (entity.type === 'DIV') {
@@ -94,7 +76,7 @@ function entityMapperToComponent(entity) {
 function customBlockRenderFunc(block, config) {
   if (block.getType() === 'atomic') {
     const contentState = config.getEditorState().getCurrentContent();
-    const entityKey = contentState.getLastCreatedEntityKey();
+    const entityKey = block.getEntityAt(0);
     const entity = contentState.getEntity(entityKey);
     return {
       component: entityMapperToComponent(entity),
@@ -148,14 +130,14 @@ const WYSIWYGEditor = () => {
   });
 
   const buildPdfPreview = () => {
-    // const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
-    // const pdfStyles = {
-    //   pageSize,
-    //   fontSize,
-    //   lineHeight: parsePointValue(lineHeight),
-    //   margin,
-    // };
-    // return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
+    const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
+    const pdfStyles = {
+      pageSize,
+      fontSize,
+      lineHeight: parsePointValue(lineHeight),
+      margin,
+    };
+    return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
   const handleModalClose = () => {
@@ -166,16 +148,21 @@ const WYSIWYGEditor = () => {
     setIsTableModalOpen(true);
   };
 
+  const insertAtomicBlock = (targetEditorState, entityType, mutability, dataHtml) => {
+    const entityKey = targetEditorState
+      .getCurrentContent()
+      .createEntity(entityType, mutability, {
+        innerHTML: dataHtml,
+      })
+      .getLastCreatedEntityKey();
+    const character = ' ';
+    const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
+    return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
+  };
+
   const handleSaveTable = (tableHTML) => {
     const currentEditorState = editorState.editor.state;
-    const contentState = currentEditorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity('TABLE', 'IMMUTABLE', {
-      innerHTML: tableHTML,
-    });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    console.log(`ENTITY KEY: ${entityKey}`);
-    const newEditorState = AtomicBlockUtils.insertAtomicBlock(currentEditorState, entityKey, ' ');
-
+    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableHTML);
     onEditorStateChange(newEditorState);
   };
 
