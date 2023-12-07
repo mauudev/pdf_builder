@@ -1,9 +1,11 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../contracts';
-import { parseStyle } from '../utils';
-import OrderedListBlock from '../blocks/ordered-list';
-import { OrderedListBuilderException } from '../exceptions';
+import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../../contracts';
+import { parseStyle } from '../../utils';
+import OrderedListBlock from '../../blocks/ordered-list';
+import { OrderedListBuilderException } from '../../exceptions';
+import { OrderedListBlockException } from '../../exceptions';
+import OrderedListValidator from './validator';
 
 /**
  * Builder de componentes de tipo 'ordered-list-item', itera los inlineStyleRanges
@@ -13,9 +15,15 @@ import { OrderedListBuilderException } from '../exceptions';
  */
 class OrderedListBuilder implements IOrderedListBuilder {
   private blockComponent: IOrderedListBlock;
+  private validator: OrderedListValidator;
 
   constructor() {
     this.blockComponent = new OrderedListBlock();
+    this.validator = new OrderedListValidator();
+  }
+
+  public validate(rawJson: RawJSON): void {
+    this.validator.validate(rawJson);
   }
 
   public resetIndex(): void {
@@ -26,15 +34,20 @@ class OrderedListBuilder implements IOrderedListBuilder {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
-    if (!rawJson || !rawJson.key) {
-      throw new OrderedListBuilderException('Invalid rawJson format or missing key');
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+    try {
+      this.validate(rawJson);
+      return this.buildOrderedListBlock(rawJson);
+    } catch (error) {
+      if (error instanceof OrderedListBlockException) {
+        throw error;
+      }
+      if (error instanceof Error) throw new OrderedListBuilderException(error.message);
+    } finally {
+      if (resetBlock) {
+        this.getBlockComponent()?.reset();
+      }
     }
-    const block = this.buildOrderedListBlock(rawJson);
-    if (resetBlock) {
-      this.getBlockComponent()?.reset();
-    }
-    return block;
   }
 
   public buildOrderedListBlock(rawJson: RawJSON): ReactElement {
