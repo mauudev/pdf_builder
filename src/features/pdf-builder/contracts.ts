@@ -1,29 +1,10 @@
 import { ReactNode, ReactElement } from 'react';
 import { Style } from '@react-pdf/types';
+import { BlockValidator } from './validators';
 
 // #################################################
-// # Types para los estilos de los bloques
+// # Types para los estilos
 // #################################################
-
-export type Blocks = {
-  blocks: Array<RawJSON>;
-  entityMap: object;
-};
-
-export type RawJSON = {
-  key: string;
-  text: string;
-  type: string;
-  depth: number;
-  inlineStyleRanges: Array<{
-    offset: number;
-    length: number;
-    style: string;
-  }>;
-  entityRanges: Array<object>;
-  data: object;
-};
-
 export type PageStyles = {
   pageSize: string | number;
   fontSize: string | number;
@@ -51,8 +32,56 @@ export type TextStyles = {
 };
 
 // #################################################
-// # BLOCKS INTERFACES
+// # Types para los bloques
 // #################################################
+type EntityRanges = {
+  offset: number;
+  length: number;
+  key: number;
+};
+
+type EntityStyles = {
+  [key: string]: Style;
+};
+
+type TableEntity = {
+  rows: number;
+  columns: number;
+  tableCells: string[][];
+  styles: EntityStyles;
+  innerHTML: string;
+};
+
+export type RawJSON = {
+  key: string;
+  text: string;
+  type: string;
+  depth: number;
+  inlineStyleRanges: Array<InlineStyleRange>;
+  entityRanges: Array<EntityRanges>;
+  data: object;
+};
+
+export type EntityMapItem = {
+  type: string;
+  mutability: string;
+  data: TableEntity; // | LinkEntity | ImageEntity | MentionEntity
+};
+
+export type EntityMap = Record<string, EntityMapItem>;
+export type RawContent = {
+  blocks: Array<RawJSON>;
+  entityMap: EntityMap;
+};
+
+export interface IValidatable {
+  validate(rawJson: RawJSON, entityMap?: EntityMap): void;
+}
+
+// #################################################
+// # Blocks
+// #################################################
+
 export interface IBlock {
   reset(): void;
   getBlocks(): Array<ReactNode>;
@@ -61,36 +90,60 @@ export interface IBlock {
 }
 
 export interface IUnstyledBlock extends IBlock {}
+
 export interface IHeaderBlock extends IBlock {
   getHeaderTypes(): string[];
 }
+
 export interface IUnorderedListBlock extends IBlock {}
+
 export interface IOrderedListBlock extends IBlock {
   index: number;
   resetIndex(): void;
 }
 
 // #################################################
-// # BUILDERS INTERFACES
+// # Entities
 // #################################################
-export interface IBuilder {
-  getBlockComponent(): IBlock | undefined;
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement;
+export interface IEntity {
+  reset(): void;
+  getEntity(): Array<ReactNode>;
+  getComponent(entity: EntityMapItem): ReactElement | undefined;
+  buildEntity(entity: EntityMapItem): void;
 }
 
-export interface IUnstyledBuilder extends IBuilder {
+export interface ITableEntity extends IEntity {}
+
+// #################################################
+// # Builders
+// #################################################
+export interface IBlockBuilder extends IValidatable {
+  getBlockComponent(): IBlock | undefined;
+  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+}
+
+export interface IEntityBuilder extends IValidatable {
+  getEntityComponent(): IEntity | undefined;
+  getBuiltEntity(entity: EntityMapItem, resetEntity?: boolean): ReactElement | undefined;
+}
+
+export interface IUnstyledBuilder extends IBlockBuilder {
   buildUnstyledBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IHeaderBuilder extends IBuilder {
+export interface IHeaderBuilder extends IBlockBuilder {
   buildHeaderBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IUnorderedListBuilder extends IBuilder {
+export interface IUnorderedListBuilder extends IBlockBuilder {
   buildUnorderedListBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IOrderedListBuilder extends IBuilder {
+export interface IOrderedListBuilder extends IBlockBuilder {
   resetIndex(): void;
   buildOrderedListBlock(rawJson: RawJSON): ReactElement;
+}
+
+export interface ITableBuilder extends IEntityBuilder {
+  buildTableEntity(rawJson: RawJSON, entityMap: EntityMap): ReactElement;
 }
