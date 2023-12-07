@@ -38,16 +38,7 @@ class UnstyledBlock implements IUnstyledBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const { type, text, inlineStyleRanges } = rawJson;
-    if (!type || !Array.isArray(inlineStyleRanges)) {
-      throw new UnstyledBlockException(
-        `Invalid rawJson format: type: ${type}, text: ${text}, inlineStyleRanges: ${inlineStyleRanges}`
-      );
-    }
-    if (type !== 'unstyled') {
-      throw new UnstyledBlockException(`Invalid type: ${type}`);
-    }
-
+    const { text, inlineStyleRanges } = rawJson;
     let styledTexts = [];
     if (text === '') {
       styledTexts = [

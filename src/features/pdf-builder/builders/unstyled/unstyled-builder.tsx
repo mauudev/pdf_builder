@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from '../contracts';
-import { parseStyle } from '../utils';
-import UnstyledBlock from '../blocks/unstyled';
-import { UnstyledBuilderException } from '../exceptions';
+import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from '../../contracts';
+import { parseStyle } from '../../utils';
+import UnstyledBlock from '../../blocks/unstyled';
+import { UnstyledBlockException, UnstyledBuilderException } from '../../exceptions';
+import UnstyledBlockValidator from './validator';
 
 /**
  * Builder de componentes de tipo 'unstyled', itera los inlineStyleRanges
@@ -13,24 +14,33 @@ import { UnstyledBuilderException } from '../exceptions';
  */
 class UnstyledBlockBuilder implements IUnstyledBuilder {
   private blockComponent: IUnstyledBlock;
+  private validator: UnstyledBlockValidator;
 
   constructor() {
     this.blockComponent = new UnstyledBlock();
+    this.validator = new UnstyledBlockValidator();
+  }
+
+  public validate(rawJson: RawJSON): void {
+    this.validator.validate(rawJson);
   }
 
   public getBlockComponent(): IUnstyledBlock {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
-    if (!rawJson || !rawJson.key) {
-      throw new UnstyledBuilderException('Invalid rawJson format or missing key');
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+    try {
+      this.validate(rawJson);
+      return this.buildUnstyledBlock(rawJson);
+    } catch (error) {
+      if (error instanceof UnstyledBlockException) throw error;
+      if (error instanceof Error) throw new UnstyledBuilderException(error.message);
+    } finally {
+      if (resetBlock) {
+        this.getBlockComponent()?.reset();
+      }
     }
-    const block = this.buildUnstyledBlock(rawJson);
-    if (resetBlock) {
-      this.getBlockComponent()?.reset();
-    }
-    return block;
   }
 
   public buildUnstyledBlock(rawJson: RawJSON): ReactElement {
