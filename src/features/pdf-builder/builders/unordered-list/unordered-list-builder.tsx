@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON } from '../contracts';
-import { parseStyle } from '../utils';
-import UnorderedListBlock from '../blocks/unordered-list';
-import { UnorderedListBuilderException } from '../exceptions';
+import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON } from '../../contracts';
+import { parseStyle } from '../../utils';
+import UnorderedListBlock from '../../blocks/unordered-list';
+import { UnorderedListBuilderException, UnorderedListBlockException } from '../../exceptions';
+import UnorderedListValidator from './validator';
 
 /**
  * Builder de componentes de tipo 'unordered-list-item', itera los inlineStyleRanges
@@ -13,24 +14,35 @@ import { UnorderedListBuilderException } from '../exceptions';
  */
 class UnorderedListBuilder implements IUnorderedListBuilder {
   private blockComponent: IUnorderedListBlock;
+  private validator: UnorderedListValidator;
 
   constructor() {
     this.blockComponent = new UnorderedListBlock();
+    this.validator = new UnorderedListValidator();
+  }
+
+  public validate(rawJson: RawJSON): void {
+    this.validator.validate(rawJson);
   }
 
   public getBlockComponent(): IUnorderedListBlock {
     return this.blockComponent;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement {
-    if (!rawJson || !rawJson.key) {
-      throw new UnorderedListBuilderException('Invalid rawJson format or missing key');
+  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+    try {
+      this.validate(rawJson);
+      return this.buildUnorderedListBlock(rawJson);
+    } catch (error) {
+      if (error instanceof UnorderedListBuilderException) {
+        throw error;
+      }
+      if (error instanceof Error) throw new UnorderedListBuilderException(error.message);
+    } finally {
+      if (resetBlock) {
+        this.getBlockComponent()?.reset();
+      }
     }
-    const block = this.buildUnorderedListBlock(rawJson);
-    if (resetBlock) {
-      this.getBlockComponent()?.reset();
-    }
-    return block;
   }
 
   public buildUnorderedListBlock(rawJson: RawJSON): ReactElement {
