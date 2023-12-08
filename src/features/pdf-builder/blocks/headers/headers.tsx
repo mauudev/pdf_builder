@@ -15,12 +15,10 @@ import Logger from '../../logger';
 class HeaderBlock implements IHeaderBlock {
   private headerBlocks: Array<ReactNode>;
   private styleMap: { [key: string]: Style };
-  private headerTypes: string[];
 
   constructor() {
     this.styleMap = headerStyles;
     this.headerBlocks = [];
-    this.headerTypes = ['header-one', 'header-two', 'header-three', 'header-four', 'header-five', 'header-six'];
   }
 
   public reset(): void {
@@ -29,10 +27,6 @@ class HeaderBlock implements IHeaderBlock {
 
   public getBlocks(): Array<ReactNode> {
     return this.headerBlocks;
-  }
-
-  public getHeaderTypes(): string[] {
-    return this.headerTypes;
   }
 
   public getComponent(rawJson: RawJSON): ReactElement {

@@ -94,9 +94,7 @@ export interface IBlock extends IRenderable {
 
 export interface IUnstyledBlock extends IBlock {}
 
-export interface IHeaderBlock extends IBlock {
-  getHeaderTypes(): string[];
-}
+export interface IHeaderBlock extends IBlock {}
 
 export interface IUnorderedListBlock extends IBlock {}
 
@@ -123,7 +121,6 @@ export interface IBuilder extends IValidatable {
   buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
   buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
 }
-
 
 export interface IUnstyledBuilder extends IBuilder {
   buildUnstyledBlock(rawJson: RawJSON): ReactElement;
