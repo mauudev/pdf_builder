@@ -1,0 +1,147 @@
+{
+  "blocks": [
+    {
+      "key": "5m52k",
+      "text": "sdqweqweqweqw",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "ch9f6",
+      "text": " ",
+      "type": "atomic",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
+          "key": 0
+        }
+      ],
+      "data": {}
+    },
+    {
+      "key": "2o70r",
+      "text": "otra mas",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "2essa",
+      "text": " ",
+      "type": "atomic",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
+          "key": 1
+        }
+      ],
+      "data": {}
+    },
+    {
+      "key": "abng2",
+      "text": "alguna mas",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "etj42",
+      "text": " ",
+      "type": "atomic",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
+          "key": 2
+        }
+      ],
+      "data": {}
+    },
+    {
+      "key": "7crtu",
+      "text": "",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [],
+      "data": {}
+    },
+    {
+      "key": "149md",
+      "text": " ",
+      "type": "atomic",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
+          "key": 3
+        }
+      ],
+      "data": {}
+    }
+  ],
+  "entityMap": {
+    "0": {
+      "type": "TABLE",
+      "mutability": "IMMUTABLE",
+      "data": {
+        "rows": 3,
+        "columns": 3,
+        "styles": {},
+        "tableCells": [
+          ["A", "B", "C"],
+          ["D", "E", "F"],
+          ["G", "H", "I"]
+        ],
+        "innerHTML": "<table><tbody><tr><td>A</td><td>B</td><td>C</td></tr><tr><td>D</td><td>E</td><td>F</td></tr><tr><td>G</td><td>H</td><td>I</td></tr></tbody></table>"
+      }
+    },
+    "1": {
+      "type": "TABLE",
+      "mutability": "IMMUTABLE",
+      "data": {
+        "innerHTML": "<table style=\"border: 1px solid black; border-collapse: collapse; width: 100%\"><tbody><tr><td>aa</td><td>aa</td></tr><tr><td>aa</td><td>aa</td></tr></tbody></table>",
+        "data": {
+          "key": "mykey"
+        }
+      }
+    },
+    "2": {
+      "type": "TABLE",
+      "mutability": "IMMUTABLE",
+      "data": {
+        "innerHTML": "<table style=\"border: 1px solid black; border-collapse: collapse; width: 100%\"><tbody><tr><td>zxc</td><td>zxc</td></tr><tr><td>zxc</td><td>zxc</td></tr></tbody></table>",
+        "data": {
+          "key": "mykey"
+        }
+      }
+    },
+    "3": {
+      "type": "TABLE",
+      "mutability": "IMMUTABLE",
+      "data": {
+        "innerHTML": "<table style=\"border: 1px solid black; border-collapse: collapse; width: 100%\"><tbody><tr><td>z</td><td>qa</td></tr><tr><td>q</td><td>qq</td></tr></tbody></table>",
+        "data": {
+          "key": "mykey"
+        }
+      }
+    }
+  }
+}
