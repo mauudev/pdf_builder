@@ -86,6 +86,22 @@ export class UnorderedListBuilderException extends BuilderException {
   }
 }
 
+export class TableBlockException extends BlockException {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TableBlockException';
+    Object.setPrototypeOf(this, TableBlockException.prototype);
+  }
+}
+
+export class TableBuilderException extends BuilderException {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TableBuilderException';
+    Object.setPrototypeOf(this, TableBuilderException.prototype);
+  }
+}
+
 export class PDFBuilderException extends BuilderException {
   constructor(message: string) {
     super(message);
