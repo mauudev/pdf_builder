@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IUnstyledBuilder, IUnstyledBlock, RawJSON } from '../../contracts';
+import { IUnstyledBuilder, IUnstyledBlock, RawJSON, EntityMap } from '../../contracts';
 import { parseStyle } from '../../utils';
 import UnstyledBlock from '../../blocks/unstyled';
 import { UnstyledBlockException, UnstyledBuilderException } from '../../exceptions';
@@ -13,11 +13,11 @@ import UnstyledBlockValidator from './validator';
  * para crear una sola linea de texto.
  */
 class UnstyledBlockBuilder implements IUnstyledBuilder {
-  private blockComponent: IUnstyledBlock;
+  private worker: IUnstyledBlock;
   private validator: UnstyledBlockValidator;
 
   constructor() {
-    this.blockComponent = new UnstyledBlock();
+    this.worker = new UnstyledBlock();
     this.validator = new UnstyledBlockValidator();
   }
 
@@ -25,11 +25,17 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
     this.validator.validate(rawJson);
   }
 
-  public getBlockComponent(): IUnstyledBlock {
-    return this.blockComponent;
+  public getWorker(): IUnstyledBlock {
+    return this.worker;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+  public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    _entityMapOrResetBlock?: EntityMap | boolean,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     try {
       this.validate(rawJson);
       return this.buildUnstyledBlock(rawJson);
@@ -38,7 +44,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
       if (error instanceof Error) throw new UnstyledBuilderException(error.message);
     } finally {
       if (resetBlock) {
-        this.getBlockComponent()?.reset();
+        this.getWorker()?.reset();
       }
     }
   }
@@ -51,7 +57,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
-        {this.blockComponent?.getComponent(rawJson)}
+        {this.worker?.getComponent(rawJson)}
       </View>
     );
   }

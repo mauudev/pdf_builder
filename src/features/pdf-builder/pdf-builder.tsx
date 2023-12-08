@@ -1,10 +1,10 @@
 import React from 'react';
 import { Document, Page, PDFViewer, View } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
-import UnstyledBlockBuilder from './builders/unstyled-builder';
-import HeaderBlockBuilder from './builders/headers-builder';
-import UnorderedListBuilder from './builders/unordered-list-builder';
-import OrderedListBuilder from './builders/ordered-list-builder';
+import UnstyledBlockBuilder from './builders/unstyled/unstyled-builder';
+import HeaderBlockBuilder from './builders/headers/headers-builder';
+import UnorderedListBuilder from './builders/unordered-list/unordered-list-builder';
+import OrderedListBuilder from './builders/ordered-list/ordered-list-builder';
 import * as contracts from './contracts';
 import * as exceptions from './exceptions';
 import Logger from './logger';
@@ -20,25 +20,24 @@ import Logger from './logger';
  * cada block.
  */
 class PDFBuilder {
-  public componentBuilder: contracts.IBuilder | undefined;
+  public builder: contracts.IBuilder;
   private contentBlocks: Array<React.ReactElement>;
-  private editorBlocks: Array<contracts.RawJSON>;
   private headerBuilder: contracts.IHeaderBuilder;
   private unstyledBuilder: contracts.IUnstyledBuilder;
   private unorderedListBuilder: contracts.IUnorderedListBuilder;
   private orderedListBuilder: contracts.IOrderedListBuilder;
 
-  constructor(editorBlocks: Array<contracts.RawJSON>) {
-    this.headerBuilder = new HeaderBlockBuilder();
+  constructor() {
+    this.contentBlocks = [];
     this.unstyledBuilder = new UnstyledBlockBuilder();
+    this.headerBuilder = new HeaderBlockBuilder();
     this.unorderedListBuilder = new UnorderedListBuilder();
     this.orderedListBuilder = new OrderedListBuilder();
-    this.editorBlocks = editorBlocks || [];
-    this.contentBlocks = [];
+    this.builder = this.unstyledBuilder;
   }
 
   public setBuilder(builder: contracts.IBuilder): void {
-    this.componentBuilder = builder;
+    this.builder = builder;
   }
 
   public PDFPreview(pdfStyles: contracts.PageStyles, windowPrevStyles: Style): React.ReactElement | undefined {
@@ -46,21 +45,41 @@ class PDFBuilder {
   }
 
   public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
+    const textStyles = {
+      fontSize: pdfStyles.fontSize,
+      lineHeight: pdfStyles.lineHeight,
+      ...pdfStyles.margin,
+    };
+    return (
+      <Document>
+        <Page size={pdfStyles.pageSize as any}>
+          {/* <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View> */}
+          <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View>
+        </Page>
+      </Document>
+    );
+  }
+
+  public buildPDFBlocks(editorRawContent: contracts.RawContent): void {
     try {
-      const textStyles = {
-        fontSize: pdfStyles.fontSize,
-        lineHeight: pdfStyles.lineHeight,
-        ...pdfStyles.margin,
-      };
-      this.buildPDFBlocks(textStyles);
-      return (
-        <Document>
-          <Page size={pdfStyles.pageSize as any}>
-            {/* <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View> */}
-            <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View>
-          </Page>
-        </Document>
-      );
+      for (const rawJson of editorRawContent.blocks) {
+        if (rawJson.type === 'unstyled') {
+          this.setBuilder(this.unstyledBuilder);
+        }
+        if (rawJson.type.startsWith('header')) {
+          this.setBuilder(this.headerBuilder);
+        }
+        if (rawJson.type === 'unordered-list-item') {
+          this.setBuilder(this.unorderedListBuilder);
+        }
+        if (rawJson.type === 'ordered-list-item') {
+          this.setBuilder(this.orderedListBuilder);
+        }
+        if (rawJson.type !== 'ordered-list-item') {
+          this.orderedListBuilder?.resetIndex();
+        }
+        this.contentBlocks.push(this.builder?.buildComponent(rawJson, true)!);
+      }
     } catch (error) {
       // TODO: find a better way to handle errors,
       // maybe by using a chain of responsibility pattern for all exceptions
@@ -72,29 +91,6 @@ class PDFBuilder {
       }
     } finally {
       this.contentBlocks = [];
-    }
-  }
-
-  public buildPDFBlocks(textStyles: Style) {
-    for (const rawJson of this.editorBlocks) {
-      if (rawJson.type === 'unstyled') {
-        this.setBuilder(this.unstyledBuilder);
-      }
-      if (rawJson.type.startsWith('header')) {
-        this.setBuilder(this.headerBuilder);
-      }
-      if (rawJson.type === 'unordered-list-item') {
-        this.setBuilder(this.unorderedListBuilder);
-      }
-      if (rawJson.type === 'ordered-list-item') {
-        this.setBuilder(this.orderedListBuilder);
-      }
-
-      // TODO: find a better way to handle the index order
-      if (rawJson.type !== 'ordered-list-item') {
-        this.orderedListBuilder.resetIndex();
-      }
-      this.contentBlocks.push(this.componentBuilder?.getBuiltBlock(rawJson, true)!);
     }
   }
 }

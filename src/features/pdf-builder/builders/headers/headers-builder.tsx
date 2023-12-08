@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IHeaderBuilder, IHeaderBlock, RawJSON } from '../../contracts';
+import { IHeaderBuilder, IHeaderBlock, RawJSON, EntityMap } from '../../contracts';
 import { parseStyle } from '../../utils';
 import HeaderBlock from '../../blocks/headers/headers';
 import { HeaderBuilderException, HeaderBlockException } from '../../exceptions';
@@ -11,11 +11,11 @@ import Logger from '../../logger';
  * Builder de componentes de tipo 'header'
  */
 class HeaderBlockBuilder implements IHeaderBuilder {
-  private blockComponent: IHeaderBlock | undefined;
+  private worker: IHeaderBlock;
   private validator: HeaderBlockValidator;
 
   constructor() {
-    this.blockComponent = new HeaderBlock();
+    this.worker = new HeaderBlock();
     this.validator = new HeaderBlockValidator();
   }
 
@@ -23,11 +23,17 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     this.validator.validate(rawJson);
   }
 
-  public getBlockComponent(): IHeaderBlock | undefined {
-    return this.blockComponent;
+  public getWorker(): IHeaderBlock {
+    return this.worker;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+  public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    _entityMapOrResetBlock?: EntityMap | boolean,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     try {
       this.validate(rawJson);
       return this.buildHeaderBlock(rawJson);
@@ -39,7 +45,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
       if (error instanceof Error) throw new HeaderBuilderException(error.message);
     } finally {
       if (resetBlock) {
-        this.getBlockComponent()?.reset();
+        this.getWorker()?.reset();
       }
     }
   }
@@ -52,7 +58,7 @@ class HeaderBlockBuilder implements IHeaderBuilder {
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
-        {this.blockComponent?.getComponent(rawJson)}
+        {this.worker?.getComponent(rawJson)}
       </View>
     );
   }

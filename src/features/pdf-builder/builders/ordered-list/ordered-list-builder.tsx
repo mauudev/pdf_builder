@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IOrderedListBuilder, IOrderedListBlock, RawJSON } from '../../contracts';
+import { IOrderedListBuilder, IOrderedListBlock, RawJSON, EntityMap } from '../../contracts';
 import { parseStyle } from '../../utils';
 import OrderedListBlock from '../../blocks/ordered-list';
 import { OrderedListBuilderException } from '../../exceptions';
@@ -14,11 +14,11 @@ import OrderedListValidator from './validator';
  * para crear una sola linea de texto.
  */
 class OrderedListBuilder implements IOrderedListBuilder {
-  private blockComponent: IOrderedListBlock;
+  private worker: IOrderedListBlock;
   private validator: OrderedListValidator;
 
   constructor() {
-    this.blockComponent = new OrderedListBlock();
+    this.worker = new OrderedListBlock();
     this.validator = new OrderedListValidator();
   }
 
@@ -27,14 +27,20 @@ class OrderedListBuilder implements IOrderedListBuilder {
   }
 
   public resetIndex(): void {
-    this.blockComponent?.resetIndex();
+    this.worker?.resetIndex();
   }
 
-  public getBlockComponent(): IOrderedListBlock {
-    return this.blockComponent;
+  public getWorker(): IOrderedListBlock {
+    return this.worker;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+  public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    _entityMapOrResetBlock?: EntityMap | boolean,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     try {
       this.validate(rawJson);
       return this.buildOrderedListBlock(rawJson);
@@ -45,7 +51,7 @@ class OrderedListBuilder implements IOrderedListBuilder {
       if (error instanceof Error) throw new OrderedListBuilderException(error.message);
     } finally {
       if (resetBlock) {
-        this.getBlockComponent()?.reset();
+        this.getWorker()?.reset();
       }
     }
   }
@@ -58,7 +64,7 @@ class OrderedListBuilder implements IOrderedListBuilder {
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
-        {this.blockComponent?.getComponent(rawJson)}
+        {this.worker?.getComponent(rawJson)}
       </View>
     );
   }

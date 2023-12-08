@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { View } from '@react-pdf/renderer';
-import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON } from '../../contracts';
+import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON, EntityMap } from '../../contracts';
 import { parseStyle } from '../../utils';
 import UnorderedListBlock from '../../blocks/unordered-list';
 import { UnorderedListBuilderException, UnorderedListBlockException } from '../../exceptions';
@@ -13,11 +13,11 @@ import UnorderedListValidator from './validator';
  * para crear una sola linea de texto.
  */
 class UnorderedListBuilder implements IUnorderedListBuilder {
-  private blockComponent: IUnorderedListBlock;
+  private worker: IUnorderedListBlock;
   private validator: UnorderedListValidator;
 
   constructor() {
-    this.blockComponent = new UnorderedListBlock();
+    this.worker = new UnorderedListBlock();
     this.validator = new UnorderedListValidator();
   }
 
@@ -25,11 +25,17 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
     this.validator.validate(rawJson);
   }
 
-  public getBlockComponent(): IUnorderedListBlock {
-    return this.blockComponent;
+  public getWorker(): IUnorderedListBlock {
+    return this.worker;
   }
 
-  public getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined {
+  public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    _entityMapOrResetBlock?: EntityMap | boolean,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     try {
       this.validate(rawJson);
       return this.buildUnorderedListBlock(rawJson);
@@ -40,7 +46,7 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
       if (error instanceof Error) throw new UnorderedListBuilderException(error.message);
     } finally {
       if (resetBlock) {
-        this.getBlockComponent()?.reset();
+        this.getWorker()?.reset();
       }
     }
   }
@@ -53,7 +59,7 @@ class UnorderedListBuilder implements IUnorderedListBuilder {
     }
     return (
       <View key={rawJson.key} style={blockStyle}>
-        {this.blockComponent?.getComponent(rawJson)}
+        {this.worker?.getComponent(rawJson)}
       </View>
     );
   }
