@@ -90,11 +90,12 @@ function customBlockRenderFunc(block, config) {
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
-  const pdfBuilder = new PDFBuilder(editorState.editor.rawContent.blocks);
 
-  // useEffect(() => {
-  //   Logger.debug(`Blocks: ${JSON.stringify(convertToRaw(editorState.editor.state.getCurrentContent()))}`);
-  // }, [editorState.editor.state]);
+  useEffect(() => {
+    Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
+    Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
+    Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
+  }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
     dispatch({
@@ -125,9 +126,10 @@ const WYSIWYGEditor = () => {
     });
   };
 
-  const createMarkup = (html) => ({
-    __html: DOMPurify.sanitize(html),
-  });
+  const createMarkup = (html) => {
+    const formattedHtml = html;
+    return { __html: formattedHtml };
+  };
 
   const buildPdfPreview = () => {
     const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
@@ -137,6 +139,8 @@ const WYSIWYGEditor = () => {
       lineHeight: parsePointValue(lineHeight),
       margin,
     };
+    const pdfBuilder = new PDFBuilder();
+    pdfBuilder.buildPDFBlocks(editorState.editor.convertedContent);
     return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
@@ -148,21 +152,28 @@ const WYSIWYGEditor = () => {
     setIsTableModalOpen(true);
   };
 
-  const insertAtomicBlock = (targetEditorState, entityType, mutability, dataHtml) => {
-    const entityKey = targetEditorState
-      .getCurrentContent()
-      .createEntity(entityType, mutability, {
-        innerHTML: dataHtml,
-      })
-      .getLastCreatedEntityKey();
-    const character = ' ';
-    const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
-    return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
+  const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
+    if (tableData && tableData.html && tableData.data) {
+      const entityKey = targetEditorState
+        .getCurrentContent()
+        .createEntity(entityType, mutability, {
+          rows: tableData.rows,
+          columns: tableData.columns,
+          tableCells: tableData.tableCells,
+          styles: tableData.styles,
+          innerHTML: tableData.html,
+        })
+        .getLastCreatedEntityKey();
+      const character = ' ';
+      const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
+      return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
+    }
   };
 
-  const handleSaveTable = (tableHTML) => {
+  const handleSaveTable = (tableData) => {
+    console.log(`Table Data: ${JSON.stringify(tableData)}`);
     const currentEditorState = editorState.editor.state;
-    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableHTML);
+    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
     onEditorStateChange(newEditorState);
   };
 

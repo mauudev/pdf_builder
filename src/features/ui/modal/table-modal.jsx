@@ -46,7 +46,8 @@ const modalStyle = {
 const getInitialState = () => ({
   rows: 2,
   columns: 2,
-  data: [
+  styles: {},
+  tableCells: [
     ['', ''],
     ['', ''],
   ],
@@ -57,15 +58,13 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
   const [tableData, setTableData] = useState(() => getInitialState());
 
   const generateHtmlTable = () => {
-    const { data } = tableData;
+    const { tableCells } = tableData;
 
-    const tableRows = data.map((row) => {
+    const tableRows = tableCells.map((row) => {
       const cells = row.map((cell) => `<td>${cell}</td>`).join('');
       return `<tr>${cells}</tr>`;
     });
-    return `<table style="border: 1px solid black; border-collapse: collapse; width: 100%"><tbody>${tableRows.join(
-      ''
-    )}</tbody></table>`;
+    return `<table><tbody>${tableRows.join('')}</tbody></table>`;
   };
 
   useEffect(() => {
@@ -75,8 +74,15 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
   }, [isOpen]);
 
   const handleSave = () => {
-    onSave(generateHtmlTable());
-    // onClose();
+    const tableHtml = generateHtmlTable();
+    setTableData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        html: tableHtml,
+      };
+      onSave(updatedData);
+      return updatedData;
+    });
   };
 
   const handleClose = () => {
@@ -89,7 +95,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
       setTableData((prevData) => ({
         ...prevData,
         rows: prevData.rows - 1,
-        data: prevData.data.filter((_, index) => index !== rowIndex),
+        tableCells: prevData.tableCells.filter((_, index) => index !== rowIndex),
       }));
     }
   };
@@ -99,7 +105,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
       setTableData((prevData) => ({
         ...prevData,
         columns: prevData.columns - 1,
-        data: prevData.data.map((row) => row.filter((_, index) => index !== colIndex)),
+        tableCells: prevData.tableCells.map((row) => row.filter((_, index) => index !== colIndex)),
       }));
     }
   };
@@ -108,7 +114,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     setTableData((prevData) => ({
       ...prevData,
       rows: prevData.rows + 1,
-      data: [...prevData.data, Array(prevData.columns).fill('')],
+      tableCells: [...prevData.tableCells, Array(prevData.columns).fill('')],
     }));
   };
 
@@ -116,17 +122,17 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
     setTableData((prevData) => ({
       ...prevData,
       columns: prevData.columns + 1,
-      data: prevData.data.map((row) => [...row, '']),
+      tableCells: prevData.tableCells.map((row) => [...row, '']),
     }));
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
     setTableData((prevData) => {
-      const newData = [...prevData.data];
-      newData[rowIndex][colIndex] = value;
+      const newCells = [...prevData.tableCells];
+      newCells[rowIndex][colIndex] = value;
       return {
         ...prevData,
-        data: newData,
+        tableCells: newCells,
       };
     });
   };
@@ -149,7 +155,7 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
               </div>
               <table>
                 <tbody>
-                  {tableData.data.map((row, rowIndex) => (
+                  {tableData.tableCells.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       {row.map((cell, colIndex) => (
                         <td key={colIndex}>
