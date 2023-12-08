@@ -5,6 +5,7 @@ import UnstyledBlockBuilder from './builders/unstyled/unstyled-builder';
 import HeaderBlockBuilder from './builders/headers/headers-builder';
 import UnorderedListBuilder from './builders/unordered-list/unordered-list-builder';
 import OrderedListBuilder from './builders/ordered-list/ordered-list-builder';
+import TableEntityBuilder from './builders/tables/table-builder';
 import * as contracts from './contracts';
 import * as exceptions from './exceptions';
 import Logger from './logger';
@@ -26,6 +27,7 @@ class PDFBuilder {
   private unstyledBuilder: contracts.IUnstyledBuilder;
   private unorderedListBuilder: contracts.IUnorderedListBuilder;
   private orderedListBuilder: contracts.IOrderedListBuilder;
+  private tableBuilder: contracts.ITableBuilder;
 
   constructor() {
     this.contentBlocks = [];
@@ -33,6 +35,7 @@ class PDFBuilder {
     this.headerBuilder = new HeaderBlockBuilder();
     this.unorderedListBuilder = new UnorderedListBuilder();
     this.orderedListBuilder = new OrderedListBuilder();
+    this.tableBuilder = new TableEntityBuilder();
     this.builder = this.unstyledBuilder;
   }
 
@@ -78,7 +81,14 @@ class PDFBuilder {
         if (rawJson.type !== 'ordered-list-item') {
           this.orderedListBuilder?.resetIndex();
         }
-        this.contentBlocks.push(this.builder?.buildComponent(rawJson, true)!);
+        if (rawJson.type === 'atomic') {
+          this.setBuilder(this.tableBuilder);
+        }
+        if (this.builder instanceof TableEntityBuilder) {
+          this.contentBlocks.push(this.builder?.buildComponent(rawJson, editorRawContent.entityMap, true)!);
+        } else {
+          this.contentBlocks.push(this.builder?.buildComponent(rawJson, true)!);
+        }
       }
     } catch (error) {
       // TODO: find a better way to handle errors,

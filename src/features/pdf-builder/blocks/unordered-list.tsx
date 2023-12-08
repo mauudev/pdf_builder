@@ -17,8 +17,6 @@ class UnorderedListBlock implements IUnorderedListBlock {
     this.listBlocks = [];
   }
 
-  public validate(rawJson: RawJSON): void {}
-
   public reset(): void {
     this.listBlocks = [];
   }

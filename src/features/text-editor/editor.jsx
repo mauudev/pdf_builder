@@ -1,23 +1,100 @@
-import React, { useEffect } from 'react';
-import { convertToRaw } from 'draft-js';
+import React, { useEffect, useState } from 'react';
+import { convertToRaw, ContentState, EditorState, AtomicBlockUtils, Modifier, genKey } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import DOMPurify from 'dompurify';
+import { v4 as uuidv4 } from 'uuid';
 import { Editor } from 'react-draft-wysiwyg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '@fortawesome/fontawesome-free';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 import { styles } from './editor.styles';
 import PreviewModal from '../ui/modal/preview-modal';
-import { capitalizeFirstLetter } from '../../utils/helpers';
+import { capitalizeFirstLetter, parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
-
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import TableModal from '../ui/modal/table-modal';
 import Logger from '../pdf-builder/logger';
 
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+
+library.add(far, fas, fab);
+
+function entityMapper(entity) {
+  if (entity.type === 'DIV') {
+    return `<div>${entity.data.innerHTML}</div>`;
+  }
+  if (entity.type === 'TABLE') {
+    return `<table>${entity.data.innerHTML}</table>`;
+  }
+  if (entity.type === 'TBODY') {
+    return `<tbody>${entity.data.innerHTML}</tbody>`;
+  }
+  if (entity.type === 'TR') {
+    return `<tr>${entity.data.innerHTML}</tr>`;
+  }
+  if (entity.type === 'TH') {
+    return `<th>${entity.data.innerHTML}</th>`;
+  }
+  if (entity.type === 'TD') {
+    return `<td>${entity.data.innerHTML}</td>`;
+  }
+  if (entity.type === 'STYLE') {
+    return `<style>${entity.data.innerHTML}</style>`;
+  }
+  return '';
+}
+
+function entityMapperToComponent(entity) {
+  if (entity.type === 'DIV') {
+    return () => <div dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'TABLE') {
+    return () => <table dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'TBODY') {
+    return <tbody dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'TR') {
+    return () => <tr dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'TH') {
+    return () => <th dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'TD') {
+    return () => <td dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
+  }
+  if (entity.type === 'STYLE') {
+    return () => <style>{entity.data.innerHTML}</style>;
+  }
+  return '';
+}
+
+function customBlockRenderFunc(block, config) {
+  if (block.getType() === 'atomic') {
+    const contentState = config.getEditorState().getCurrentContent();
+    const entityKey = block.getEntityAt(0);
+    const entity = contentState.getEntity(entityKey);
+    return {
+      component: entityMapperToComponent(entity),
+      editable: false,
+      props: {
+        children: () => entity.innerHTML,
+      },
+    };
+  }
+}
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
-  const pdfBuilder = new PDFBuilder(editorState.editor.rawContent.blocks);
+  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
   useEffect(() => {
-    Logger.debug(`Blocks: ${JSON.stringify(convertToRaw(editorState.editor.state.getCurrentContent()))}`);
+    Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
+    Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
+    Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
   }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
@@ -25,7 +102,7 @@ const WYSIWYGEditor = () => {
       type: 'SET_EDITOR_STATE',
       payload: {
         editorState: newEditorState,
-        convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent())),
+        convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent()), null, false, entityMapper),
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
       },
     });
@@ -49,9 +126,10 @@ const WYSIWYGEditor = () => {
     });
   };
 
-  const createMarkup = (html) => ({
-    __html: DOMPurify.sanitize(html),
-  });
+  const createMarkup = (html) => {
+    const formattedHtml = html;
+    return { __html: formattedHtml };
+  };
 
   const buildPdfPreview = () => {
     const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
@@ -61,26 +139,67 @@ const WYSIWYGEditor = () => {
       lineHeight: parsePointValue(lineHeight),
       margin,
     };
+    const pdfBuilder = new PDFBuilder();
+    pdfBuilder.buildPDFBlocks(editorState.editor.convertedContent);
     return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
   };
 
-  const parsePointValue = (value) => {
-    const numericChars = [...value].filter((char) => !isNaN(char) || char === '.');
-    return parseFloat(numericChars.join(''));
+  const handleModalClose = () => {
+    setIsTableModalOpen(false);
   };
+
+  const handleModalOpen = () => {
+    setIsTableModalOpen(true);
+  };
+
+  const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
+    if (tableData && tableData.html && tableData.data) {
+      const entityKey = targetEditorState
+        .getCurrentContent()
+        .createEntity(entityType, mutability, {
+          rows: tableData.rows,
+          columns: tableData.columns,
+          tableCells: tableData.tableCells,
+          styles: tableData.styles,
+          innerHTML: tableData.html,
+        })
+        .getLastCreatedEntityKey();
+      const character = ' ';
+      const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
+      return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
+    }
+  };
+
+  const handleSaveTable = (tableData) => {
+    console.log(`Table Data: ${JSON.stringify(tableData)}`);
+    const currentEditorState = editorState.editor.state;
+    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
+    onEditorStateChange(newEditorState);
+  };
+
+  const AddTableOption = () => (
+    <div className="rdw-option-wrapper" onClick={handleModalOpen}>
+      <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
+    </div>
+  );
 
   return (
     <div style={styles.editorLayout}>
       <div style={styles.wrapper}>
         <Editor
           editorState={editorState.editor.state}
+          toolbarClassName="toolbar-class"
           wrapperClassName="wrapper-class"
           editorClassName="editor-class"
-          toolbarClassName="toolbar-class"
           onEditorStateChange={onEditorStateChange}
+          customBlockRenderFunc={customBlockRenderFunc}
           toolbar={{
             options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
           }}
+          toolbarCustomButtons={[
+            <AddTableOption />,
+            // <TableOption onChange={onEditorStateChange} editorState={editorState.editor.state} />,
+          ]}
         />
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
@@ -119,7 +238,7 @@ const WYSIWYGEditor = () => {
           </div>
         </div>
       </div>
-      {/* <TableModal isOpen={isTableModalOpen} onClose={() => setTableModalOpen(false)} onSave={handleSaveTable} /> */}
+      <TableModal isOpen={isTableModalOpen} onClose={handleModalClose} onSave={handleSaveTable} />
       <PreviewModal pdfPreview={buildPdfPreview()} />
       <div style={styles.livePreview}>
         <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>

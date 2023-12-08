@@ -36,8 +36,10 @@ export const styles = {
   cartaPreview: {
     backgroundColor: 'white',
     border: '1px solid #000',
-    width: '215.9mm',
-    height: '279.4mm',
+    // width: '215.9mm',
+    // height: '279.4mm',
+    width: '612.0pt',
+    height: '792.0pt',
   },
   oficioPreview: {
     backgroundColor: 'white',
@@ -68,6 +70,7 @@ export const styles = {
     marginBottom: 'var(--margin-bottom, 5pt)',
     textAlign: 'left',
     overflowWrap: 'break-word',
+    fontFamily: 'Arial, sans-serif',
   },
   gridContainer: {
     margin: '10px',

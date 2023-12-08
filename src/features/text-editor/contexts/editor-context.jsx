@@ -7,8 +7,8 @@ export const EditorProvider = ({ children }) => {
   const editorInitialState = {
     pageStyles: {
       pageSize: 'LETTER',
-      fontSize: '14.0pt',
-      lineHeight: '1.5rem',
+      fontSize: '16.0pt',
+      lineHeight: '1.5em',
       margin: {
         marginTop: '20.0pt',
         marginLeft: '20.0pt',
@@ -33,7 +33,7 @@ export const EditorProvider = ({ children }) => {
       case 'CHANGE_LINE_HEIGHT':
         return {
           ...state,
-          pageStyles: { ...state.pageStyles, lineHeight: `${parseFloat(action.payload)}rem` },
+          pageStyles: { ...state.pageStyles, lineHeight: `${parseFloat(action.payload)}em` },
         };
       case 'CHANGE_MARGIN':
         return {
@@ -50,10 +50,17 @@ export const EditorProvider = ({ children }) => {
         return {
           ...state,
           editor: {
-            ...state.editor,
             state: action.payload.editorState,
             convertedContent: action.payload.convertedContent,
             rawContent: action.payload.rawContent,
+          },
+        };
+      case 'SET_TABLE_DATA':
+        return {
+          ...state,
+          editor: {
+            ...state.editor,
+            tableData: action.payload,
           },
         };
       default:
