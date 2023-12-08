@@ -78,14 +78,17 @@ export interface IValidatable {
   validate(rawJson: RawJSON, entityMap?: EntityMap): void;
 }
 
+interface IRenderable {
+  reset(): void;
+  getComponent(data: RawJSON | EntityMapItem): ReactElement | undefined;
+}
+
 // #################################################
 // # Blocks
 // #################################################
 
-export interface IBlock {
-  reset(): void;
+export interface IBlock extends IRenderable {
   getBlocks(): Array<ReactNode>;
-  getComponent(rawJson: RawJSON): ReactElement | undefined;
   buildBlocks(rawJson: RawJSON): void;
 }
 
@@ -105,10 +108,8 @@ export interface IOrderedListBlock extends IBlock {
 // #################################################
 // # Entities
 // #################################################
-export interface IEntity {
-  reset(): void;
+export interface IEntity extends IRenderable {
   getEntity(): Array<ReactNode>;
-  getComponent(entity: EntityMapItem): ReactElement | undefined;
   buildEntity(entity: EntityMapItem): void;
 }
 
@@ -117,33 +118,30 @@ export interface ITableEntity extends IEntity {}
 // #################################################
 // # Builders
 // #################################################
-export interface IBlockBuilder extends IValidatable {
-  getBlockComponent(): IBlock | undefined;
-  getBuiltBlock(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+export interface IBuilder extends IValidatable {
+  getWorker(): IBlock | IEntity;
+  buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
+  buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
 }
 
-export interface IEntityBuilder extends IValidatable {
-  getEntityComponent(): IEntity | undefined;
-  getBuiltEntity(entity: EntityMapItem, resetEntity?: boolean): ReactElement | undefined;
-}
 
-export interface IUnstyledBuilder extends IBlockBuilder {
+export interface IUnstyledBuilder extends IBuilder {
   buildUnstyledBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IHeaderBuilder extends IBlockBuilder {
+export interface IHeaderBuilder extends IBuilder {
   buildHeaderBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IUnorderedListBuilder extends IBlockBuilder {
+export interface IUnorderedListBuilder extends IBuilder {
   buildUnorderedListBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface IOrderedListBuilder extends IBlockBuilder {
+export interface IOrderedListBuilder extends IBuilder {
   resetIndex(): void;
   buildOrderedListBlock(rawJson: RawJSON): ReactElement;
 }
 
-export interface ITableBuilder extends IEntityBuilder {
+export interface ITableBuilder extends IBuilder {
   buildTableEntity(rawJson: RawJSON, entityMap: EntityMap): ReactElement;
 }
