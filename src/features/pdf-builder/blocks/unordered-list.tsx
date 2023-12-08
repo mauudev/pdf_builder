@@ -16,6 +16,9 @@ class UnorderedListBlock implements IUnorderedListBlock {
   constructor() {
     this.listBlocks = [];
   }
+
+  public validate(rawJson: RawJSON): void {}
+
   public reset(): void {
     this.listBlocks = [];
   }
@@ -37,13 +40,7 @@ class UnorderedListBlock implements IUnorderedListBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const { type, text, inlineStyleRanges } = rawJson;
-    if (!type || !text || !Array.isArray(inlineStyleRanges)) {
-      throw new UnorderedListBlockException('Invalid rawJson format');
-    }
-    if (type !== 'unordered-list-item') {
-      throw new UnorderedListBlockException(`Invalid type: ${type}`);
-    }
+    const { text, inlineStyleRanges } = rawJson;
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
     Logger.debug(`Unordered list content and styles: ${JSON.stringify(styledTexts)}`);
 

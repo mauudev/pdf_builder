@@ -43,14 +43,7 @@ class OrderedListBlock implements IOrderedListBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const { type, text, inlineStyleRanges } = rawJson;
-
-    if (!type || !text || !Array.isArray(inlineStyleRanges)) {
-      throw new OrderedListBlockException('Invalid rawJson format');
-    }
-    if (type !== 'ordered-list-item') {
-      throw new OrderedListBlockException(`Invalid type: ${type}`);
-    }
+    const { text, inlineStyleRanges } = rawJson;
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
     Logger.debug(`Ordered list content and styles: ${JSON.stringify(styledTexts)}`);
 

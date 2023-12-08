@@ -22,6 +22,7 @@ class HeaderBlock implements IHeaderBlock {
     this.headerBlocks = [];
     this.headerTypes = ['header-one', 'header-two', 'header-three', 'header-four', 'header-five', 'header-six'];
   }
+
   public reset(): void {
     this.headerBlocks = [];
   }
@@ -47,16 +48,8 @@ class HeaderBlock implements IHeaderBlock {
   }
 
   public buildBlocks(rawJson: RawJSON): void {
-    const { type, text, inlineStyleRanges } = rawJson;
-
-    if (!type || !text || !Array.isArray(inlineStyleRanges)) {
-      throw new HeaderBlockException('Invalid rawJson format');
-    }
-    if (!this.headerTypes.includes(type)) {
-      throw new HeaderBlockException(`Invalid header type: ${type}`);
-    }
+    const { text, inlineStyleRanges } = rawJson;
     const styledTexts = composeStyledTexts(text, inlineStyleRanges);
-
     Logger.debug(`Header content and styles: ${JSON.stringify(styledTexts)}`);
 
     for (const styledText of styledTexts) {
