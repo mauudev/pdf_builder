@@ -20,6 +20,7 @@ export const EditorProvider = ({ children }) => {
       state: EditorState.createEmpty(),
       convertedContent: null,
       rawContent: {},
+      pdfContent: null,
     },
   };
 
@@ -50,19 +51,20 @@ export const EditorProvider = ({ children }) => {
         return {
           ...state,
           editor: {
+            ...state.editor,
             state: action.payload.editorState,
             convertedContent: action.payload.convertedContent,
             rawContent: action.payload.rawContent,
           },
         };
-      case 'SET_TABLE_DATA':
+      case 'SET_PDF_CONTENT':
         return {
           ...state,
           editor: {
             ...state.editor,
-            tableData: action.payload,
+            pdfContent: action.payload,
           },
-        };
+        }
       default:
         return state;
     }

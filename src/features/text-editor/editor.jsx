@@ -90,6 +90,7 @@ function customBlockRenderFunc(block, config) {
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   useEffect(() => {
     Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
@@ -105,6 +106,13 @@ const WYSIWYGEditor = () => {
         convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent()), null, false, entityMapper),
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
       },
+    });
+  };
+
+  const setPDFContent = (content) => {
+    dispatch({
+      type: 'SET_PDF_CONTENT',
+      payload: content,
     });
   };
 
@@ -140,30 +148,40 @@ const WYSIWYGEditor = () => {
       margin,
     };
     const pdfBuilder = new PDFBuilder();
-    pdfBuilder.buildPDFBlocks(editorState.editor.convertedContent);
-    return pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
+    pdfBuilder.buildPDFBlocks(editorState.editor.rawContent);
+    const pdfContent = pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
+    setPDFContent(pdfContent);
   };
 
-  const handleModalClose = () => {
+  const handleTableModalClose = () => {
     setIsTableModalOpen(false);
   };
 
-  const handleModalOpen = () => {
+  const handleTableModalOpen = () => {
     setIsTableModalOpen(true);
   };
 
+  const handlePreviewModalOpen = () => {
+    buildPdfPreview();
+    setIsPreviewModalOpen(true);
+  };
+
+  const handlePreviewModalClose = () => {
+    setIsPreviewModalOpen(false);
+  };
+
   const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
-    if (tableData && tableData.html && tableData.data) {
+    if (tableData && tableData.html && tableData.tableCells) {
       const entityKey = targetEditorState
-        .getCurrentContent()
-        .createEntity(entityType, mutability, {
-          rows: tableData.rows,
-          columns: tableData.columns,
-          tableCells: tableData.tableCells,
-          styles: tableData.styles,
-          innerHTML: tableData.html,
-        })
-        .getLastCreatedEntityKey();
+      .getCurrentContent()
+      .createEntity(entityType, mutability, {
+        rows: tableData.rows,
+        columns: tableData.columns,
+        tableCells: tableData.tableCells,
+        styles: tableData.styles,
+        innerHTML: tableData.html,
+      })
+      .getLastCreatedEntityKey();
       const character = ' ';
       const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
       return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
@@ -171,15 +189,20 @@ const WYSIWYGEditor = () => {
   };
 
   const handleSaveTable = (tableData) => {
-    console.log(`Table Data: ${JSON.stringify(tableData)}`);
     const currentEditorState = editorState.editor.state;
     const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
     onEditorStateChange(newEditorState);
   };
 
   const AddTableOption = () => (
-    <div className="rdw-option-wrapper" onClick={handleModalOpen}>
+    <div className="rdw-option-wrapper" onClick={handleTableModalOpen}>
       <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
+    </div>
+  );
+
+  const PDFPreviewOption = () => (
+    <div className="rdw-option-wrapper" onClick={handlePreviewModalOpen}>
+      <FontAwesomeIcon icon="fa-regular fa-file-pdf" />
     </div>
   );
 
@@ -196,10 +219,7 @@ const WYSIWYGEditor = () => {
           toolbar={{
             options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
           }}
-          toolbarCustomButtons={[
-            <AddTableOption />,
-            // <TableOption onChange={onEditorStateChange} editorState={editorState.editor.state} />,
-          ]}
+          toolbarCustomButtons={[<AddTableOption />, <PDFPreviewOption />]}
         />
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
@@ -238,8 +258,12 @@ const WYSIWYGEditor = () => {
           </div>
         </div>
       </div>
-      <TableModal isOpen={isTableModalOpen} onClose={handleModalClose} onSave={handleSaveTable} />
-      <PreviewModal pdfPreview={buildPdfPreview()} />
+      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      <PreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={handlePreviewModalClose}
+        pdfPreview={editorState.editor.pdfContent}
+      />
       <div style={styles.livePreview}>
         <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
           <div
