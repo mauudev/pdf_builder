@@ -30,13 +30,13 @@ class PDFBuilder {
   private tableBuilder: contracts.ITableBuilder;
 
   constructor() {
-    this.contentBlocks = [];
     this.unstyledBuilder = new UnstyledBlockBuilder();
     this.headerBuilder = new HeaderBlockBuilder();
     this.unorderedListBuilder = new UnorderedListBuilder();
     this.orderedListBuilder = new OrderedListBuilder();
     this.tableBuilder = new TableEntityBuilder();
     this.builder = this.unstyledBuilder;
+    this.contentBlocks = [];
   }
 
   public setBuilder(builder: contracts.IBuilder): void {
@@ -44,7 +44,9 @@ class PDFBuilder {
   }
 
   public PDFPreview(pdfStyles: contracts.PageStyles, windowPrevStyles: Style): React.ReactElement | undefined {
-    return <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
+    const pdfContent = <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
+    this.contentBlocks = [];
+    return pdfContent;
   }
 
   public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
@@ -99,8 +101,6 @@ class PDFBuilder {
       if (error instanceof exceptions.BuilderException) {
         Logger.error(`${error.name}: ${error.message}`);
       }
-    } finally {
-      this.contentBlocks = [];
     }
   }
 }

@@ -1,28 +1,32 @@
 import { StyleSheet } from '@react-pdf/renderer';
 
 export const styles = StyleSheet.create({
+  body: {
+    paddingTop: 10,
+    paddingBottom: 80,
+    paddingHorizontal: 50,
+  },
   table: {
     display: 'flex',
-    width: 'auto',
+    flexDirection: 'column',
+    width: '50%',
     borderStyle: 'solid',
     borderWidth: 1,
     borderRightWidth: 0,
     borderBottomWidth: 0,
   },
   tableRow: {
-    margin: 'auto',
     flexDirection: 'row',
   },
   tableCol: {
-    width: '25%',
+    flex: 1,
     borderStyle: 'solid',
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
   },
   tableCell: {
-    margin: 'auto',
-    marginTop: 5,
-    fontSize: 10,
+    fontSize: 12,
+    padding: 2,
   },
 });

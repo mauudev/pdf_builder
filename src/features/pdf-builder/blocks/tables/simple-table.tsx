@@ -26,8 +26,9 @@ class TableEntity implements ITableEntity {
 
   public getComponent(entity: EntityMapItem): ReactElement {
     this.buildEntity(entity);
+    console.log(`Building table entity with data: ${JSON.stringify(this.tableEntity)}`);
     const mainBlock = (
-      <View style={styles.table}>
+      <View key={uuidv4()} style={styles.table}>
         {this.getEntity().map((block, _) => (
           <React.Fragment key={uuidv4()}>{block}</React.Fragment>
         ))}
@@ -41,11 +42,11 @@ class TableEntity implements ITableEntity {
     Logger.debug(`Building table entity with data: ${JSON.stringify(tableCells)}`);
     this.tableEntity = tableCells.map((row) => {
       return (
-        <View style={styles.tableRow}>
+        <View key={uuidv4()} style={styles.tableRow}>
           {row.map((cell) => {
             return (
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{cell}</Text>
+              <View key={uuidv4()} style={styles.tableCol}>
+                <Text key={uuidv4()} style={styles.tableCell}>{cell}</Text>
               </View>
             );
           })}
