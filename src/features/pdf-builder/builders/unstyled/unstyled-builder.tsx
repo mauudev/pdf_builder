@@ -31,11 +31,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
 
   public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
   public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
-  public buildComponent(
-    rawJson: RawJSON,
-    _entityMapOrResetBlock?: EntityMap | boolean,
-    resetBlock?: boolean
-  ): ReactElement | undefined {
+  public buildComponent(rawJson: RawJSON, resetBlock?: boolean | EntityMap): ReactElement | undefined {
     try {
       this.validate(rawJson);
       return this.buildUnstyledBlock(rawJson);
@@ -43,6 +39,7 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
       if (error instanceof UnstyledBlockException) throw error;
       if (error instanceof Error) throw new UnstyledBuilderException(error.message);
     } finally {
+      console.warn(`WAA REINICIAR OK => ${resetBlock}`);
       if (resetBlock) {
         this.getWorker()?.reset();
       }
