@@ -39,7 +39,6 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
       if (error instanceof UnstyledBlockException) throw error;
       if (error instanceof Error) throw new UnstyledBuilderException(error.message);
     } finally {
-      console.warn(`WAA REINICIAR OK => ${resetBlock}`);
       if (resetBlock) {
         this.getWorker()?.reset();
       }
