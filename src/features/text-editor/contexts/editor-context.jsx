@@ -21,6 +21,7 @@ export const EditorProvider = ({ children }) => {
       convertedContent: null,
       rawContent: {},
       pdfContent: null,
+      pdfPreview: null,
     },
   };
 
@@ -55,6 +56,7 @@ export const EditorProvider = ({ children }) => {
             state: action.payload.editorState,
             convertedContent: action.payload.convertedContent,
             rawContent: action.payload.rawContent,
+            pdfContent: action.payload.pdfContent,
           },
         };
       case 'SET_PDF_CONTENT':
@@ -62,9 +64,10 @@ export const EditorProvider = ({ children }) => {
           ...state,
           editor: {
             ...state.editor,
-            pdfContent: action.payload,
+            pdfContent: action.payload.pdfContent,
+            pdfPreview: action.payload.pdfPreview,
           },
-        }
+        };
       default:
         return state;
     }
