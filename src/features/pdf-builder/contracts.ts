@@ -86,7 +86,6 @@ interface IRenderable {
 // #################################################
 // # Blocks
 // #################################################
-
 export interface IBlock extends IRenderable {
   getBlocks(): Array<ReactNode>;
   buildBlocks(rawJson: RawJSON): void;
