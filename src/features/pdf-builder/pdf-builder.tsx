@@ -39,14 +39,16 @@ class PDFBuilder {
     this.contentBlocks = [];
   }
 
+  public reset(): void {
+    this.contentBlocks = [];
+  }
+
   public setBuilder(builder: contracts.IBuilder): void {
     this.builder = builder;
   }
 
   public PDFPreview(pdfStyles: contracts.PageStyles, windowPrevStyles: Style): React.ReactElement | undefined {
-    const pdfContent = <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
-    this.contentBlocks = [];
-    return pdfContent;
+    return <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
   }
 
   public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
@@ -58,7 +60,6 @@ class PDFBuilder {
     return (
       <Document>
         <Page size={pdfStyles.pageSize as any}>
-          {/* <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View> */}
           <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View>
         </Page>
       </Document>
