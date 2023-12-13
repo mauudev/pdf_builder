@@ -7,6 +7,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tooltip from '@mui/material/Tooltip';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '@fortawesome/fontawesome-free';
 
 const modalStyle = {
   display: 'flex',
@@ -53,6 +55,12 @@ const getInitialState = () => ({
   ],
   html: '',
 });
+
+const AddTableOption = ({ handleOpen }) => (
+  <div className="rdw-option-wrapper" onClick={handleOpen}>
+    <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
+  </div>
+);
 
 const TableModal = ({ isOpen, onClose, onSave }) => {
   const [tableData, setTableData] = useState(() => getInitialState());
@@ -219,4 +227,4 @@ const TableModal = ({ isOpen, onClose, onSave }) => {
   );
 };
 
-export default TableModal;
+export { TableModal, AddTableOption };
