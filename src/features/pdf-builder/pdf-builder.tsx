@@ -23,6 +23,7 @@ import Logger from './logger';
 class PDFBuilder {
   public builder: contracts.IBuilder;
   private contentBlocks: Array<React.ReactElement>;
+  private pdfContent: React.ReactElement | null;
   private headerBuilder: contracts.IHeaderBuilder;
   private unstyledBuilder: contracts.IUnstyledBuilder;
   private unorderedListBuilder: contracts.IUnorderedListBuilder;
@@ -36,36 +37,44 @@ class PDFBuilder {
     this.orderedListBuilder = new OrderedListBuilder();
     this.tableBuilder = new TableEntityBuilder();
     this.builder = this.unstyledBuilder;
+    this.pdfContent = null;
     this.contentBlocks = [];
+  }
+
+  public reset(): void {
+    this.pdfContent = null;
+    this.contentBlocks = [];
+  }
+
+  public getPdfContent(): React.ReactElement | null {
+    return this.pdfContent;
   }
 
   public setBuilder(builder: contracts.IBuilder): void {
     this.builder = builder;
   }
 
-  public PDFPreview(pdfStyles: contracts.PageStyles, windowPrevStyles: Style): React.ReactElement | undefined {
-    const pdfContent = <PDFViewer style={windowPrevStyles}>{this.buildPDFContent(pdfStyles)}</PDFViewer>;
-    this.contentBlocks = [];
-    return pdfContent;
+  public buildPdfPreview(windowPrevStyles: Style): React.ReactElement | null {
+    return this.pdfContent ? <PDFViewer style={windowPrevStyles}>{this.pdfContent}</PDFViewer> : null;
   }
 
-  public buildPDFContent(pdfStyles: contracts.PageStyles): React.ReactElement | undefined {
+  public buildPdfContent(editorRawContent: contracts.RawContent, pdfStyles: contracts.PageStyles): void {
+    this.buildPdfBlocks(editorRawContent);
     const textStyles = {
       fontSize: pdfStyles.fontSize,
       lineHeight: pdfStyles.lineHeight,
       ...pdfStyles.margin,
     };
-    return (
+    this.pdfContent = (
       <Document>
         <Page size={pdfStyles.pageSize as any}>
-          {/* <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View> */}
           <View style={textStyles}>{this.contentBlocks.map((block) => block)}</View>
         </Page>
       </Document>
     );
   }
 
-  public buildPDFBlocks(editorRawContent: contracts.RawContent): void {
+  public buildPdfBlocks(editorRawContent: contracts.RawContent): void {
     try {
       for (const rawJson of editorRawContent.blocks) {
         if (rawJson.type === 'unstyled') {

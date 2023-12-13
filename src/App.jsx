@@ -9,7 +9,6 @@ function App() {
       <div className="app">
         <header className="app-header">
           <div className="header-content">
-            <img className="logo" src="cat.jpeg" alt="Logo" />
             <span>Rich Text Editor</span>
           </div>
         </header>
