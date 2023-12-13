@@ -5,8 +5,7 @@ import htmlToDraft from 'html-to-draftjs';
 import DOMPurify from 'dompurify';
 import { v4 as uuidv4 } from 'uuid';
 import { Editor } from 'react-draft-wysiwyg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '@fortawesome/fontawesome-free';
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -16,8 +15,11 @@ import PreviewModal from '../ui/modal/preview-modal';
 import { capitalizeFirstLetter, parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
-import TableModal from '../ui/modal/table-modal';
+import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
 import Logger from '../pdf-builder/logger';
+import PDFViewer from './pdf-preview';
+import EditorContainer from '../ui/containers/editor-container';
+import PageOptions from '../ui/editor-custom-options/page-options';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -89,14 +91,18 @@ function customBlockRenderFunc(block, config) {
 }
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
-  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [documentURL, setDocumentURL] = useState('');
+  const [isPageOptionsOpen, setIsPageOptionsOpen] = useState(false);
+  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+  const pdfBuilder = new PDFBuilder();
 
   useEffect(() => {
     Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
     Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
     Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
-  }, [editorState.editor.state]);
+    Logger.debug(`PDF Content: ${JSON.stringify(editorState.editor.pdfContent)}`);
+  }, [editorState.editor.state, editorState.editor.pdfContent]);
 
   const onEditorStateChange = (newEditorState) => {
     dispatch({
@@ -105,8 +111,17 @@ const WYSIWYGEditor = () => {
         editorState: newEditorState,
         convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent()), null, false, entityMapper),
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
+        pdfContent: buildPdfPreview(),
       },
     });
+  };
+
+  const handlePageOptionsClose = () => {
+    setIsPageOptionsOpen(false);
+  };
+
+  const handlePageOptionsOpen = () => {
+    setIsPageOptionsOpen(true);
   };
 
   const setPDFContent = (content) => {
@@ -147,10 +162,11 @@ const WYSIWYGEditor = () => {
       lineHeight: parsePointValue(lineHeight),
       margin,
     };
-    const pdfBuilder = new PDFBuilder();
     pdfBuilder.buildPDFBlocks(editorState.editor.rawContent);
-    const pdfContent = pdfBuilder.PDFPreview(pdfStyles, styles.modalPreview);
-    setPDFContent(pdfContent);
+    const pdfContent = pdfBuilder.buildPDFContent(pdfStyles, styles.modalPreview);
+    // setPDFContent(pdfContent);
+    console.warn(`BUILDING BLOCKS W pdf CONTENT: ${JSON.stringify(pdfContent)}`);
+    return pdfContent;
   };
 
   const handleTableModalClose = () => {
@@ -170,18 +186,28 @@ const WYSIWYGEditor = () => {
     setIsPreviewModalOpen(false);
   };
 
+  const handleUrlChange = () => {
+    setDocumentURL('something');
+  };
+
+  const handleRenderError = (error) => {
+    if (error) {
+      Logger.error(error);
+    }
+  };
+
   const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
     if (tableData && tableData.html && tableData.tableCells) {
       const entityKey = targetEditorState
-      .getCurrentContent()
-      .createEntity(entityType, mutability, {
-        rows: tableData.rows,
-        columns: tableData.columns,
-        tableCells: tableData.tableCells,
-        styles: tableData.styles,
-        innerHTML: tableData.html,
-      })
-      .getLastCreatedEntityKey();
+        .getCurrentContent()
+        .createEntity(entityType, mutability, {
+          rows: tableData.rows,
+          columns: tableData.columns,
+          tableCells: tableData.tableCells,
+          styles: tableData.styles,
+          innerHTML: tableData.html,
+        })
+        .getLastCreatedEntityKey();
       const character = ' ';
       const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
       return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
@@ -193,18 +219,6 @@ const WYSIWYGEditor = () => {
     const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
     onEditorStateChange(newEditorState);
   };
-
-  const AddTableOption = () => (
-    <div className="rdw-option-wrapper" onClick={handleTableModalOpen}>
-      <FontAwesomeIcon title="Add Table" icon="fa-solid fa-table" />
-    </div>
-  );
-
-  const PDFPreviewOption = () => (
-    <div className="rdw-option-wrapper" onClick={handlePreviewModalOpen}>
-      <FontAwesomeIcon icon="fa-regular fa-file-pdf" />
-    </div>
-  );
 
   return (
     <div style={styles.editorLayout}>
@@ -219,7 +233,7 @@ const WYSIWYGEditor = () => {
           toolbar={{
             options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
           }}
-          toolbarCustomButtons={[<AddTableOption />, <PDFPreviewOption />]}
+          toolbarCustomButtons={[<AddTableOption handleOpen={handleTableModalOpen} />]}
         />
         <div style={styles.gridContainer}>
           <div style={styles.gridItem}>
@@ -259,27 +273,17 @@ const WYSIWYGEditor = () => {
         </div>
       </div>
       <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
-      <PreviewModal
+      {/* <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={handlePreviewModalClose}
         pdfPreview={editorState.editor.pdfContent}
-      />
-      <div style={styles.livePreview}>
-        <div style={editorState.pageStyles.pageSize === 'LETTER' ? styles.cartaPreview : styles.oficioPreview}>
-          <div
-            style={{
-              ...styles.content,
-              '--font-size': `${editorState.pageStyles.fontSize}`,
-              '--line-spacing': `${editorState.pageStyles.lineHeight}`,
-              '--margin-left': `${editorState.pageStyles.margin.marginLeft}`,
-              '--margin-right': `${editorState.pageStyles.margin.marginRight}`,
-              '--margin-top': `${editorState.pageStyles.margin.marginTop}`,
-              '--margin-bottom': `${editorState.pageStyles.margin.marginBottom}`,
-            }}
-            dangerouslySetInnerHTML={createMarkup(editorState.editor.convertedContent)}
-          ></div>
-        </div>
-      </div>
+      /> */}
+      {/* <PDFViewer
+        value={editorState.editor.pdfContent}
+        onUrlChange={handleUrlChange}
+        onRenderError={handleRenderError}
+      /> */}
+      {/* <EditorContainer /> */}
     </div>
   );
 };
