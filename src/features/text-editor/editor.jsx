@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { convertToRaw, ContentState, EditorState, AtomicBlockUtils, Modifier, genKey } from 'draft-js';
+import { convertToRaw, EditorState, AtomicBlockUtils } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
-import DOMPurify from 'dompurify';
-import { v4 as uuidv4 } from 'uuid';
 import { Editor } from 'react-draft-wysiwyg';
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { styles } from './editor.styles';
 import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-preview';
-import { capitalizeFirstLetter, parsePointValue } from '../../utils/helpers';
+import { parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
 import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
 import Logger from '../pdf-builder/logger';
-import PDFViewer from './pdf-preview';
-import EditorContainer from '../ui/containers/editor-container';
-import PageOptions from '../ui/editor-custom-options/page-options';
+import { PageOptionsModal, PageOptions } from '../ui/editor-custom-options/page-options';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -115,14 +109,6 @@ const WYSIWYGEditor = () => {
     });
   };
 
-  const handlePageOptionsClose = () => {
-    setIsPageOptionsOpen(false);
-  };
-
-  const handlePageOptionsOpen = () => {
-    setIsPageOptionsOpen(true);
-  };
-
   const setPdfContent = () => {
     const { pdfContent, pdfPreview } = buildPdfContent();
     dispatch({
@@ -131,47 +117,18 @@ const WYSIWYGEditor = () => {
     });
   };
 
-  const handleChangePageSize = (size) => {
-    dispatch({ type: 'CHANGE_PAGE_SIZE', payload: size });
-  };
-
-  const handleChangeLineHeight = (spacing) => {
-    dispatch({
-      type: 'CHANGE_LINE_HEIGHT',
-      payload: spacing,
-    });
-  };
-
-  const handleChangeMargin = (margin, value) => {
-    dispatch({
-      type: 'CHANGE_MARGIN',
-      payload: { margin, value },
-    });
-  };
-
-  const createMarkup = (html) => {
-    const formattedHtml = html;
-    return { __html: formattedHtml };
-  };
-
-  const buildPdfContent = () => {
-    const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
-    const pdfStyles = {
-      pageSize,
-      fontSize,
-      lineHeight: parsePointValue(lineHeight),
-      margin,
-    };
-    pdfBuilder.buildPdfContent(editorState.editor.rawContent, pdfStyles);
-    return { pdfContent: pdfBuilder.getPdfContent(), pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview) };
-  };
-
   const handleTableModalClose = () => {
     setIsTableModalOpen(false);
   };
 
   const handleTableModalOpen = () => {
     setIsTableModalOpen(true);
+  };
+
+  const handleSaveTable = (tableData) => {
+    const currentEditorState = editorState.editor.state;
+    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
+    onEditorStateChange(newEditorState);
   };
 
   const handlePreviewModalOpen = () => {
@@ -193,6 +150,14 @@ const WYSIWYGEditor = () => {
     }
   };
 
+  const handlePageOptionsClose = () => {
+    setIsPageOptionsOpen(false);
+  };
+
+  const handlePageOptionsOpen = () => {
+    setIsPageOptionsOpen(true);
+  };
+
   const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
     if (tableData && tableData.html && tableData.tableCells) {
       const entityKey = targetEditorState
@@ -211,10 +176,21 @@ const WYSIWYGEditor = () => {
     }
   };
 
-  const handleSaveTable = (tableData) => {
-    const currentEditorState = editorState.editor.state;
-    const newEditorState = insertAtomicBlock(currentEditorState, 'TABLE', 'IMMUTABLE', tableData);
-    onEditorStateChange(newEditorState);
+  const createMarkup = (html) => {
+    const formattedHtml = html;
+    return { __html: formattedHtml };
+  };
+
+  const buildPdfContent = () => {
+    const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
+    const pdfStyles = {
+      pageSize,
+      fontSize,
+      lineHeight: parsePointValue(lineHeight),
+      margin,
+    };
+    pdfBuilder.buildPdfContent(editorState.editor.rawContent, pdfStyles);
+    return { pdfContent: pdfBuilder.getPdfContent(), pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview) };
   };
 
   return (
@@ -231,48 +207,14 @@ const WYSIWYGEditor = () => {
             options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
           }}
           toolbarCustomButtons={[
+            <PageOptions handleOpen={handlePageOptionsOpen} />,
             <AddTableOption handleOpen={handleTableModalOpen} />,
             <PDFPreviewOption handleOpen={handlePreviewModalOpen} />,
           ]}
         />
-        <div style={styles.gridContainer}>
-          <div style={styles.gridItem}>
-            <label htmlFor="page-size">Tamanio de pagina:</label>
-            <select
-              id="page-size"
-              value={editorState.pageStyles.pageSize}
-              onChange={(e) => handleChangePageSize(e.target.value)}
-            >
-              <option value="LETTER">Carta</option>
-              <option value="A4">Oficio</option>
-            </select>
-          </div>
-          {['marginTop', 'marginLeft', 'marginRight', 'marginBottom'].map((marginKey) => (
-            <div key={`_${marginKey}`} style={styles.gridItem}>
-              <label htmlFor={`page-margin_${marginKey}`}>{capitalizeFirstLetter(marginKey)}:</label>
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                value={parsePointValue(editorState.pageStyles.margin[marginKey])}
-                onChange={(e) => handleChangeMargin(marginKey, e.target.value)}
-              />
-            </div>
-          ))}
-          <div style={styles.gridItem}>
-            <label htmlFor="line-spacing">Espaciado:</label>
-            <input
-              type="number"
-              step="0.1"
-              min="0"
-              max="10"
-              value={parsePointValue(editorState.pageStyles.lineHeight)}
-              onChange={(e) => handleChangeLineHeight(e.target.value)}
-            />
-          </div>
-        </div>
       </div>
       <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={handlePreviewModalClose}
