@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { convertToRaw, EditorState, AtomicBlockUtils } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
-import { styles } from './editor.styles';
-import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-preview';
+import { styles, eStyles } from './editor.styles';
+import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-doc-preview';
 import { parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
+import PDFViewer from './pdf-live-preview';
 import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
 import Logger from '../pdf-builder/logger';
 import { PageOptionsModal, PageOptions } from '../ui/editor-custom-options/page-options';
@@ -103,7 +106,12 @@ const WYSIWYGEditor = () => {
       type: 'SET_EDITOR_STATE',
       payload: {
         editorState: newEditorState,
-        convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent()), null, false, entityMapper),
+        convertedContent: draftToHtml(
+          convertToRaw(newEditorState.getCurrentContent()),
+          null,
+          false,
+          entityMapper
+        ),
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
       },
     });
@@ -190,21 +198,33 @@ const WYSIWYGEditor = () => {
       margin,
     };
     pdfBuilder.buildPdfContent(editorState.editor.rawContent, pdfStyles);
-    return { pdfContent: pdfBuilder.getPdfContent(), pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview) };
+    return {
+      pdfContent: pdfBuilder.getPdfContent(),
+      pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview),
+    };
   };
-
+  
   return (
-    <div style={styles.editorLayout}>
-      <div style={styles.wrapper}>
+    <Grid sx={styles.editorLayout} container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid sx={{ height: '90%' }} item xs={12} md={6}>
         <Editor
           editorState={editorState.editor.state}
-          toolbarClassName="toolbar-class"
-          wrapperClassName="wrapper-class"
-          editorClassName="editor-class"
+          toolbarStyle={styles.toolbar}
+          editorStyle={styles.editor}
+          wrapperStyle={styles.wrapper}
           onEditorStateChange={onEditorStateChange}
           customBlockRenderFunc={customBlockRenderFunc}
           toolbar={{
-            options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
+            options: [
+              'inline',
+              'blockType',
+              'fontSize',
+              'list',
+              'textAlign',
+              'history',
+              'remove',
+              'colorPicker',
+            ],
           }}
           toolbarCustomButtons={[
             <PageOptions handleOpen={handlePageOptionsOpen} />,
@@ -212,15 +232,17 @@ const WYSIWYGEditor = () => {
             <PDFPreviewOption handleOpen={handlePreviewModalOpen} />,
           ]}
         />
-      </div>
-      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
-      <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
-      <PreviewModal
-        isOpen={isPreviewModalOpen}
-        onClose={handlePreviewModalClose}
-        pdfPreview={editorState.editor.pdfPreview}
-      />
-    </div>
+      </Grid>
+      <Grid item xs={12} md={2}>
+        <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
+        <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+        <PreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={handlePreviewModalClose}
+          pdfPreview={editorState.editor.pdfPreview}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
