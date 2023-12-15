@@ -8,7 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
-import { styles, eStyles } from './editor.styles';
+import { styles } from './editor.styles';
 import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-doc-preview';
 import { parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
@@ -99,7 +99,8 @@ const WYSIWYGEditor = () => {
     Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
     Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
     Logger.debug(`PDF Content: ${JSON.stringify(editorState.editor.pdfContent)}`);
-  }, [editorState.editor.state, editorState.editor.pdfContent]);
+    Logger.debug(`PDF doc URL: ${JSON.stringify(documentURL)}`);
+  }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
     dispatch({
@@ -115,6 +116,7 @@ const WYSIWYGEditor = () => {
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
       },
     });
+    setPdfContent();
   };
 
   const setPdfContent = () => {
@@ -140,16 +142,11 @@ const WYSIWYGEditor = () => {
   };
 
   const handlePreviewModalOpen = () => {
-    setPdfContent();
     setIsPreviewModalOpen(true);
   };
 
   const handlePreviewModalClose = () => {
     setIsPreviewModalOpen(false);
-  };
-
-  const handleUrlChange = () => {
-    setDocumentURL('something');
   };
 
   const handleRenderError = (error) => {
@@ -184,11 +181,6 @@ const WYSIWYGEditor = () => {
     }
   };
 
-  const createMarkup = (html) => {
-    const formattedHtml = html;
-    return { __html: formattedHtml };
-  };
-
   const buildPdfContent = () => {
     const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
     const pdfStyles = {
@@ -203,10 +195,10 @@ const WYSIWYGEditor = () => {
       pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview),
     };
   };
-  
+
   return (
-    <Grid sx={styles.editorLayout} container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-      <Grid sx={{ height: '90%' }} item xs={12} md={6}>
+    <Grid sx={styles.editorLayout} container rowSpacing={2} columnSpacing={{ xs: 2, sm: 3, md: 5 }}>
+      <Grid sx={{ height: '95%' }} item xs={12} md={5}>
         <Editor
           editorState={editorState.editor.state}
           toolbarStyle={styles.toolbar}
@@ -233,15 +225,20 @@ const WYSIWYGEditor = () => {
           ]}
         />
       </Grid>
-      <Grid item xs={12} md={2}>
-        <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
-        <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
-        <PreviewModal
-          isOpen={isPreviewModalOpen}
-          onClose={handlePreviewModalClose}
-          pdfPreview={editorState.editor.pdfPreview}
+      <Grid sx={{ height: '95%' }} item xs={12} md={6}>
+        <PDFViewer
+          value={editorState.editor.pdfContent}
+          onDocumentUrlChange={setDocumentURL}
+          onRenderError={handleRenderError}
         />
       </Grid>
+      <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
+      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      <PreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={handlePreviewModalClose}
+        pdfPreview={editorState.editor.pdfPreview}
+      />
     </Grid>
   );
 };
