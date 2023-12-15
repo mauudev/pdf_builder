@@ -46,7 +46,9 @@ class TableEntity implements ITableEntity {
           {row.map((cell) => {
             return (
               <View key={uuidv4()} style={styles.tableCol}>
-                <Text key={uuidv4()} style={styles.tableCell}>{cell}</Text>
+                <Text key={uuidv4()} style={styles.tableCell}>
+                  {cell}
+                </Text>
               </View>
             );
           })}

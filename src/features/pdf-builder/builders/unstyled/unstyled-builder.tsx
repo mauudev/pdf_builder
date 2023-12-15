@@ -30,7 +30,11 @@ class UnstyledBlockBuilder implements IUnstyledBuilder {
   }
 
   public buildComponent(rawJson: RawJSON, resetBlock?: boolean): ReactElement | undefined;
-  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    entityMap: EntityMap,
+    resetBlock?: boolean
+  ): ReactElement | undefined;
   public buildComponent(rawJson: RawJSON, resetBlock?: boolean | EntityMap): ReactElement | undefined {
     try {
       this.validate(rawJson);

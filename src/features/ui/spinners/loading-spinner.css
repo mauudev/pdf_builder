@@ -4,10 +4,11 @@
   justify-content: center;
   flex-direction: column;
   margin: 20px;
+  position: relative;
 }
 
 .spinner-icon {
-  animation: spin 2s linear infinite;
+  animation: spin 2.5s linear infinite;
 }
 
 @keyframes spin {

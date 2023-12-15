@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { convertToRaw, EditorState, AtomicBlockUtils } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { styles } from './editor.styles';
-import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-preview';
+import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-doc-preview';
 import { parsePointValue } from '../../utils/helpers';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
+import PDFViewer from './pdf-live-preview';
 import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
 import Logger from '../pdf-builder/logger';
 import { PageOptionsModal, PageOptions } from '../ui/editor-custom-options/page-options';
@@ -96,17 +99,24 @@ const WYSIWYGEditor = () => {
     Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
     Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
     Logger.debug(`PDF Content: ${JSON.stringify(editorState.editor.pdfContent)}`);
-  }, [editorState.editor.state, editorState.editor.pdfContent]);
+    Logger.debug(`PDF doc URL: ${JSON.stringify(documentURL)}`);
+  }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
     dispatch({
       type: 'SET_EDITOR_STATE',
       payload: {
         editorState: newEditorState,
-        convertedContent: draftToHtml(convertToRaw(newEditorState.getCurrentContent()), null, false, entityMapper),
+        convertedContent: draftToHtml(
+          convertToRaw(newEditorState.getCurrentContent()),
+          null,
+          false,
+          entityMapper
+        ),
         rawContent: convertToRaw(newEditorState.getCurrentContent()),
       },
     });
+    setPdfContent();
   };
 
   const setPdfContent = () => {
@@ -132,16 +142,11 @@ const WYSIWYGEditor = () => {
   };
 
   const handlePreviewModalOpen = () => {
-    setPdfContent();
     setIsPreviewModalOpen(true);
   };
 
   const handlePreviewModalClose = () => {
     setIsPreviewModalOpen(false);
-  };
-
-  const handleUrlChange = () => {
-    setDocumentURL('something');
   };
 
   const handleRenderError = (error) => {
@@ -176,11 +181,6 @@ const WYSIWYGEditor = () => {
     }
   };
 
-  const createMarkup = (html) => {
-    const formattedHtml = html;
-    return { __html: formattedHtml };
-  };
-
   const buildPdfContent = () => {
     const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
     const pdfStyles = {
@@ -190,21 +190,33 @@ const WYSIWYGEditor = () => {
       margin,
     };
     pdfBuilder.buildPdfContent(editorState.editor.rawContent, pdfStyles);
-    return { pdfContent: pdfBuilder.getPdfContent(), pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview) };
+    return {
+      pdfContent: pdfBuilder.getPdfContent(),
+      pdfPreview: pdfBuilder.buildPdfPreview(styles.modalPreview),
+    };
   };
 
   return (
-    <div style={styles.editorLayout}>
-      <div style={styles.wrapper}>
+    <Grid sx={styles.editorLayout} container rowSpacing={2} columnSpacing={{ xs: 2, sm: 3, md: 5 }}>
+      <Grid sx={{ height: '95%' }} item xs={12} md={5}>
         <Editor
           editorState={editorState.editor.state}
-          toolbarClassName="toolbar-class"
-          wrapperClassName="wrapper-class"
-          editorClassName="editor-class"
+          toolbarStyle={styles.toolbar}
+          editorStyle={styles.editor}
+          wrapperStyle={styles.wrapper}
           onEditorStateChange={onEditorStateChange}
           customBlockRenderFunc={customBlockRenderFunc}
           toolbar={{
-            options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'history', 'remove', 'colorPicker'],
+            options: [
+              'inline',
+              'blockType',
+              'fontSize',
+              'list',
+              'textAlign',
+              'history',
+              'remove',
+              'colorPicker',
+            ],
           }}
           toolbarCustomButtons={[
             <PageOptions handleOpen={handlePageOptionsOpen} />,
@@ -212,15 +224,22 @@ const WYSIWYGEditor = () => {
             <PDFPreviewOption handleOpen={handlePreviewModalOpen} />,
           ]}
         />
-      </div>
-      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      </Grid>
+      <Grid sx={{ height: '95%' }} item xs={12} md={6}>
+        <PDFViewer
+          value={editorState.editor.pdfContent}
+          onDocumentUrlChange={setDocumentURL}
+          onRenderError={handleRenderError}
+        />
+      </Grid>
       <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
+      <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={handlePreviewModalClose}
         pdfPreview={editorState.editor.pdfPreview}
       />
-    </div>
+    </Grid>
   );
 };
 

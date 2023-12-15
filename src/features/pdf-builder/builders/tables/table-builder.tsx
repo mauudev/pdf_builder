@@ -31,8 +31,16 @@ class TableEntityBuilder implements ITableBuilder {
     _entityMapOrResetBlock?: EntityMap | boolean,
     resetBlock?: boolean
   ): ReactElement | undefined;
-  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined;
-  public buildComponent(rawJson: RawJSON, entityMap: EntityMap, resetBlock?: boolean): ReactElement | undefined {
+  public buildComponent(
+    rawJson: RawJSON,
+    entityMap: EntityMap,
+    resetBlock?: boolean
+  ): ReactElement | undefined;
+  public buildComponent(
+    rawJson: RawJSON,
+    entityMap: EntityMap,
+    resetBlock?: boolean
+  ): ReactElement | undefined {
     try {
       this.validate(rawJson, entityMap);
       return this.buildTableEntity(rawJson, entityMap);
