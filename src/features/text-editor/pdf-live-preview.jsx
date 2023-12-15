@@ -94,10 +94,12 @@ const PDFViewer = ({ value, onDocumentUrlChange, onRenderError }) => {
     return url;
   }, [value]);
 
+  // eslint-disable-next-line
   useEffect(() => {
     onDocumentUrlChange(render.value);
   }, [render.value]);
 
+  // eslint-disable-next-line
   useEffect(() => onRenderError(render.error), [render.error]);
 
   const onDocumentLoad = (d) => {};

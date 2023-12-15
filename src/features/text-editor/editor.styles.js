@@ -4,16 +4,15 @@ export const styles = {
     height: '100vh',
     padding: '1rem',
   },
-  wrapper: {
+  editorWrapper: {
     width: '100%',
     height: '100%',
     backgroundColor: '#f3f3f3',
     padding: '1rem',
   },
-  toolbar: {
+  editorToolbar: {
     width: '100%',
     height: '10%',
-    backgroundColor: '#f3f3f3',
     border: '1px solid #000',
     padding: '1rem',
     backgroundColor: '#fff',
@@ -28,55 +27,10 @@ export const styles = {
     padding: '1rem',
     border: '1px solid #000',
   },
-  cartaPreview: {
-    backgroundColor: 'white',
-    border: '1px solid #000',
-    // width: '215.9mm',
-    // height: '279.4mm',
-    width: '612.0pt',
-    height: '792.0pt',
-  },
-  oficioPreview: {
-    backgroundColor: 'white',
-    border: '1px solid #000',
-    width: '210.0mm',
-    height: '297.0mm',
-  },
-  livePreview: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '1rem',
-    marginBottom: '1rem',
-  },
   modalPreview: {
     marginTop: '6rem',
     marginBottom: '1rem',
     width: '90%',
     height: '100%',
-  },
-  content: {
-    fontSize: 'var(--font-size, 12pt)',
-    width: 'calc(100% - var(--margin-left, 5pt) - var(--margin-right, 5pt))',
-    lineHeight: 'var(--line-spacing, 5em)',
-    marginLeft: 'var(--margin-left, 5pt)',
-    marginRight: 'var(--margin-right, 5pt)',
-    marginTop: 'var(--margin-top, 5pt)',
-    marginBottom: 'var(--margin-bottom, 5pt)',
-    textAlign: 'left',
-    overflowWrap: 'break-word',
-    fontFamily: 'Arial, sans-serif',
-  },
-  gridContainer: {
-    margin: '10px',
-    width: '40%',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gridGap: '10px',
-  },
-  gridItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  }
 };

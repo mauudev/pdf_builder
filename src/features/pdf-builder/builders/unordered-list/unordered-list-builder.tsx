@@ -3,7 +3,7 @@ import { View } from '@react-pdf/renderer';
 import { IUnorderedListBuilder, IUnorderedListBlock, RawJSON, EntityMap } from '../../contracts';
 import { parseStyle } from '../../utils';
 import UnorderedListBlock from '../../blocks/unordered-list';
-import { UnorderedListBuilderException, UnorderedListBlockException } from '../../exceptions';
+import { UnorderedListBuilderException } from '../../exceptions';
 import UnorderedListValidator from './validator';
 
 /**
