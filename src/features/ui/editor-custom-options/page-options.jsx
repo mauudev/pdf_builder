@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@fortawesome/fontawesome-free';
 import { useEditor } from '../../text-editor/contexts/editor-context';
 import { parsePointValue, toTitleCase } from '../../../utils/helpers';
+import { v4 as uuidv4 } from 'uuid';
 
 const style = {
   display: 'flex',
@@ -78,7 +79,7 @@ const PageOptionsModal = ({ isOpen, onClose }) => {
             Page options
           </Typography>
           <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            <Grid item xs={12} md={2}>
+            <Grid key={uuidv4()} item xs={12} md={2}>
               <FormControl fullWidth>
                 <InputLabel id="page-size-label">Page Size</InputLabel>
                 <Select
@@ -89,12 +90,12 @@ const PageOptionsModal = ({ isOpen, onClose }) => {
                   onChange={(e) => handleChangePageSize(e.target.value)}
                 >
                   <MenuItem value="LETTER">Letter</MenuItem>
-                  <MenuItem value="H4">H4</MenuItem>
+                  <MenuItem value="A4">A4</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             {['marginTop', 'marginLeft', 'marginRight', 'marginBottom'].map((marginKey) => (
-              <Grid item xs={12} md={2}>
+              <Grid key={uuidv4()} item xs={12} md={2}>
                 <FormControl fullWidth>
                   <TextField
                     label={toTitleCase(marginKey)}
@@ -108,7 +109,7 @@ const PageOptionsModal = ({ isOpen, onClose }) => {
                 </FormControl>
               </Grid>
             ))}
-            <Grid item xs={12} md={2}>
+            <Grid key={uuidv4()} item xs={12} md={2}>
               <FormControl fullWidth>
                 <TextField
                   label="Line Height"
