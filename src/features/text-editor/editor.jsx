@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { convertToRaw, EditorState, AtomicBlockUtils } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { far } from '@fortawesome/free-regular-svg-icons';
@@ -94,6 +93,7 @@ const WYSIWYGEditor = () => {
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const pdfBuilder = new PDFBuilder();
 
+  // eslint-disable-next-line
   useEffect(() => {
     Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
     Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
@@ -201,9 +201,9 @@ const WYSIWYGEditor = () => {
       <Grid sx={{ height: '95%' }} item xs={12} md={5}>
         <Editor
           editorState={editorState.editor.state}
-          toolbarStyle={styles.toolbar}
+          toolbarStyle={styles.editorToolbar}
           editorStyle={styles.editor}
-          wrapperStyle={styles.wrapper}
+          wrapperStyle={styles.editorWrapper}
           onEditorStateChange={onEditorStateChange}
           customBlockRenderFunc={customBlockRenderFunc}
           toolbar={{
@@ -225,7 +225,7 @@ const WYSIWYGEditor = () => {
           ]}
         />
       </Grid>
-      <Grid sx={{ height: '95%' }} item xs={12} md={6}>
+      <Grid sx={{ height: '95%', alignItems: 'center' }} item xs={12} md={6}>
         <PDFViewer
           value={editorState.editor.pdfContent}
           onDocumentUrlChange={setDocumentURL}

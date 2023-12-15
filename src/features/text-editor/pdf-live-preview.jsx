@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import Stack from '@mui/material/Stack';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { LoadingSpinner } from '../ui/spinners/loading-spinner';
 import { useAsync } from 'react-use';
@@ -19,6 +23,17 @@ const Wrapper = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1em;
+  box-sizing: border-box;
+  background-color: #00695f;
+  border-bottom: 1px solid #000;
 `;
 
 const DocumentWrapper = styled.div`
@@ -79,10 +94,12 @@ const PDFViewer = ({ value, onDocumentUrlChange, onRenderError }) => {
     return url;
   }, [value]);
 
+  // eslint-disable-next-line
   useEffect(() => {
     onDocumentUrlChange(render.value);
   }, [render.value]);
 
+  // eslint-disable-next-line
   useEffect(() => onRenderError(render.error), [render.error]);
 
   const onDocumentLoad = (d) => {};
@@ -100,7 +117,22 @@ const PDFViewer = ({ value, onDocumentUrlChange, onRenderError }) => {
       <Message active={shouldShowTextLoader}>Rendering PDF...</Message>
 
       <Message active={!render.loading && !value}>Please start typing whatever you want</Message>
-
+      <Toolbar>
+        <Typography sx={{ textAlign: 'left', color: '#fff' }} variant="h5">
+          Document Preview
+        </Typography>
+        <Stack direction="row" spacing={2}>
+          <Button
+            href={render.value}
+            target="_blank"
+            color="success"
+            variant="contained"
+            endIcon={<CloudDownloadIcon />}
+          >
+            Download
+          </Button>
+        </Stack>
+      </Toolbar>
       <DocumentWrapper>
         {shouldShowPreviousDocument && previousRenderValue ? (
           <Document
