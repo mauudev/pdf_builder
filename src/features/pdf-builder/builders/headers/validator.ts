@@ -3,7 +3,14 @@ import { RawJSON } from '../../contracts';
 import { HeaderBlockException, BlockException } from '../../exceptions';
 
 export default class HeaderBlockValidator extends BlockValidator {
-  private headerTypes = ['header-one', 'header-two', 'header-three', 'header-four', 'header-five', 'header-six'];
+  private headerTypes = [
+    'header-one',
+    'header-two',
+    'header-three',
+    'header-four',
+    'header-five',
+    'header-six',
+  ];
 
   public validate(rawJson: RawJSON): void {
     try {
