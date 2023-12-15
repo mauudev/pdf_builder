@@ -8,7 +8,7 @@ export const EditorProvider = ({ children }) => {
     pageStyles: {
       pageSize: 'LETTER',
       fontSize: '16.0pt',
-      lineHeight: '1.5em',
+      lineHeight: '1.5pt',
       margin: {
         marginTop: '20.0pt',
         marginLeft: '20.0pt',
@@ -35,7 +35,7 @@ export const EditorProvider = ({ children }) => {
       case 'CHANGE_LINE_HEIGHT':
         return {
           ...state,
-          pageStyles: { ...state.pageStyles, lineHeight: `${parseFloat(action.payload)}em` },
+          pageStyles: { ...state.pageStyles, lineHeight: `${parseFloat(action.payload)}pt` },
         };
       case 'CHANGE_MARGIN':
         return {
