@@ -1,11 +1,20 @@
-import { EditorState, AtomicBlockUtils } from 'draft-js';
+import {
+  EditorState,
+  AtomicBlockUtils,
+  ContentBlock,
+  ContentState,
+  Modifier,
+  genKey,
+  CharacterMetadata,
+} from 'draft-js';
+import { List as ImmutableList, Repeat as ImmutableRepeat, Map as ImmutableMap } from 'immutable';
 
-export const insertAtomicBlock = (targetEditorState, entityType, mutability, data) => {
+export const insertAtomicBlock = (editorState, entityType, mutability, data) => {
   let entityKey = null;
   switch (entityType) {
     case 'TABLE':
       if (data && data.html && data.tableCells) {
-        entityKey = targetEditorState
+        entityKey = editorState
           .getCurrentContent()
           .createEntity(entityType, mutability, {
             rows: data.rows,
@@ -20,8 +29,41 @@ export const insertAtomicBlock = (targetEditorState, entityType, mutability, dat
     default:
   }
   const character = ' ';
-  const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
+  const movedSelection = EditorState.moveSelectionToEnd(editorState);
   return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
+};
+
+export const insertBlock = (editorState, blockType, text, data) => {
+  let newBlock = null;
+  switch (blockType) {
+    case 'unstyled':
+      const newBlockKey = genKey();
+      const charData = CharacterMetadata.create();
+      newBlock = new ContentBlock({
+        key: newBlockKey,
+        type: blockType,
+        text: text,
+        characterList: ImmutableList(ImmutableRepeat(charData, text.length)),
+        data: ImmutableMap(data || {}),
+      });
+      break;
+    default:
+      return editorState;
+  }
+  const currentContent = editorState.getCurrentContent();
+  const blockMap = currentContent.getBlockMap();
+  const updatedBlocks = blockMap.set(newBlock.getKey(), newBlock);
+  const updatedContentState = ContentState.createFromBlockArray(updatedBlocks.toArray());
+  const newEditorState = EditorState.push(editorState, updatedContentState, 'insert-fragment');
+  return EditorState.forceSelection(newEditorState, newEditorState.getSelection());
+};
+
+export const insertText = (editorState, text) => {
+  const currentContent = editorState.getCurrentContent(),
+    currentSelection = editorState.getSelection();
+  const newContent = Modifier.replaceText(currentContent, currentSelection, text);
+  const newEditorState = EditorState.push(editorState, newContent, 'insert-characters');
+  return EditorState.forceSelection(newEditorState, newContent.getSelectionAfter());
 };
 
 export const entityMapper = (entity) => {

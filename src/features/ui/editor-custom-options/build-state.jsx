@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { convertToRaw, convertFromRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import { entityMapper } from '../../../utils/editor.utils';
+import { entityMapper, insertBlock } from '../../../utils/editor.utils';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Box from '@mui/material/Box';
+import { FormControl } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Backdrop from '@mui/material/Backdrop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -190,8 +192,9 @@ const BuildState = ({ handleOpen }) => (
 
 const BuildStateModal = ({ isOpen, onClose }) => {
   const { editorState, dispatch } = useEditor();
+  const [inputText, setInputText] = React.useState('');
 
-  const addContentBlocks = () => {
+  const addPredefinedContent = () => {
     const newContent = convertFromRaw(builtData);
     const updatedEditorState = EditorState.createWithContent(newContent);
     dispatch({
@@ -207,6 +210,22 @@ const BuildStateModal = ({ isOpen, onClose }) => {
         rawContent: convertToRaw(updatedEditorState.getCurrentContent()),
       },
     });
+  };
+
+  const addManualContent = () => {
+    const newState = insertBlock(editorState.editor.state, 'unstyled', inputText);
+    dispatch({
+      type: 'SET_EDITOR_STATE',
+      payload: {
+        editorState: newState,
+        convertedContent: draftToHtml(convertToRaw(newState.getCurrentContent()), null, false, entityMapper),
+        rawContent: convertToRaw(newState.getCurrentContent()),
+      },
+    });
+  };
+
+  const handleTextChange = (text) => {
+    setInputText(text);
   };
 
   return (
@@ -229,9 +248,21 @@ const BuildStateModal = ({ isOpen, onClose }) => {
             Build Editor State
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Button size="small" color="success" variant="contained" onClick={addContentBlocks}>
+            <Button size="small" color="success" variant="contained" onClick={addPredefinedContent}>
               Defined state 1
             </Button>
+            <FormControl>
+              <TextField
+                label="Type away :)"
+                type="text"
+                placeholder="Enter text"
+                onChange={(e) => handleTextChange(e.target.value)}
+                variant="outlined"
+              />
+              <Button size="small" color="secondary" variant="contained" onClick={addManualContent}>
+                Insert text
+              </Button>
+            </FormControl>
           </Stack>
         </Box>
       </Fade>
