@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { convertToRaw, convertFromRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import { entityMapper, insertBlock } from '../../../utils/editor.utils';
+import { entityMapper, insertBlock, insertText } from '../../../utils/editor.utils';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Box from '@mui/material/Box';
@@ -192,7 +192,16 @@ const BuildState = ({ handleOpen }) => (
 
 const BuildStateModal = ({ isOpen, onClose }) => {
   const { editorState, dispatch } = useEditor();
-  const [inputText, setInputText] = React.useState('');
+  const [inputBlockText, setinputBlockText] = React.useState('');
+  const [inputText, setinputText] = React.useState('');
+
+  const handleTextBlockChange = (text) => {
+    setinputBlockText(text);
+  };
+
+  const handleTextChange = (text) => {
+    setinputText(text);
+  };
 
   const addPredefinedContent = () => {
     const newContent = convertFromRaw(builtData);
@@ -212,8 +221,8 @@ const BuildStateModal = ({ isOpen, onClose }) => {
     });
   };
 
-  const addManualContent = () => {
-    const newState = insertBlock(editorState.editor.state, 'unstyled', inputText);
+  const addTextBlock = () => {
+    const newState = insertBlock(editorState.editor.state, 'unstyled', inputBlockText);
     dispatch({
       type: 'SET_EDITOR_STATE',
       payload: {
@@ -224,8 +233,16 @@ const BuildStateModal = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleTextChange = (text) => {
-    setInputText(text);
+  const addText = () => {
+    const newState = insertText(editorState.editor.state, inputText);
+    dispatch({
+      type: 'SET_EDITOR_STATE',
+      payload: {
+        editorState: newState,
+        convertedContent: draftToHtml(convertToRaw(newState.getCurrentContent()), null, false, entityMapper),
+        rawContent: convertToRaw(newState.getCurrentContent()),
+      },
+    });
   };
 
   return (
@@ -256,11 +273,23 @@ const BuildStateModal = ({ isOpen, onClose }) => {
                 label="Type away :)"
                 type="text"
                 placeholder="Enter text"
+                onChange={(e) => handleTextBlockChange(e.target.value)}
+                variant="outlined"
+              />
+              <Button size="small" color="secondary" variant="contained" onClick={addTextBlock}>
+                Insert text block
+              </Button>
+            </FormControl>
+            <FormControl>
+              <TextField
+                label="Type away :)"
+                type="text"
+                placeholder="Enter text"
                 onChange={(e) => handleTextChange(e.target.value)}
                 variant="outlined"
               />
-              <Button size="small" color="secondary" variant="contained" onClick={addManualContent}>
-                Insert text
+              <Button size="small" color="primary" variant="contained" onClick={addText}>
+                Append text
               </Button>
             </FormControl>
           </Stack>
