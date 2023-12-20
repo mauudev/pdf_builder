@@ -95,11 +95,7 @@ class PDFBuilder {
         if (rawJson.type === 'atomic') {
           this.setBuilder(this.tableBuilder);
         }
-        if (this.builder instanceof TableEntityBuilder) {
-          this.contentBlocks.push(this.builder?.buildComponent(rawJson, editorRawContent.entityMap, true)!);
-        } else {
-          this.contentBlocks.push(this.builder?.buildComponent(rawJson, true)!);
-        }
+        this.contentBlocks.push(this.builder?.buildComponent(rawJson, editorRawContent.entityMap, true)!);
       }
     } catch (error) {
       // TODO: find a better way to handle errors,
