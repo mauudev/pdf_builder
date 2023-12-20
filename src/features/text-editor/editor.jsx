@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { convertToRaw, EditorState, AtomicBlockUtils } from 'draft-js';
+import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
 import Grid from '@mui/material/Grid';
@@ -10,96 +10,36 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { styles } from './editor.styles';
 import { PDFPreviewOption, PreviewModal } from '../ui/editor-custom-options/pdf-doc-preview';
 import { parsePointValue } from '../../utils/helpers';
+import { entityMapper, customBlockRenderFunc, insertAtomicBlock } from '../../utils/editor.utils';
 import PDFBuilder from '../pdf-builder/pdf-builder';
 import { useEditor } from './contexts/editor-context';
 import PDFViewer from './pdf-live-preview';
 import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
-import Logger from '../pdf-builder/logger';
 import { PageOptionsModal, PageOptions } from '../ui/editor-custom-options/page-options';
+import { BuildStateModal, BuildState } from '../ui/editor-custom-options/build-state';
+import Logger from '../pdf-builder/logger';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 library.add(far, fas, fab);
 
-function entityMapper(entity) {
-  if (entity.type === 'DIV') {
-    return `<div>${entity.data.innerHTML}</div>`;
-  }
-  if (entity.type === 'TABLE') {
-    return `<table>${entity.data.innerHTML}</table>`;
-  }
-  if (entity.type === 'TBODY') {
-    return `<tbody>${entity.data.innerHTML}</tbody>`;
-  }
-  if (entity.type === 'TR') {
-    return `<tr>${entity.data.innerHTML}</tr>`;
-  }
-  if (entity.type === 'TH') {
-    return `<th>${entity.data.innerHTML}</th>`;
-  }
-  if (entity.type === 'TD') {
-    return `<td>${entity.data.innerHTML}</td>`;
-  }
-  if (entity.type === 'STYLE') {
-    return `<style>${entity.data.innerHTML}</style>`;
-  }
-  return '';
-}
-
-function entityMapperToComponent(entity) {
-  if (entity.type === 'DIV') {
-    return () => <div dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'TABLE') {
-    return () => <table dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'TBODY') {
-    return <tbody dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'TR') {
-    return () => <tr dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'TH') {
-    return () => <th dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'TD') {
-    return () => <td dangerouslySetInnerHTML={{ __html: entity.data.innerHTML }} />;
-  }
-  if (entity.type === 'STYLE') {
-    return () => <style>{entity.data.innerHTML}</style>;
-  }
-  return '';
-}
-
-function customBlockRenderFunc(block, config) {
-  if (block.getType() === 'atomic') {
-    const contentState = config.getEditorState().getCurrentContent();
-    const entityKey = block.getEntityAt(0);
-    const entity = contentState.getEntity(entityKey);
-    return {
-      component: entityMapperToComponent(entity),
-      editable: false,
-      props: {
-        children: () => entity.innerHTML,
-      },
-    };
-  }
-}
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [documentURL, setDocumentURL] = useState('');
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isPageOptionsOpen, setIsPageOptionsOpen] = useState(false);
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
+  const [isBuildStateOpen, setIsBuildStateOpen] = useState(false);
   const pdfBuilder = new PDFBuilder();
 
   // eslint-disable-next-line
   useEffect(() => {
-    Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
+    // Logger.debug(`Blocks: ${JSON.stringify(editorState.editor.rawContent.blocks)}`);
     Logger.debug(`Raw: ${JSON.stringify(editorState.editor.rawContent)}`);
-    Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
-    Logger.debug(`PDF Content: ${JSON.stringify(editorState.editor.pdfContent)}`);
-    Logger.debug(`PDF doc URL: ${JSON.stringify(documentURL)}`);
+    // Logger.debug(`Converted: ${JSON.stringify(editorState.editor.convertedContent)}`);
+    // Logger.debug(`PDF Content: ${JSON.stringify(editorState.editor.pdfContent)}`);
+    // Logger.debug(`PDF doc URL: ${JSON.stringify(documentURL)}`);
+    // Logger.debug(`State: ${JSON.stringify(editorState.editor.state)}`);
   }, [editorState.editor.state]);
 
   const onEditorStateChange = (newEditorState) => {
@@ -163,22 +103,12 @@ const WYSIWYGEditor = () => {
     setIsPageOptionsOpen(true);
   };
 
-  const insertAtomicBlock = (targetEditorState, entityType, mutability, tableData) => {
-    if (tableData && tableData.html && tableData.tableCells) {
-      const entityKey = targetEditorState
-        .getCurrentContent()
-        .createEntity(entityType, mutability, {
-          rows: tableData.rows,
-          columns: tableData.columns,
-          tableCells: tableData.tableCells,
-          styles: tableData.styles,
-          innerHTML: tableData.html,
-        })
-        .getLastCreatedEntityKey();
-      const character = ' ';
-      const movedSelection = EditorState.moveSelectionToEnd(targetEditorState);
-      return AtomicBlockUtils.insertAtomicBlock(movedSelection, entityKey, character);
-    }
+  const handleBuildStateOptionsOpen = () => {
+    setIsBuildStateOpen(true);
+  };
+
+  const handleBuildStateOptionsClose = () => {
+    setIsBuildStateOpen(false);
   };
 
   const buildPdfContent = () => {
@@ -222,6 +152,7 @@ const WYSIWYGEditor = () => {
             <PageOptions handleOpen={handlePageOptionsOpen} />,
             <AddTableOption handleOpen={handleTableModalOpen} />,
             <PDFPreviewOption handleOpen={handlePreviewModalOpen} />,
+            <BuildState handleOpen={handleBuildStateOptionsOpen} />,
           ]}
         />
       </Grid>
@@ -234,6 +165,7 @@ const WYSIWYGEditor = () => {
       </Grid>
       <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
       <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
+      <BuildStateModal isOpen={isBuildStateOpen} onClose={handleBuildStateOptionsClose} />
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={handlePreviewModalClose}
