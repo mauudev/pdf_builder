@@ -80,6 +80,13 @@ const Message = styled.div`
   transition: all 1s;
   opacity: ${(props) => (props.active ? 1 : 0)};
   pointer-events: ${(props) => (props.active ? 'all' : 'none')};
+  flex-direction: column;
+
+  #icon {
+    width: 200px;
+    height: 200px;
+    margin-top: 10px;
+  }
 `;
 
 const PDFViewer = ({ value, onDocumentUrlChange, onRenderError }) => {
@@ -116,7 +123,10 @@ const PDFViewer = ({ value, onDocumentUrlChange, onRenderError }) => {
     <Wrapper>
       <Message active={shouldShowTextLoader}>Rendering PDF...</Message>
 
-      <Message active={!render.loading && !value}>Please start typing whatever you want</Message>
+      <Message active={!render.loading && !value}>
+        <Typography variant="h6">Please start typing using the text editor</Typography>
+        <img id="icon" src="type-away.png" width="100px" height="100px" alt="Icono" />
+      </Message>
       <Toolbar>
         <Typography sx={{ textAlign: 'left', color: '#fff' }} variant="h5">
           Document Preview

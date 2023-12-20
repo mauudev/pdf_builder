@@ -24,7 +24,17 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 library.add(far, fas, fab);
 
 const toolbarOptions = {
-  options: ['inline', 'list', 'textAlign', 'blockType', 'fontSize', 'colorPicker', 'history', 'remove'],
+  options: [
+    'inline',
+    'list',
+    'textAlign',
+    'blockType',
+    'fontSize',
+    'colorPicker',
+    'history',
+    'remove',
+    'fontFamily',
+  ],
   inline: {
     options: ['bold', 'italic', 'underline', 'strikethrough'],
     bold: { className: 'rich-text-icon' },
@@ -45,7 +55,7 @@ const toolbarOptions = {
     justify: { className: 'rich-text-icon' },
   },
   blockType: {
-    options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'],
+    options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BlockType'],
     Normal: { className: 'rich-text-icon' },
     H1: { className: 'rich-text-icon' },
     H2: { className: 'rich-text-icon' },
@@ -53,6 +63,7 @@ const toolbarOptions = {
     H4: { className: 'rich-text-icon' },
     H5: { className: 'rich-text-icon' },
     H6: { className: 'rich-text-icon' },
+    BlockType: { className: 'rich-text-icon' },
   },
   fontSize: {
     options: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
@@ -73,6 +84,7 @@ const toolbarOptions = {
   colorPicker: { options: ['inline', 'block'] },
   history: { options: ['undo', 'redo'] },
   remove: { className: 'rich-text-icon' },
+  fontFamily: { options: ['Arial', 'Georgia', 'Times New Roman', 'Helvetica'] },
 };
 
 const WYSIWYGEditor = () => {
