@@ -23,6 +23,58 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 library.add(far, fas, fab);
 
+const toolbarOptions = {
+  options: ['inline', 'list', 'textAlign', 'blockType', 'fontSize', 'colorPicker', 'history', 'remove'],
+  inline: {
+    options: ['bold', 'italic', 'underline', 'strikethrough'],
+    bold: { className: 'rich-text-icon' },
+    italic: { className: 'rich-text-icon' },
+    underline: { className: 'rich-text-icon' },
+    strikethrough: { className: 'rich-text-icon' },
+  },
+  list: {
+    options: ['unordered', 'ordered'],
+    unordered: { className: 'rich-text-icon' },
+    ordered: { className: 'rich-text-icon' },
+  },
+  textAlign: {
+    options: ['left', 'center', 'right', 'justify'],
+    left: { className: 'rich-text-icon' },
+    center: { className: 'rich-text-icon' },
+    right: { className: 'rich-text-icon' },
+    justify: { className: 'rich-text-icon' },
+  },
+  blockType: {
+    options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'],
+    Normal: { className: 'rich-text-icon' },
+    H1: { className: 'rich-text-icon' },
+    H2: { className: 'rich-text-icon' },
+    H3: { className: 'rich-text-icon' },
+    H4: { className: 'rich-text-icon' },
+    H5: { className: 'rich-text-icon' },
+    H6: { className: 'rich-text-icon' },
+  },
+  fontSize: {
+    options: ['8', '10', '12', '14', '16', '18', '20', '24', '30', '36', '48', '60', '72'],
+    8: { className: 'rich-text-icon' },
+    10: { className: 'rich-text-icon' },
+    12: { className: 'rich-text-icon' },
+    14: { className: 'rich-text-icon' },
+    16: { className: 'rich-text-icon' },
+    18: { className: 'rich-text-icon' },
+    20: { className: 'rich-text-icon' },
+    24: { className: 'rich-text-icon' },
+    30: { className: 'rich-text-icon' },
+    36: { className: 'rich-text-icon' },
+    48: { className: 'rich-text-icon' },
+    60: { className: 'rich-text-icon' },
+    72: { className: 'rich-text-icon' },
+  },
+  colorPicker: { options: ['inline', 'block'] },
+  history: { options: ['undo', 'redo'] },
+  remove: { className: 'rich-text-icon' },
+};
+
 const WYSIWYGEditor = () => {
   const { editorState, dispatch } = useEditor();
   const [documentURL, setDocumentURL] = useState('');
@@ -136,18 +188,7 @@ const WYSIWYGEditor = () => {
           wrapperStyle={styles.editorWrapper}
           onEditorStateChange={onEditorStateChange}
           customBlockRenderFunc={customBlockRenderFunc}
-          toolbar={{
-            options: [
-              'inline',
-              'blockType',
-              'fontSize',
-              'list',
-              'textAlign',
-              'history',
-              'remove',
-              'colorPicker',
-            ],
-          }}
+          toolbar={toolbarOptions}
           toolbarCustomButtons={[
             <PageOptions handleOpen={handlePageOptionsOpen} />,
             <AddTableOption handleOpen={handleTableModalOpen} />,

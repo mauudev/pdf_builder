@@ -16,7 +16,7 @@ export const styles = {
     border: '1px solid #000',
     padding: '1rem',
     backgroundColor: '#fff',
-    overflow: 'auto',
+    // overflow: 'auto',
     boxSizing: 'border-box',
     borderRadius: '4px',
   },
