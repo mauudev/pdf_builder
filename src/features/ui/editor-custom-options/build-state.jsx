@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { convertToRaw, convertFromRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import { entityMapper, insertBlock, insertText } from '../../../utils/editor.utils';
+import { entityMapper, insertBlock, insertText, insertBlockList, insertList } from '../../../utils/editor.utils';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Box from '@mui/material/Box';
@@ -233,6 +233,32 @@ const BuildStateModal = ({ isOpen, onClose }) => {
     });
   };
 
+  const addListBlock = () => {
+    const listItems = ['Item 1', 'Item 2', 'Item 3'];
+    const newState = insertBlockList(editorState.editor.state, listItems, true);
+    dispatch({
+      type: 'SET_EDITOR_STATE',
+      payload: {
+        editorState: newState,
+        convertedContent: draftToHtml(convertToRaw(newState.getCurrentContent()), null, false, entityMapper),
+        rawContent: convertToRaw(newState.getCurrentContent()),
+      },
+    });
+  };
+
+  const addList = () => {
+    const listItems = ['Item 1', 'Item 2', 'Item 3'];
+    const newState = insertList(editorState.editor.state, listItems, true);
+    dispatch({
+      type: 'SET_EDITOR_STATE',
+      payload: {
+        editorState: newState,
+        convertedContent: draftToHtml(convertToRaw(newState.getCurrentContent()), null, false, entityMapper),
+        rawContent: convertToRaw(newState.getCurrentContent()),
+      },
+    });
+  };
+
   const addText = () => {
     const newState = insertText(editorState.editor.state, inputText);
     dispatch({
@@ -290,6 +316,11 @@ const BuildStateModal = ({ isOpen, onClose }) => {
               />
               <Button size="small" color="primary" variant="contained" onClick={addText}>
                 Append text
+              </Button>
+            </FormControl>
+            <FormControl>
+              <Button size="small" color="primary" variant="contained" onClick={addList}>
+                Append List block
               </Button>
             </FormControl>
           </Stack>

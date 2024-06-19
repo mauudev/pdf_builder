@@ -66,6 +66,98 @@ export const insertText = (editorState, text) => {
   return EditorState.forceSelection(newEditorState, newContent.getSelectionAfter());
 };
 
+export const insertBlockList = (editorState, listItems, ordered) => {
+  const contentState = editorState.getCurrentContent();
+  const selectionState = editorState.getSelection();
+
+  const blocks = listItems.map((item, index) => {
+    const key = genKey();
+    const block = new ContentBlock({
+      key,
+      type: ordered ? 'ordered-list-item' : 'unordered-list-item',
+      text: item,
+      characterList: ImmutableList(ImmutableRepeat(CharacterMetadata.create(), item.length)),
+      data: ImmutableMap({}),
+    });
+    return block;
+  });
+
+  const newBlockMap = contentState.getBlockMap().withMutations((blockMap) => {
+    blocks.forEach((block) => {
+      blockMap.set(block.getKey(), block);
+    });
+  });
+
+  const newContentState = contentState.merge({
+    blockMap: newBlockMap,
+    selectionAfter: selectionState,
+  });
+
+  const newEditorState = EditorState.push(editorState, newContentState, 'insert-fragment');
+  return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
+};
+
+export const insertList = (editorState, listItems, ordered) => {
+  const contentState = editorState.getCurrentContent();
+  const selectionState = editorState.getSelection();
+
+  const startKey = selectionState.getStartKey();
+  const startOffset = selectionState.getStartOffset();
+
+  const block = contentState.getBlockForKey(startKey);
+  const blockText = block.getText();
+
+  const beforeText = blockText.slice(0, startOffset);
+  const afterText = blockText.slice(startOffset);
+
+  const beforeBlockKey = genKey();
+  const afterBlockKey = genKey();
+
+  const beforeBlock = new ContentBlock({
+    key: beforeBlockKey,
+    type: block.getType(),
+    text: beforeText,
+    characterList: block.getCharacterList().slice(0, startOffset),
+  });
+
+  const afterBlock = new ContentBlock({
+    key: afterBlockKey,
+    type: block.getType(),
+    text: afterText,
+    characterList: block.getCharacterList().slice(startOffset),
+  });
+
+  const listBlocks = listItems.map((item) => {
+    return new ContentBlock({
+      key: genKey(),
+      type: ordered ? 'ordered-list-item' : 'unordered-list-item',
+      text: item,
+      characterList: ImmutableList(ImmutableRepeat(CharacterMetadata.create(), item.length)),
+    });
+  });
+
+  const blockMap = contentState.getBlockMap();
+  const blocksBefore = blockMap.toSeq().takeUntil((v) => v === block);
+  const blocksAfter = blockMap.toSeq().skipUntil((v) => v === block).rest();
+
+  const newBlocks = blocksBefore
+    .concat([[beforeBlockKey, beforeBlock], ...listBlocks.map((b) => [b.getKey(), b]), [afterBlockKey, afterBlock]])
+    .concat(blocksAfter)
+    .toOrderedMap();
+
+  const newContentState = contentState.merge({
+    blockMap: newBlocks,
+    selectionAfter: selectionState.merge({
+      anchorKey: afterBlockKey,
+      anchorOffset: 0,
+      focusKey: afterBlockKey,
+      focusOffset: 0,
+    }),
+  });
+
+  return EditorState.push(editorState, newContentState, 'insert-fragment');
+};
+
 export const entityMapper = (entity) => {
   if (entity.type === 'DIV') {
     return `<div>${entity.data.innerHTML}</div>`;

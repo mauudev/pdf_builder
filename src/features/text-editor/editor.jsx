@@ -17,6 +17,7 @@ import PDFViewer from './pdf-live-preview';
 import { TableModal, AddTableOption } from '../ui/editor-custom-options/add-table';
 import { PageOptionsModal, PageOptions } from '../ui/editor-custom-options/page-options';
 import { BuildStateModal, BuildState } from '../ui/editor-custom-options/build-state';
+import { CustomSearchModal, CustomSearch } from '../ui/editor-custom-options/custom-search';
 import Logger from '../pdf-builder/logger';
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -94,6 +95,7 @@ const WYSIWYGEditor = () => {
   const [isPageOptionsOpen, setIsPageOptionsOpen] = useState(false);
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [isBuildStateOpen, setIsBuildStateOpen] = useState(false);
+  const [isCustomSearchOpen, setIsCustomSearchOpen] = useState(false);
   const pdfBuilder = new PDFBuilder();
 
   // eslint-disable-next-line
@@ -175,6 +177,14 @@ const WYSIWYGEditor = () => {
     setIsBuildStateOpen(false);
   };
 
+  const handleCustomSearchOptionsOpen = () => {
+    setIsCustomSearchOpen(true);
+  };
+
+  const handleCustomSearchOptionsClose = () => {
+    setIsCustomSearchOpen(false);
+  };
+
   const buildPdfContent = () => {
     const { pageSize, fontSize, lineHeight, margin } = editorState.pageStyles;
     const pdfStyles = {
@@ -206,6 +216,7 @@ const WYSIWYGEditor = () => {
             <AddTableOption handleOpen={handleTableModalOpen} />,
             <PDFPreviewOption handleOpen={handlePreviewModalOpen} />,
             <BuildState handleOpen={handleBuildStateOptionsOpen} />,
+            <CustomSearch handleOpen={handleCustomSearchOptionsOpen} />,
           ]}
         />
       </Grid>
@@ -219,6 +230,7 @@ const WYSIWYGEditor = () => {
       <PageOptionsModal isOpen={isPageOptionsOpen} onClose={handlePageOptionsClose} />
       <TableModal isOpen={isTableModalOpen} onClose={handleTableModalClose} onSave={handleSaveTable} />
       <BuildStateModal isOpen={isBuildStateOpen} onClose={handleBuildStateOptionsClose} />
+      <CustomSearchModal isOpen={isCustomSearchOpen} onClose={handleCustomSearchOptionsClose} />
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={handlePreviewModalClose}
